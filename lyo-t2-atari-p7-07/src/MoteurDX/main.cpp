@@ -36,24 +36,20 @@ bool InitDirect3DApp::Initialize()
 {
     if (!WindowDX::Initialize())
         return false;
-    //TEST COMMIT 
- /*   m_TriangleRenderer = std::make_unique<TriangleRenderer>(mD3DDevice.Get(), mCommandQueue.Get(),mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(),mRtvDescriptorSize);
-    if (!m_TriangleRenderer->Initialize())
-        return false;*/
 
+    // Profondeur
     D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
     depthStencilDesc.DepthEnable = TRUE;
     depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
     depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
     depthStencilDesc.StencilEnable = FALSE;
 
-
-
+    // Square parameters
     float squareSize = 1.0f;
     DirectX::XMFLOAT4 squareColor = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-    m_TriangleRenderer = new TriangleRenderer(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc);
-    if (!m_TriangleRenderer->Initialize())
+    m_TriangleRenderer = new TriangleRenderer();
+    if (!m_TriangleRenderer->Initialize(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc))
     {
         delete m_TriangleRenderer;  // Liberation si l'initialisation echoue
         m_TriangleRenderer = nullptr;
@@ -96,15 +92,12 @@ void InitDirect3DApp::Draw()
     CD3DX12_RESOURCE_BARRIER barrierStart = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     mCommandList->ResourceBarrier(1, &barrierStart);
 
-    FLOAT clearColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+    // Background Color
+    FLOAT clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
     mCommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-
-    mCommandList->OMSetRenderTargets(1, &rtvHandle, true, nullptr);
-
+    //mCommandList->OMSetRenderTargets(1, &rtvHandle, true, nullptr);
 
     // Appel pour dessiner le triangle
-    //mCommandList->SetGraphicsRootSignature(m_TriangleRenderer->GetRootSignature());
-    //mCommandList->SetPipelineState(m_TriangleRenderer->GetPipelineState());
 
     m_TriangleRenderer->Render(); // Rendu du triangle ici
 
@@ -124,6 +117,4 @@ void InitDirect3DApp::Draw()
     // Presenter le SwapChain (1 pour V-Sync) swap the back & front buffer
     mSwapChain->Present(0, 0);
     mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
-
-
 }
