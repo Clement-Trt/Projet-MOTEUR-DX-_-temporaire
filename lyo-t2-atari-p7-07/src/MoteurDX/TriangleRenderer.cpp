@@ -1,8 +1,8 @@
-#include "pch.h"
+﻿#include "pch.h"
 
 #include "TriangleRenderer.h"
 #include <d3dcompiler.h>
-
+#include "InputManager.h"
 TriangleRenderer::TriangleRenderer()
 {
 }
@@ -29,7 +29,32 @@ bool TriangleRenderer::Initialize(ID3D12Device* device, ID3D12CommandQueue* comm
 void TriangleRenderer::Update()
 {
     // Update logic (if needed)
-    UpdateTransform();
+    //UpdateTransform();
+    
+    UpdateTransformV2();
+
+    //test input
+    if (InputManager::GetKeyDown('A'))
+    {
+        MessageBox(0, L"Touche A pressed !", L"Debug Input", MB_OK);
+    }
+    if (InputManager::GetKeyDown('Z'))
+    {
+        m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(0.1f), 0.0f); // Fait tourner a chaque frame
+    }
+    if (InputManager::GetKeyDown('Q'))
+    {
+        m_Transform.Rotation(0.002f, DirectX::XMConvertToRadians(0.0f), 0.0f); // Fait tourner a chaque frame
+    }
+    if (InputManager::GetKeyDown('S'))
+    {
+        m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(-0.1f), 0.0f); // Fait tourner a chaque frame
+    }
+    if (InputManager::GetKeyDown('D'))
+    {
+        m_Transform.Rotation(-0.002f, DirectX::XMConvertToRadians(0.0f), 0.0f); // Fait tourner a chaque frame
+    }
+
 }
 
 void TriangleRenderer::UpdateTransform()
@@ -55,6 +80,27 @@ void TriangleRenderer::UpdateTransform()
     m_ConstantBuffer->Unmap(0, nullptr);
 }
 
+void TriangleRenderer::UpdateTransformV2()
+{
+    m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(m_RotationSpeed * 0.016f), 0.0f); //60fps = 0.016 (changer avec deltaTime)
+    m_Transform.UpdateMatrix();
+
+    DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
+        DirectX::XMVectorSet(0.0f, 2.0f, -5.0f, 0.0f), // Position de la camera (position de la camera dans notre World)
+        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),  // Cible (point que la camera regarde)
+        DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)); // Orientation
+
+    DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
+
+    DirectX::XMMATRIX worldViewProj = XMLoadFloat4x4(&m_Transform.matrix) * view * proj;
+    XMStoreFloat4x4(&m_ObjectConstants.WorldViewProj, DirectX::XMMatrixTranspose(worldViewProj));
+
+    void* pData;
+    CD3DX12_RANGE readRange(0, 0);
+    m_ConstantBuffer->Map(0, &readRange, &pData);
+    memcpy(pData, &m_ObjectConstants, sizeof(m_ObjectConstants));
+    m_ConstantBuffer->Unmap(0, nullptr);
+}
 
 void TriangleRenderer::Render()
 {

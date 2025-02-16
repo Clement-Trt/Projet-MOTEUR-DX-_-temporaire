@@ -8,6 +8,9 @@
 #include "d3dx12.h"
 #include <DirectXMath.h>
 
+#include "InputManager.h"
+#include "Transform.h"
+
 using namespace Microsoft::WRL;
 
 struct Vertex
@@ -28,6 +31,7 @@ public:
     bool Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc);
     void Update();
     void UpdateTransform();
+    void UpdateTransformV2();
     void Render();
 
     ID3D12PipelineState* GetPipelineState() const;
@@ -64,6 +68,8 @@ private:
     ComPtr<ID3D12DescriptorHeap> m_DsvHeap;
     D3D12_DEPTH_STENCIL_DESC m_DepthStencilDesc;
 
-
+    // Transform
+    Transform::TRANSFORM m_Transform;
+    float m_RotationSpeed = 0.1f;
 };
 
