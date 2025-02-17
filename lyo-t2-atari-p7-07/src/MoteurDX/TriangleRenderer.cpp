@@ -3,8 +3,10 @@
 #include "TriangleRenderer.h"
 #include <d3dcompiler.h>
 #include "InputManager.h"
+
 TriangleRenderer::TriangleRenderer()
 {
+
 }
 
 bool TriangleRenderer::Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc)
@@ -36,23 +38,24 @@ void TriangleRenderer::Update()
     //test input
     if (InputManager::GetKeyDown('A'))
     {
-        MessageBox(0, L"Touche A pressed !", L"Debug Input", MB_OK);
+        //MessageBox(0, L"Touche A pressed !", L"Debug Input", MB_OK);
+        m_Transform.Move(0.1f,0.0f,0.0f); // Avance
     }
     if (InputManager::GetKeyDown('Z'))
     {
-        m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(0.1f), 0.0f); // Fait tourner a chaque frame
+        m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(5.0f), 0.0f); // Rotation
     }
     if (InputManager::GetKeyDown('Q'))
     {
-        m_Transform.Rotation(0.002f, DirectX::XMConvertToRadians(0.0f), 0.0f); // Fait tourner a chaque frame
+        m_Transform.Rotation(0.05f, DirectX::XMConvertToRadians(0.0f), 0.0f);
     }
     if (InputManager::GetKeyDown('S'))
     {
-        m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(-0.1f), 0.0f); // Fait tourner a chaque frame
+        m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(-5.0f), 0.0f);
     }
     if (InputManager::GetKeyDown('D'))
     {
-        m_Transform.Rotation(-0.002f, DirectX::XMConvertToRadians(0.0f), 0.0f); // Fait tourner a chaque frame
+        m_Transform.Rotation(-0.05f, DirectX::XMConvertToRadians(0.0f), 0.0f);
     }
 
 }
@@ -82,7 +85,6 @@ void TriangleRenderer::UpdateTransform()
 
 void TriangleRenderer::UpdateTransformV2()
 {
-    m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(m_RotationSpeed * 0.016f), 0.0f); //60fps = 0.016 (changer avec deltaTime)
     m_Transform.UpdateMatrix();
 
     DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
@@ -92,7 +94,7 @@ void TriangleRenderer::UpdateTransformV2()
 
     DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
-    DirectX::XMMATRIX worldViewProj = XMLoadFloat4x4(&m_Transform.matrix) * view * proj;
+    DirectX::XMMATRIX worldViewProj = XMLoadFloat4x4(&m_Transform.GetMatrix()) * view * proj;
     XMStoreFloat4x4(&m_ObjectConstants.WorldViewProj, DirectX::XMMatrixTranspose(worldViewProj));
 
     void* pData;

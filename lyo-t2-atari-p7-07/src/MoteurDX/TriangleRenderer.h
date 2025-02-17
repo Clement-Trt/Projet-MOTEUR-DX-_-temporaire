@@ -69,7 +69,7 @@ private:
     D3D12_DEPTH_STENCIL_DESC m_DepthStencilDesc;
 
     // Transform
-    Transform::TRANSFORM m_Transform;
+    Transform m_Transform;
     float m_RotationSpeed = 0.1f;
 };
 
