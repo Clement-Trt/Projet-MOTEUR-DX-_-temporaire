@@ -78,6 +78,7 @@ void MeshFactory::Render()
 
 void MeshFactory::CreateVertexBuffer(float size)
 {
+	// size = taille du cube
 	float halfSize = size / 2.0f;
 
 	Vertex vertices[] =
@@ -95,4 +96,36 @@ void MeshFactory::CreateVertexBuffer(float size)
 		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },   // Haut droit  (6)
 		{ DirectX::XMFLOAT3(-halfSize, halfSize, -halfSize), { 0.0f, 1.0f, 0.0f, 1.0f } }    // Haut gauche (7)
 	};
+
+	uint16_t indices[] =
+	{
+		// Triangle1 | triangle2 (pour chaque carre du cube)
+		// Face avant
+		0, 1, 2,  0, 2, 3,
+		// Face arriere
+		4, 6, 5,  4, 7, 6,
+		// Face gauche
+		4, 5, 1,  4, 1, 0,
+		// Face droite
+		3, 2, 6,  3, 6, 7,
+		// Face haut
+		1, 5, 6,  1, 6, 2,
+		// Face bas
+		4, 0, 3,  4, 3, 7
+	};
+
+	// Creation des buffers pour stocker les sommets et indices
+	const UINT vSize = sizeof(vertices);
+	const UINT iSize = sizeof(indices);
+
+	// Create vertex & index buffer
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+
+	CD3DX12_RESOURCE_DESC vbDesc = CD3DX12_RESOURCE_DESC::Buffer(vSize);
+	CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(iSize);
+	
+	// Vertex Buffer
+	m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &vbDesc,D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,IID_PPV_ARGS(&m_VertexBuffer));
+	// Index Buffer
+	m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &ibDesc,D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,IID_PPV_ARGS(&m_IndexBuffer));
 }

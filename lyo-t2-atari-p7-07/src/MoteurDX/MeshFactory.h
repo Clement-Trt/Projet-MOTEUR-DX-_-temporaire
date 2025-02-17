@@ -3,6 +3,7 @@
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <wrl.h>
+#include "d3dx12.h"
 
 #include <vector>
 
@@ -47,6 +48,9 @@ public:
 private:
 	std::vector<CubeMesh*> cubeList;
 
+	// Camera
+	Camera* m_Camera;
+
 	ComPtr<ID3D12Device> m_Device;
 	ComPtr<ID3D12CommandQueue> m_CommandQueue;
 	ComPtr<ID3D12GraphicsCommandList> m_CommandList;
@@ -58,8 +62,12 @@ private:
 	UINT m_RtvDescriptorSize;
 	D3D12_DEPTH_STENCIL_DESC m_DepthStencilDesc;
 
-	Camera* m_Camera;
-
 	ComPtr<ID3D12PipelineState> m_PipelineState;
 	ComPtr<ID3D12RootSignature> m_RootSignature;
+
+	//Vertex & Index Buffer
+	ComPtr<ID3D12Resource> m_VertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
+	ComPtr<ID3D12Resource> m_IndexBuffer;
+	D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
 };
