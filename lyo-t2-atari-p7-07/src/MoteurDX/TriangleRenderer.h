@@ -9,6 +9,9 @@
 #include <DirectXMath.h>
 #include "Camera.h"
 
+#include "InputManager.h"
+#include "Transform.h"
+
 using namespace Microsoft::WRL;
 
 struct Vertex
@@ -29,6 +32,7 @@ public:
     bool Initialize();
     void Update();
     void UpdateTransform();
+    void UpdateTransformV2();
     void Render();
 
     ID3D12PipelineState* GetPipelineState() const;
@@ -66,6 +70,8 @@ private:
     ComPtr<ID3D12DescriptorHeap> m_DsvHeap;
     D3D12_DEPTH_STENCIL_DESC m_DepthStencilDesc;
 
-
+    // Transform
+    Transform m_Transform;
+    float m_RotationSpeed = 0.1f;
 };
 

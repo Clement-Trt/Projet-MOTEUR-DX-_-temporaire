@@ -39,13 +39,9 @@ bool InitDirect3DApp::Initialize()
 {
     if (!WindowDX::Initialize())
         return false;
-    //TEST COMMIT 
- /*   m_TriangleRenderer = std::make_unique<TriangleRenderer>(mD3DDevice.Get(), mCommandQueue.Get(),mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(),mRtvDescriptorSize);
-    if (!m_TriangleRenderer->Initialize())
-        return false;*/
 
-        // Positionner la caméra à une position initiale
-    m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la caméra en arrière pour voir la scène
+        // Positionner la camera a une position initiale
+    m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
 
     D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
     depthStencilDesc.DepthEnable = TRUE;
@@ -102,43 +98,43 @@ void InitDirect3DApp::Draw()
         return;
     }
 
-    // Définir le viewport et le rectangle de découpe (scissor) pour le rendu.
+    // Definir le viewport et le rectangle de decoupe (scissor) pour le rendu.
     mCommandList->RSSetViewports(1, &mScreenViewport);
     mCommandList->RSSetScissorRects(1, &mScissorRect);
 
-    // Récupérer le handle du back buffer pour le rendu.
+    // Recuperer le handle du back buffer pour le rendu.
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart(), mCurrBackBuffer, mRtvDescriptorSize);
 
-    // Récupérer le handle du Depth Stencil View.
+    // Recuperer le handle du Depth Stencil View.
     CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(mDsvHeap->GetCPUDescriptorHandleForHeapStart());
 
-    // Transitionner le back buffer de l'état PRESENT à RENDER_TARGET.
+    // Transitionner le back buffer de l'etat PRESENT a RENDER_TARGET.
     CD3DX12_RESOURCE_BARRIER barrierStart = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
     mCommandList->ResourceBarrier(1, &barrierStart);
 
     // Effacer le Render Target avec une couleur de fond
-    FLOAT clearColor[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+    FLOAT clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
     mCommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
-    // Effacer le Depth Buffer pour réinitialiser les valeurs de profondeur (1.0 = loin).
+    // Effacer le Depth Buffer pour reinitialiser les valeurs de profondeur (1.0 = loin).
     mCommandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
-    // Attacher le Render Target et le Depth Buffer à l'Output Merger.
+    // Attacher le Render Target et le Depth Buffer a l'Output Merger.
     mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
     // Appeler le renderer de l'objet
     m_TriangleRenderer->Render(); // Rendu du triangle ici
 
-    // Transitionner le back buffer de RENDER_TARGET à PRESENT pour la présentation.
+    // Transitionner le back buffer de RENDER_TARGET a PRESENT pour la presentation.
     CD3DX12_RESOURCE_BARRIER barrierStop = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
     mCommandList->ResourceBarrier(1, &barrierStop);
 
-    // Fermer la command list et l'exécuter sur la GPU.
+    // Fermer la command list et l'executer sur la GPU.
     mCommandList->Close();
     ID3D12CommandList* ppCommandLists[] = { mCommandList.Get() };
     mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-    // Attendre la fin de l'exécution des commandes et présenter le swap chain.
+    // Attendre la fin de l'execution des commandes et presenter le swap chain.
     FlushCommandQueue();
     mSwapChain->Present(0, 0);
     mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
