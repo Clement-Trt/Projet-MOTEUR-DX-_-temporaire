@@ -3,8 +3,8 @@
 #include "TriangleRenderer.h"
 #include <d3dcompiler.h>
 
-TriangleRenderer::TriangleRenderer(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc)
-    : m_Device(device), m_CommandQueue(commandQueue),m_CommandList(commandList), m_SwapChain(swapChain), m_RtvHeap(rtvHeap), m_DsvHeap(dsvHeap) ,m_RtvDescriptorSize(rtvDescriptorSize), m_Size(size), m_Color(color), m_DepthStencilDesc(depthStencilDesc)
+TriangleRenderer::TriangleRenderer(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera)
+    : m_Device(device), m_CommandQueue(commandQueue),m_CommandList(commandList), m_SwapChain(swapChain), m_RtvHeap(rtvHeap), m_DsvHeap(dsvHeap) ,m_RtvDescriptorSize(rtvDescriptorSize), m_Size(size), m_Color(color), m_DepthStencilDesc(depthStencilDesc), m_Camera(camera)
 {
 }
 
@@ -24,13 +24,17 @@ void TriangleRenderer::Update()
 
 void TriangleRenderer::UpdateTransform()
 {
+
     // Création des matrices
     DirectX::XMMATRIX world = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(45.0f));
     // DirectX::XMMATRIX world = DirectX::XMMatrixIdentity();
-    DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
-        DirectX::XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f), // Position de la caméra
-        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),  // Cible
-        DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)); // Orientation
+    //DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
+    //    DirectX::XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f), // Position de la caméra
+    //    DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),  // Cible
+    //    DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)); // Orientation
+    
+    // Utilisation de la vue de la caméra
+    DirectX::XMMATRIX view = m_Camera->GetViewMatrix();
 
     DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
@@ -48,38 +52,24 @@ void TriangleRenderer::UpdateTransform()
 
 void TriangleRenderer::Render()
 {
-    // Get the back buffer index
-    UINT backBufferIndex = m_SwapChain->GetCurrentBackBufferIndex();
-
-    // Get the render target view handle
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_RtvHeap->GetCPUDescriptorHandleForHeapStart(), backBufferIndex, m_RtvDescriptorSize);
-    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_DsvHeap->GetCPUDescriptorHandleForHeapStart());
-
-    //// Clear the render target
-    float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-    m_CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-    m_CommandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
-    // Set the pipeline state and root signature
+    // Configurer le root signature pour le pipeline.
     m_CommandList->SetGraphicsRootSignature(m_RootSignature.Get());
+
+    // Définir l'objet de l'état du pipeline (PSO) contenant la configuration graphique.
     m_CommandList->SetPipelineState(m_PipelineState.Get());
 
-    // Définir le buffer constant
+    // Attacher le constant buffer (contenant la matrice World-View-Projection) au pipeline.
     m_CommandList->SetGraphicsRootConstantBufferView(0, m_ConstantBuffer->GetGPUVirtualAddress());
 
     // Set primitive topology
-
     m_CommandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
     m_CommandList->IASetIndexBuffer(&m_IndexBufferView);
     m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // attacher le Depth Buffer au pipeline
-    m_CommandList->OMSetRenderTargets(1, &rtvHandle, TRUE, &dsvHandle);
-
     // Draw the triangle
+    // Émettre l'appel de dessin : 36 indices pour dessiner le cube.
     // m_CommandList->DrawInstanced(36, 1, 0, 0);
     m_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
-    //MessageBox(0, L"Triangle is here !", L"Draw", MB_OK);
 }
 
 void TriangleRenderer::CreateVertexBuffer(float size, DirectX::XMFLOAT4 color)
