@@ -40,7 +40,7 @@ public:
 	virtual void Update();
 	virtual void Draw();
 
-
+	HWND GetMainWindow() { return m_mainWindow; };
 private:
 	static WindowDX* m_Application; // ref instance de la classe
 

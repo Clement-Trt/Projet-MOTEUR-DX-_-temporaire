@@ -118,6 +118,9 @@ void InitDirect3DApp::Draw()
 
     // Appeler le renderer de l'objet
     m_TriangleRenderer->Render(); // Rendu du triangle ici
+    
+    // Change le titre de la fentre (peux servir pour le debug)
+    SetWindowText(GetActiveWindow(), TEXT("MoteurDX"));
 
     // Transitionner le back buffer de RENDER_TARGET a PRESENT pour la presentation.
     CD3DX12_RESOURCE_BARRIER barrierStop = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
