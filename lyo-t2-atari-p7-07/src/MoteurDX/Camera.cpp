@@ -26,11 +26,20 @@ void Camera::Rotate(float pitch, float yaw)
 
 XMMATRIX Camera::GetViewMatrix() const
 {
+    // Calcul du vecteur direction à partir des angles (m_Pitch et m_Yaw)
+    float cosPitch = cosf(m_Pitch);
+    float sinPitch = sinf(m_Pitch);
+    float cosYaw = cosf(m_Yaw);
+    float sinYaw = sinf(m_Yaw);
 
+    // Le vecteur forward
+    XMVECTOR forward = XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
 
     XMVECTOR pos = XMVectorSet(m_Position.x, m_Position.y, m_Position.z, 1.0f);
 
-    XMVECTOR target = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+    // XMVECTOR target = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+    // Définir le target comme position + direction
+    XMVECTOR target = XMVectorAdd(pos, forward);
 
     XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
