@@ -11,14 +11,14 @@ void Camera::SetPosition(float x, float y, float z)
     m_Position = { x, y, z };
 }
 
-void Camera::Move(float rightDir, float upDir, float frontDir)
+void Camera::Move(float frontDir, float rightDir, float upDir)
 {
     m_Position.x += rightDir;
     m_Position.y += upDir;
     m_Position.z += frontDir;
 }
 
-void Camera::MoveRelative(float rightDir, float upDir, float frontDir)
+void Camera::MoveRelative(float frontDir, float rightDir, float upDir)
 {
     // Calculer le forward comme dans GetViewMatrix
     float cosPitch = cosf(m_Pitch);
