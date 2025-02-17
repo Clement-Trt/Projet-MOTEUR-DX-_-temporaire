@@ -32,9 +32,8 @@ bool TriangleRenderer::Initialize(ID3D12Device* device, ID3D12CommandQueue* comm
 void TriangleRenderer::Update()
 {
     // Update logic (if needed)
-    //UpdateTransform();
     
-    UpdateTransformV2();
+    UpdateTransform();
 
     //test input
     if (InputManager::GetKeyDown('A'))
@@ -63,39 +62,9 @@ void TriangleRenderer::Update()
 
 void TriangleRenderer::UpdateTransform()
 {
-
-    // Creation des matrices
-    DirectX::XMMATRIX world = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(45.0f));
-    // DirectX::XMMATRIX world = DirectX::XMMatrixIdentity();
-    //DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
-    //    DirectX::XMVectorSet(0.0f, 0.0f, -5.0f, 1.0f), // Position de la camera
-    //    DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),  // Cible
-    //    DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)); // Orientation
-    
-    // Utilisation de la vue de la camera
-    DirectX::XMMATRIX view = m_Camera->GetViewMatrix();
-
-    DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
-
-    DirectX::XMMATRIX worldViewProj = world * view * proj;
-    XMStoreFloat4x4(&m_ObjectConstants.WorldViewProj, DirectX::XMMatrixTranspose(worldViewProj));
-
-    // Mettre a jour le buffer constant
-    void* pData;
-    CD3DX12_RANGE readRange(0, 0);
-    m_ConstantBuffer->Map(0, &readRange, &pData);
-    memcpy(pData, &m_ObjectConstants, sizeof(m_ObjectConstants));
-    m_ConstantBuffer->Unmap(0, nullptr);
-}
-
-void TriangleRenderer::UpdateTransformV2()
-{
     m_Transform.UpdateMatrix();
 
-    DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(
-        DirectX::XMVectorSet(0.0f, 2.0f, -5.0f, 0.0f), // Position de la camera (position de la camera dans notre World)
-        DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),  // Cible (point que la camera regarde)
-        DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)); // Orientation
+    DirectX::XMMATRIX view = m_Camera->GetViewMatrix();
 
     DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 

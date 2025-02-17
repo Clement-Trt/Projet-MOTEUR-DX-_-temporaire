@@ -28,11 +28,10 @@ struct ObjectConstants
 class TriangleRenderer
 {
 public:
-    TriangleRenderer(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera);
-    bool Initialize();
+    TriangleRenderer();
+    bool Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera);
     void Update();
     void UpdateTransform();
-    void UpdateTransformV2();
     void Render();
 
     ID3D12PipelineState* GetPipelineState() const;

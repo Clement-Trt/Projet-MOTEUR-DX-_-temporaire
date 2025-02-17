@@ -6,6 +6,7 @@
 #include "WindowDX.h"
 #include "TriangleRenderer.h"
 #include "Camera.h"
+#include "InputManager.h"
 
 class InitDirect3DApp : public WindowDX
 {
@@ -52,8 +53,8 @@ bool InitDirect3DApp::Initialize()
     float squareSize = 1.0f;
     DirectX::XMFLOAT4 squareColor = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-    m_TriangleRenderer = new TriangleRenderer(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc, &m_Camera);
-    if (!m_TriangleRenderer->Initialize())
+    m_TriangleRenderer = new TriangleRenderer();
+    if (!m_TriangleRenderer->Initialize(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc, &m_Camera))
     {
         delete m_TriangleRenderer;  // Liberation si l'initialisation echoue
         m_TriangleRenderer = nullptr;
@@ -66,17 +67,10 @@ bool InitDirect3DApp::Initialize()
 }
 void InitDirect3DApp::Update()
 {
-    if (GetAsyncKeyState(VK_LEFT)) m_Camera.Move(-0.1f, 0, 0);
-    if (GetAsyncKeyState(VK_RIGHT)) m_Camera.Move(0.1f, 0, 0);
-    if (GetAsyncKeyState(VK_UP)) m_Camera.Move(0, 0.1f, 0);
-    if (GetAsyncKeyState(VK_DOWN)) m_Camera.Move(0, -0.1f, 0);
-
-    /*if (GetAsyncKeyState(VK_LEFT)) m_Camera.Rotate(0, -0.1f);
-    if (GetAsyncKeyState(VK_RIGHT)) m_Camera.Rotate(0, 0.1f);
-    if (GetAsyncKeyState(VK_UP)) m_Camera.Rotate(-0.1f, 0);
-    if (GetAsyncKeyState(VK_DOWN)) m_Camera.Rotate(0.1f, 0);*/
-
-
+    if (InputManager::GetKeyDown(VK_LEFT)) m_Camera.Move(-0.1f, 0, 0);
+    if (InputManager::GetKeyDown(VK_RIGHT)) m_Camera.Move(0.1f, 0, 0);
+    if (InputManager::GetKeyDown(VK_UP)) m_Camera.Move(0, 0.1f, 0);
+    if (InputManager::GetKeyDown(VK_DOWN)) m_Camera.Move(0, -0.1f, 0);
 
     // Update logic for the triangle
     m_TriangleRenderer->Update();
