@@ -67,6 +67,19 @@ bool InitDirect3DApp::Initialize()
 }
 void InitDirect3DApp::Update()
 {
+    // Mettez à jour la souris en passant le handle de la fenêtre
+    InputManager::UpdateMouse(GetActiveWindow());
+
+    // Récupérer le déplacement de la souris
+    int deltaX = InputManager::GetMouseDeltaX();
+    int deltaY = InputManager::GetMouseDeltaY();
+
+    // Sensibilité de la souris (ajustez selon vos préférences)
+    const float sensitivity = 0.005f;
+
+    // Mettre à jour la rotation de la caméra en fonction du delta
+    m_Camera.Rotate(deltaY * sensitivity, deltaX * sensitivity);
+
     /*if (InputManager::GetKeyDown(VK_LEFT)) m_Camera.Move(0, -0.1f, 0);
     if (InputManager::GetKeyDown(VK_RIGHT)) m_Camera.Move(0, 0.1f, 0);
     if (InputManager::GetKeyDown(VK_UP)) m_Camera.Move(0.1f, 0, 0);
@@ -77,12 +90,10 @@ void InitDirect3DApp::Update()
     if (GetAsyncKeyState(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
     if (GetAsyncKeyState(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
 
-    if (InputManager::GetKeyDown('K')) m_Camera.Rotate(0, -0.01f);
+    /*if (InputManager::GetKeyDown('K')) m_Camera.Rotate(0, -0.01f);
     if (InputManager::GetKeyDown('M')) m_Camera.Rotate(0, 0.01f);
     if (InputManager::GetKeyDown('L')) m_Camera.Rotate(-0.01f, 0);
-    if (InputManager::GetKeyDown('O')) m_Camera.Rotate(0.01f, 0);   
-
-
+    if (InputManager::GetKeyDown('O')) m_Camera.Rotate(0.01f, 0);  */ 
 
     // Update logic for the triangle
     m_TriangleRenderer->Update();

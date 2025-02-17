@@ -20,3 +20,30 @@ bool InputManager::GetKeyDown(char key) {
 
 	return false;
 }
+
+// Cette fonction doit être appelée chaque frame (avant de récupérer le delta)
+void InputManager::UpdateMouse(HWND hWnd)
+{
+	POINT currentPos;
+	// Récupérer la position de la souris en coordonnées écran
+	GetCursorPos(&currentPos);
+	// Convertir en coordonnées client
+	ScreenToClient(hWnd, &currentPos);
+
+	// Calculer le delta par rapport à la dernière position
+	s_MouseDelta.x = currentPos.x - s_LastMousePos.x;
+	s_MouseDelta.y = currentPos.y - s_LastMousePos.y;
+
+	// Mettre à jour la dernière position
+	s_LastMousePos = currentPos;
+}
+
+int InputManager::GetMouseDeltaX()
+{
+	return s_MouseDelta.x;
+}
+
+int InputManager::GetMouseDeltaY()
+{
+	return s_MouseDelta.y;
+}
