@@ -67,15 +67,22 @@ bool InitDirect3DApp::Initialize()
 }
 void InitDirect3DApp::Update()
 {
-    if (InputManager::GetKeyDown(VK_LEFT)) m_Camera.Move(-0.1f, 0, 0);
+    /*if (InputManager::GetKeyDown(VK_LEFT)) m_Camera.Move(-0.1f, 0, 0);
     if (InputManager::GetKeyDown(VK_RIGHT)) m_Camera.Move(0.1f, 0, 0);
     if (InputManager::GetKeyDown(VK_UP)) m_Camera.Move(0, 0, 0.1f);
-    if (InputManager::GetKeyDown(VK_DOWN)) m_Camera.Move(0, 0, -0.1); 
-    
-    /*if (InputManager::GetKeyDown('K')) m_Camera.Rotate(0, -0.05f);
-    if (InputManager::GetKeyDown('M')) m_Camera.Rotate(0, 0.05f);
-    if (InputManager::GetKeyDown('O')) m_Camera.Rotate(-0.05f, 0);
-    if (InputManager::GetKeyDown('L')) m_Camera.Rotate(0.05f, 0);*/
+    if (InputManager::GetKeyDown(VK_DOWN)) m_Camera.Move(0, 0, -0.1); */
+
+    if (GetAsyncKeyState(VK_LEFT)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
+    if (GetAsyncKeyState(VK_RIGHT)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+    if (GetAsyncKeyState(VK_UP)) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
+    if (GetAsyncKeyState(VK_DOWN)) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
+
+    if (InputManager::GetKeyDown('K')) m_Camera.Rotate(0, -0.01f);
+    if (InputManager::GetKeyDown('M')) m_Camera.Rotate(0, 0.01f);
+    if (InputManager::GetKeyDown('L')) m_Camera.Rotate(-0.01f, 0);
+    if (InputManager::GetKeyDown('O')) m_Camera.Rotate(0.01f, 0);   
+
+
 
     // Update logic for the triangle
     m_TriangleRenderer->Update();

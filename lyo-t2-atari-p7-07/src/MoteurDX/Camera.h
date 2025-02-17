@@ -7,7 +7,8 @@ public:
     Camera();
 
     void SetPosition(float x, float y, float z);
-    void Move(float dx, float dy, float dz);
+    void Move(float rightDir, float upDir, float frontDir);
+    void MoveRelative(float forwardDelta, float rightDelta, float upDelta);
     void Rotate(float pitch, float yaw);
 
     DirectX::XMMATRIX GetViewMatrix() const;
