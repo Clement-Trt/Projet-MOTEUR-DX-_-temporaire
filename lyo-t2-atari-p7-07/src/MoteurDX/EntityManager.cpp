@@ -52,13 +52,13 @@ void EntityManager::AddEntityToTab(Entity* entity, EntityComponents* components)
 //	//return entity;
 //}
 
-int EntityManager::DestroyEntity(Entity* entity) {
+void EntityManager::DestroyEntity(Entity* entity) {
 	int index = entity->tab_index;
 	int lastIndex = entityNb - 1;
 
 	if (index > lastIndex) {
-		std::cerr << "Index invalide." << std::endl;
-		return 10000;
+		std::cerr << "Index of entity to destroy invalid." << std::endl;
+		return;
 	}
 
 	tab_entity[lastIndex]->tab_index = index;
@@ -73,8 +73,6 @@ int EntityManager::DestroyEntity(Entity* entity) {
 	tab_Components[lastIndex] = nullptr;
 	delete tab_Components[lastIndex];
 	int newEntityToPointAt = --entityNb;
-
-	return entityNb;
 }
 
 void EntityManager::ToDestroy(Entity* entity)

@@ -2,11 +2,12 @@
 
 #include <iostream>
 #include "Scene.h"
-#include "EntityManager.h"
-#include "GameManager.h"
+#include "InitDirect3DApp.h"
+//#include "EntityManager.h"
+//#include "GameManager.h"
 #include "Movement.h"
 
-void Scene::Initialize(GameManager* gameManager)
+void Scene::Initialize(InitDirect3DApp* gameManager)
 {
 	mpGameManager = gameManager;
 

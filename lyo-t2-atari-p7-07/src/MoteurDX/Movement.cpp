@@ -1,10 +1,11 @@
 #include "pch.h"
 
 #include "Movement.h"
-#include "GameManager.h"
+//#include "GameManager.h"
+#include "InitDirect3DApp.h"
 //#include "EntityManager.h"
 
-void Movement::Initialize(GameManager* gameManager)
+void Movement::Initialize(InitDirect3DApp* gameManager)
 {
 	mGM = gameManager;
 }

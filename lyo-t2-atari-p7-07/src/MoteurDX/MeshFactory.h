@@ -69,7 +69,7 @@ private:
 	std::vector<CubeMesh*> cubeList;
 
 	// Camera
-	Camera* m_Camera;
+	Camera m_Camera;
 
 	ComPtr<ID3D12Device> m_Device;
 	ComPtr<ID3D12CommandQueue> m_CommandQueue;
@@ -91,5 +91,5 @@ private:
 	ComPtr<ID3D12Resource> m_IndexBuffer;
 	D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
 
-	GameManager* m_GameManager;
+	//GameManager* m_GameManager;
 };

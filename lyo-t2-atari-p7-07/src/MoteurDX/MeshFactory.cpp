@@ -18,7 +18,7 @@ void MeshFactory::InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* comm
 	m_DepthStencilDesc = depthStencilDesc;
 	m_Camera = camera;
 
-	m_GameManager = gameManager;
+	//m_GameManager = gameManager;
 
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();

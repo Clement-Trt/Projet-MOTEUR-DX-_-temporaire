@@ -74,7 +74,7 @@ public:
 
 	// Detruit une entite (supprime sa signature de composants)
 	void ToDestroy(Entity* entity);
-	int DestroyEntity(Entity* entity);
+	void DestroyEntity(Entity* entity);
 
 	// Ajoute un composant a une entite (en "ou"-ant le bit)
 	void AddComponent(Entity* entity, ComponentMask componentMask);

@@ -7,6 +7,7 @@
 
 //class EntityManager;
 class GameManager;
+class InitDirect3DApp;
 //class EntityManager;
 
 class Movement
@@ -14,14 +15,14 @@ class Movement
 protected:
 	//std::unique_ptr<EntityManager> mEM = std::make_unique<EntityManager>();
 
-	GameManager* mGM;
+	InitDirect3DApp* mGM;
 	//EntityManager* mEM;
 
 	//VelocityComponent* mVc;
 
 public:
 
-	void Initialize(GameManager* gameManager);
+	void Initialize(InitDirect3DApp* gameManager);
 
 	void SetVelocity(Entity* entity, float velFront, float velRight, float velUp); 
 };

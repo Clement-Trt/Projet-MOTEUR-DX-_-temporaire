@@ -3,13 +3,14 @@
 class GameManager;
 class EntityManager;
 class Movement;
+class InitDirect3DApp;
 
 class Scene
 {
 protected:
 
 	// Pointeur vers GM
-	GameManager* mpGameManager;
+	InitDirect3DApp* mpGameManager;
 	EntityManager* mpEntityManager;
 
 	// Pointeur vers chaque System
@@ -19,7 +20,7 @@ public:
 	//Scene();
 
 	// Initialisation des calsses System avec le GM
-	void Initialize(GameManager* gameManager);
+	void Initialize(InitDirect3DApp* gameManager);
 	virtual void OnInitialize() = 0;
 
 	void Update();

@@ -11,8 +11,8 @@ class GameManager
 {
 protected:
 
-	EntityManager* mEM;
 	//Movement* mMvmt;
+	EntityManager* mEM;
 
 	Scene* mScene;
 
