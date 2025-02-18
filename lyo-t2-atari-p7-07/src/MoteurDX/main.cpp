@@ -100,9 +100,6 @@ void InitDirect3DApp::Update()
     if (InputManager::GetKeyDown('L')) m_Camera.Rotate(-0.01f, 0);
     if (InputManager::GetKeyDown('O')) m_Camera.Rotate(0.01f, 0); */ 
 
-    // Mettre a jour le cube 
-    m_TriangleRenderer->UpdateTransform();
-
     // Update MeshFactory
     m_meshFactory->Update();
 }
