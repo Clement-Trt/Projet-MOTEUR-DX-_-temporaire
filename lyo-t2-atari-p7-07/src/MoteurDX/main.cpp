@@ -54,7 +54,7 @@ bool InitDirect3DApp::Initialize()
     DirectX::XMFLOAT4 squareColor = { 1.0f, 0.0f, 0.0f, 0.0f };
 
     m_TriangleRenderer = new TriangleRenderer();
-    if (!m_TriangleRenderer->Initialize(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc, &m_Camera))
+    if (!m_TriangleRenderer->Initialize(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc))
     {
         delete m_TriangleRenderer;  // Liberation si l'initialisation echoue
         m_TriangleRenderer = nullptr;
@@ -97,7 +97,8 @@ void InitDirect3DApp::Update()
     if (InputManager::GetKeyDown('L')) m_Camera.Rotate(-0.01f, 0);
     if (InputManager::GetKeyDown('O')) m_Camera.Rotate(0.01f, 0); */ 
 
-
+    // Mettre à jour le cube 
+    m_TriangleRenderer->UpdateTransform();
 
     // Update logic for the triangle
     m_TriangleRenderer->Update();
