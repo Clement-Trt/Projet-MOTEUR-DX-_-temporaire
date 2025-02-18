@@ -7,6 +7,7 @@
 #include "TriangleRenderer.h"
 #include "Camera.h"
 #include "InputManager.h"
+#include "MeshFactory.h"
 
 class InitDirect3DApp : public WindowDX
 {
@@ -21,7 +22,7 @@ private:
     TriangleRenderer* m_TriangleRenderer;
     ComPtr<ID3D12PipelineState> mPSO;
     Camera m_Camera;
-
+    MeshFactory* m_meshFactory;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -41,7 +42,7 @@ bool InitDirect3DApp::Initialize()
     if (!WindowDX::Initialize())
         return false;
 
-        // Positionner la camera a une position initiale
+    // Positionner la camera a une position initiale
     m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
 
     D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
@@ -53,6 +54,19 @@ bool InitDirect3DApp::Initialize()
     float squareSize = 1.0f;
     DirectX::XMFLOAT4 squareColor = { 1.0f, 0.0f, 0.0f, 0.0f };
 
+    // MeshFactory
+    m_meshFactory = new MeshFactory;
+    m_meshFactory->InitMeshFactory(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, depthStencilDesc, &m_Camera);
+    MessageBox(0, L"InitReussiMeshFacto", 0, 0);
+
+    m_meshFactory->CreateCube(1.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f);
+    m_meshFactory->CreateCube(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f);
+    m_meshFactory->CreateCube(2.0f, 2.0f, 2.0f, 3.0f, 0.0f, 0.0f);
+    m_meshFactory->CreateCube(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f);
+    m_meshFactory->CreateCube(3.0f, 1.0f, 3.0f, 0.0f, 0.0f, 0.0f);
+    MessageBox(0, L"CreationDuCube", 0, 0);
+
+    // Triangle render (pour un seul cube)
     m_TriangleRenderer = new TriangleRenderer();
     if (!m_TriangleRenderer->Initialize(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc, &m_Camera))
     {
@@ -60,7 +74,8 @@ bool InitDirect3DApp::Initialize()
         m_TriangleRenderer = nullptr;
         return false;
     }
-    mPSO = m_TriangleRenderer->GetPipelineState();
+   // mPSO = m_TriangleRenderer->GetPipelineState();
+    mPSO = m_meshFactory->GetPipelineState();
 
 
     return true;
@@ -71,6 +86,9 @@ void InitDirect3DApp::Update()
     if (InputManager::GetKeyDown(VK_RIGHT)) m_Camera.Move(0.1f, 0, 0);
     if (InputManager::GetKeyDown(VK_UP)) m_Camera.Move(0, 0.1f, 0);
     if (InputManager::GetKeyDown(VK_DOWN)) m_Camera.Move(0, -0.1f, 0);
+
+    // Update MeshFactory
+    m_meshFactory->Update();
 
     // Update logic for the triangle
     m_TriangleRenderer->Update();
@@ -117,10 +135,13 @@ void InitDirect3DApp::Draw()
     mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
     // Appeler le renderer de l'objet
-    m_TriangleRenderer->Render(); // Rendu du triangle ici
-    
+    //m_TriangleRenderer->Render(); // Rendu du triangle ici
+    m_meshFactory->Render();
+
     // Change le titre de la fentre (peux servir pour le debug)
-    SetWindowText(GetActiveWindow(), TEXT("MoteurDX"));
+    wchar_t title[256];
+    swprintf_s(title, 256, L"NBcube: %d", (int)m_meshFactory->GetCubeList()->size());
+    SetWindowText(GetActiveWindow(), title);
 
     // Transitionner le back buffer de RENDER_TARGET a PRESENT pour la presentation.
     CD3DX12_RESOURCE_BARRIER barrierStop = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

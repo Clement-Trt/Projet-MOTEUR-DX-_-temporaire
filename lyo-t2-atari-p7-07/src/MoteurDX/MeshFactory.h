@@ -1,5 +1,6 @@
 #pragma once
 
+#include <d3dcompiler.h>
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <wrl.h>
@@ -20,10 +21,16 @@ struct CubeMesh
 	Transform m_Transform;
 };
 
-struct Vertex
+struct VertexMesh
 {
 	DirectX::XMFLOAT3 Position;
 	DirectX::XMFLOAT4 Color;
+};
+
+// Structure pour les constantes (matrice WorldViewProj)
+struct TransformConstants
+{
+	DirectX::XMFLOAT4X4 WorldViewProj;
 };
 
 class MeshFactory
@@ -43,9 +50,18 @@ public:
 	// Render all mesh
 	void Render();
 
+	// Cree un vertex et l'index buffer commun
 	void CreateVertexBuffer(float size);
 
+	std::vector<CubeMesh*>* GetCubeList() { return &cubeList; };
+	ID3D12PipelineState* GetPipelineState() { return m_PipelineState.Get(); };
 private:
+	// Methode pour creer le pipeline (root signature & PSO)
+	void CreatePipelineState();
+
+	// Alloue et configure le constant buffer pour un cube
+	void CreateCubeConstantBuffer(CubeMesh* cube);
+
 	std::vector<CubeMesh*> cubeList;
 
 	// Camera

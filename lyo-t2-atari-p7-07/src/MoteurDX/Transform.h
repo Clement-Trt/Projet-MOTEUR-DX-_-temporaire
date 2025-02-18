@@ -21,6 +21,9 @@ public:
     // Effectue le deplacement Z X Y
     void Move(float dirFront, float dirRight, float dirUp);
 
+    // Effectue le scaling
+    void Scale(float scaleX, float scaleY, float scaleZ);
+
     // Recup la matrice
     DirectX::XMFLOAT4X4& GetMatrix() { return matrix; };
 

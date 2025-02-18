@@ -106,3 +106,10 @@ void Transform::Move(float dirFront, float dirRight, float dirUp)
 
     UpdateMatrix();
 }
+
+void Transform::Scale(float scaleX, float scaleY, float scaleZ)
+{
+    vScale = DirectX::XMFLOAT3(scaleX, scaleY, scaleZ);
+
+    UpdateMatrix();
+}

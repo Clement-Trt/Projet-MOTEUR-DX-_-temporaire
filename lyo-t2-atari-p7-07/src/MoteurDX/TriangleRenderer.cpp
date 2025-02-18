@@ -147,34 +147,6 @@ void TriangleRenderer::CreateVertexBuffer(float size, DirectX::XMFLOAT4 color)
     };
 
     // Creation des buffers pour stocker les sommets et indices
-    
-    // const UINT vertexBufferSize = sizeof(m_triangleVertices);
-    //const UINT vertexBufferSize = sizeof(m_squareVertices);
-
-    //CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
-
-    /*m_Device->CreateCommittedResource(
-        &heapProps,
-        D3D12_HEAP_FLAG_NONE,
-        &bufferDesc,
-        D3D12_RESOURCE_STATE_GENERIC_READ,
-        nullptr,
-        IID_PPV_ARGS(&m_VertexBuffer));*/
-
-        // Copy data to vertex buffer
-    //void* pVertexDataBegin;
-    //CD3DX12_RANGE readRange(0, 0);
-    //m_VertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin));
-    //// memcpy(pVertexDataBegin, m_triangleVertices, vertexBufferSize);
-    //memcpy(pVertexDataBegin, m_squareVertices, vertexBufferSize);
-    //m_VertexBuffer->Unmap(0, nullptr);
-
-        // Initialize vertex buffer view
-    /*m_VertexBufferView.BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
-    m_VertexBufferView.StrideInBytes = sizeof(Vertex);
-    m_VertexBufferView.SizeInBytes = vertexBufferSize;*/
-
-    // Creation des buffers pour stocker les sommets et indices
     const UINT vSize = sizeof(vertices);
     const UINT iSize = sizeof(indices);
 
