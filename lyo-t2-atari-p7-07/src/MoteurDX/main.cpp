@@ -4,9 +4,9 @@
 #include <iostream>
 #include <DirectXColors.h>
 #include "WindowDX.h"
-#include "TriangleRenderer.h"
 #include "Camera.h"
 #include "InputManager.h"
+#include "MeshFactory.h"
 
 class InitDirect3DApp : public WindowDX
 {
@@ -17,11 +17,9 @@ public:
     void Draw() override;
 
 private:
-    //std::unique_ptr<TriangleRenderer> m_TriangleRenderer;
-    TriangleRenderer* m_TriangleRenderer;
     ComPtr<ID3D12PipelineState> mPSO;
     Camera m_Camera;
-
+    MeshFactory* m_meshFactory;
 };
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -41,7 +39,7 @@ bool InitDirect3DApp::Initialize()
     if (!WindowDX::Initialize())
         return false;
 
-        // Positionner la camera a une position initiale
+    // Positionner la camera a une position initiale
     m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
 
     D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
@@ -53,32 +51,37 @@ bool InitDirect3DApp::Initialize()
     float squareSize = 1.0f;
     DirectX::XMFLOAT4 squareColor = { 1.0f, 0.0f, 0.0f, 0.0f };
 
-    m_TriangleRenderer = new TriangleRenderer();
-    if (!m_TriangleRenderer->Initialize(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc))
-    {
-        delete m_TriangleRenderer;  // Liberation si l'initialisation echoue
-        m_TriangleRenderer = nullptr;
-        return false;
-    }
-    mPSO = m_TriangleRenderer->GetPipelineState();
+    // MeshFactory
+    m_meshFactory = new MeshFactory;
+    m_meshFactory->InitMeshFactory(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, depthStencilDesc, &m_Camera);
+    MessageBox(0, L"InitReussiMeshFacto", 0, 0);
+
+    m_meshFactory->CreateCube(1.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f);
+    m_meshFactory->CreateCube(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f);
+    m_meshFactory->CreateCube(2.0f, 2.0f, 2.0f, 3.0f, 0.0f, 0.0f);
+    m_meshFactory->CreateCube(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f);
+    m_meshFactory->CreateCube(3.0f, 1.0f, 3.0f, 0.0f, 0.0f, 0.0f);
+    MessageBox(0, L"CreationDuCube", 0, 0);
+
+    mPSO = m_meshFactory->GetPipelineState();
 
 
     return true;
 }
 void InitDirect3DApp::Update()
 {
-    // Mettez à jour la souris en passant le handle de la fenêtre
+    // Mettez a jour la souris en passant le handle de la fenetre
     InputManager::UpdateMouse(GetActiveWindow());
 
-    // Récupérer le déplacement de la souris
+    // Recuperer le deplacement de la souris
     int deltaX = InputManager::GetMouseDeltaX();
     int deltaY = InputManager::GetMouseDeltaY();
 
-    // Sensibilité de la souris
+    // Sensibilite de la souris
     const float sensitivity = 0.005f;
     if (InputManager::GetKeyIsPressed(MK_LBUTTON))
     {
-        // Mettre à jour la rotation de la caméra en fonction du delta
+        // Mettre a jour la rotation de la camera en fonction du delta
         m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
     }
 
@@ -97,11 +100,11 @@ void InitDirect3DApp::Update()
     if (InputManager::GetKeyDown('L')) m_Camera.Rotate(-0.01f, 0);
     if (InputManager::GetKeyDown('O')) m_Camera.Rotate(0.01f, 0); */ 
 
-    // Mettre à jour le cube 
+    // Mettre a jour le cube 
     m_TriangleRenderer->UpdateTransform();
 
-    // Update logic for the triangle
-    m_TriangleRenderer->Update();
+    // Update MeshFactory
+    m_meshFactory->Update();
 }
 
 void InitDirect3DApp::Draw()
@@ -144,8 +147,13 @@ void InitDirect3DApp::Draw()
     // Attacher le Render Target et le Depth Buffer a l'Output Merger.
     mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
-    // Appeler le renderer de l'objet
-    m_TriangleRenderer->Render(); // Rendu du triangle ici
+    // Appeler le renderer des objets
+    m_meshFactory->Render();
+
+    // Change le titre de la fentre (peux servir pour le debug)
+    wchar_t title[256];
+    swprintf_s(title, 256, L"NBcube: %d", (int)m_meshFactory->GetCubeList()->size());
+    SetWindowText(GetActiveWindow(), title);
 
     // Transitionner le back buffer de RENDER_TARGET a PRESENT pour la presentation.
     CD3DX12_RESOURCE_BARRIER barrierStop = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
