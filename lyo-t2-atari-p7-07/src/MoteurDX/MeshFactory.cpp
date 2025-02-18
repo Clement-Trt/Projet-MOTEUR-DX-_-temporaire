@@ -1,11 +1,12 @@
 #include "pch.h"
 #include "MeshFactory.h"
+#include "GameManager.h"
 
 MeshFactory::MeshFactory()
 {
 }
 
-void MeshFactory::InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera)
+void MeshFactory::InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera, GameManager* gameManager)
 {
 	m_Device = device;
 	m_CommandQueue = commandQueue;
@@ -17,6 +18,8 @@ void MeshFactory::InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* comm
 	m_DepthStencilDesc = depthStencilDesc;
 	m_Camera = camera;
 
+	m_GameManager = gameManager;
+
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();
 
@@ -27,25 +30,34 @@ void MeshFactory::InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* comm
 	m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void MeshFactory::CreateCube(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ)
+CubeMesh* MeshFactory::CreateCube(Entity* entity, float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ)
 {
-	CubeMesh* newCube = new CubeMesh;
-	newCube->m_sizeX = sizeX;
-	newCube->m_sizeY = sizeY;
-	newCube->m_sizeZ = sizeZ;
+	
+	MeshComponent* newCube = static_cast<MeshComponent*>(m_GameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
+	TransformComponent* transform = static_cast<TransformComponent*>(m_GameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
 
-	newCube->m_posX = posX;
-	newCube->m_posY = posY;
-	newCube->m_posZ = posZ;
+	
+	//CubeMesh* newCube = new CubeMesh;
+	
+	//newCube->m_sizeX = sizeX;
+	//newCube->m_sizeY = sizeY;
+	//newCube->m_sizeZ = sizeZ;
+
+	//newCube->m_posX = posX;
+	//newCube->m_posY = posY;
+	//newCube->m_posZ = posZ;
 
 	// Set la position
-	newCube->m_Transform.Move(posX, posY, posZ);
-	newCube->m_Transform.Scale(sizeX, sizeY, sizeZ);
+	/*newCube->m_Transform->Move(posX, posY, posZ);
+	newCube->m_Transform->Scale(sizeX, sizeY, sizeZ);*/
+	transform->m_transform.Move(posX, posY, posZ);
+	transform->m_transform.Scale(sizeX, sizeY, sizeZ);
 
 	// Creer le constant buffer pour ce cube
-	CreateCubeConstantBuffer(newCube);
+	CreateCubeConstantBuffer(&newCube->m_cubeMesh);
 
-	cubeList.push_back(newCube);
+	cubeList.push_back(&newCube->m_cubeMesh);
+	return &newCube->m_cubeMesh;
 }
 
 void MeshFactory::Update() 
@@ -54,7 +66,7 @@ void MeshFactory::Update()
 	{
 		for (auto* cube : cubeList)
 		{
-			cube->m_Transform.UpdateMatrix();
+			cube->m_Transform->UpdateMatrix();
 		}
 	}
 }
@@ -74,7 +86,7 @@ void MeshFactory::Render()
 	for (auto* cube : cubeList)
 	{
 		// Calculer la matrice World-View-Projection
-		DirectX::XMMATRIX world = XMLoadFloat4x4(&cube->m_Transform.GetMatrix());
+		DirectX::XMMATRIX world = XMLoadFloat4x4(&cube->m_Transform->GetMatrix());
 		DirectX::XMMATRIX view = m_Camera->GetViewMatrix();
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 		DirectX::XMMATRIX wvp = world * view * proj;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "EntityManager.h"
+
 #include <d3dcompiler.h>
 #include <d3d12.h>
 #include <dxgi1_4.h>
@@ -11,14 +13,16 @@
 #include "Transform.h"
 #include "Camera.h"
 
+class GameManager;
+
 using namespace Microsoft::WRL;
 
 struct CubeMesh 
 {
-	float m_posX, m_posY, m_posZ;
-	float m_sizeX, m_sizeY, m_sizeZ;
+	//float m_posX, m_posY, m_posZ;
+	//float m_sizeX, m_sizeY, m_sizeZ;
 	ComPtr<ID3D12Resource> m_ConstantBuffer;
-	Transform m_Transform;
+	//Transform* m_Transform = new Transform;
 };
 
 struct VertexMesh
@@ -39,10 +43,10 @@ public:
 	MeshFactory();
 
 	// Init meshFactory qui recup les commandlist etc...
-	void InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera);
+	void InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera, GameManager* gameManager);
 
 	// Create a mesh inside
-	void CreateCube(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
+	CubeMesh* CreateCube(Entity* entity, float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
 
 	// Update all mesh
 	void Update();
@@ -86,4 +90,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
 	ComPtr<ID3D12Resource> m_IndexBuffer;
 	D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
+
+	GameManager* m_GameManager;
 };

@@ -103,13 +103,13 @@ int WindowDX::Run()
     return (int)msg.wParam;
 }
 
-void WindowDX::Update()
-{
-}
-
-void WindowDX::Draw()
-{
-}
+//void WindowDX::Update()
+//{
+//}
+//
+//void WindowDX::Draw()
+//{
+//}
 
 LRESULT WindowDX::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {

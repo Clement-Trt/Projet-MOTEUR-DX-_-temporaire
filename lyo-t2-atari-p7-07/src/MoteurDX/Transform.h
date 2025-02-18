@@ -27,6 +27,10 @@ public:
     // Recup la matrice
     DirectX::XMFLOAT4X4& GetMatrix() { return matrix; };
 
+    float GetPositionX() { return vPosition.x; };
+    float GetPositionY() { return vPosition.y; };
+    float GetPositionZ() { return vPosition.z; };
+
 private:
 
     // m : matrice, v : vector, q : quaternion
