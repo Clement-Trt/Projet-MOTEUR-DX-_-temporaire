@@ -25,16 +25,16 @@ bool InputManager::GetKeyDown(char key) {
 void InputManager::UpdateMouse(HWND hWnd)
 {
 	POINT currentPos;
-	// Récupérer la position de la souris en coordonnées écran
+	// Recuperer la position de la souris en coordonnees ecran
 	GetCursorPos(&currentPos);
-	// Convertir en coordonnées client
+	// Convertir en coordonnees client
 	ScreenToClient(hWnd, &currentPos);
 
-	// Calculer le delta par rapport à la dernière position
+	// Calculer le delta par rapport a la derniere position
 	s_MouseDelta.x = currentPos.x - s_LastMousePos.x;
 	s_MouseDelta.y = currentPos.y - s_LastMousePos.y;
 
-	// Mettre à jour la dernière position
+	// Mettre a jour la derniere position
 	s_LastMousePos = currentPos;
 }
 
