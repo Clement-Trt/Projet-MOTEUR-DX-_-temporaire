@@ -4,7 +4,6 @@
 #include <iostream>
 #include <DirectXColors.h>
 #include "WindowDX.h"
-#include "TriangleRenderer.h"
 #include "Camera.h"
 #include "InputManager.h"
 #include "MeshFactory.h"
@@ -18,8 +17,6 @@ public:
     void Draw() override;
 
 private:
-    //std::unique_ptr<TriangleRenderer> m_TriangleRenderer;
-    TriangleRenderer* m_TriangleRenderer;
     ComPtr<ID3D12PipelineState> mPSO;
     Camera m_Camera;
     MeshFactory* m_meshFactory;
@@ -66,15 +63,6 @@ bool InitDirect3DApp::Initialize()
     m_meshFactory->CreateCube(3.0f, 1.0f, 3.0f, 0.0f, 0.0f, 0.0f);
     MessageBox(0, L"CreationDuCube", 0, 0);
 
-    // Triangle render (pour un seul cube)
-    m_TriangleRenderer = new TriangleRenderer();
-    if (!m_TriangleRenderer->Initialize(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, squareSize, squareColor, depthStencilDesc, &m_Camera))
-    {
-        delete m_TriangleRenderer;  // Liberation si l'initialisation echoue
-        m_TriangleRenderer = nullptr;
-        return false;
-    }
-   // mPSO = m_TriangleRenderer->GetPipelineState();
     mPSO = m_meshFactory->GetPipelineState();
 
 
@@ -89,9 +77,6 @@ void InitDirect3DApp::Update()
 
     // Update MeshFactory
     m_meshFactory->Update();
-
-    // Update logic for the triangle
-    m_TriangleRenderer->Update();
 }
 
 void InitDirect3DApp::Draw()
@@ -134,8 +119,7 @@ void InitDirect3DApp::Draw()
     // Attacher le Render Target et le Depth Buffer a l'Output Merger.
     mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
-    // Appeler le renderer de l'objet
-    //m_TriangleRenderer->Render(); // Rendu du triangle ici
+    // Appeler le renderer des objets
     m_meshFactory->Render();
 
     // Change le titre de la fentre (peux servir pour le debug)

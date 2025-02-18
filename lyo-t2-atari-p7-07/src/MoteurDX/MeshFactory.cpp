@@ -17,10 +17,6 @@ void MeshFactory::InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* comm
 	m_DepthStencilDesc = depthStencilDesc;
 	m_Camera = camera;
 
-	// Configurer le root signature et le pipeline une seule fois
-	//m_CommandList->SetGraphicsRootSignature(m_RootSignature.Get());
-	//m_CommandList->SetPipelineState(m_PipelineState.Get());
-
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();
 
