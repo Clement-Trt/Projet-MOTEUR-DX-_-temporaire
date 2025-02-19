@@ -31,7 +31,7 @@ void SceneTest::OnUpdate()
 		{
 			break;
 		}
-		TransformComponent* transform = static_cast<TransformComponent*>(mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity->tab_index]->tab_components[Transform_index]);
+		TransformComponent* transform = static_cast<TransformComponent*>(mpGameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
 		transform->m_transform.UpdateMatrix();
 	}
 }
