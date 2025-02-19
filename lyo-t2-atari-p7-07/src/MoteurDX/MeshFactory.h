@@ -15,23 +15,6 @@
 
 using namespace Microsoft::WRL;
 
-//struct CubeMesh 
-//{
-//	// Buffer de constantes (matrices, couleurs, etc.)
-//	ComPtr<ID3D12Resource> m_constantBuffer;
-//
-//	// Vertex Buffer
-//	ComPtr<ID3D12Resource> m_vertexBuffer;
-//	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
-//
-//	// Index Buffer
-//	ComPtr<ID3D12Resource> m_indexBuffer;
-//	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
-//
-//	// Nombre d'indices pour le rendu
-//	UINT m_meshIndex;
-//};
-
 struct VertexMesh
 {
 	DirectX::XMFLOAT3 Position;
@@ -55,6 +38,10 @@ public:
 	// Create a mesh inside
 	CubeMesh* CreateCube(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
 
+	void CreateSharedCubeGeometry();
+
+	D3D12_VERTEX_BUFFER_VIEW* GetVertexBufferView() { return &m_vertexBufferView; };
+	D3D12_INDEX_BUFFER_VIEW* GetIndexBufferView() { return &m_indexBufferView; };
 private:
 	// Cree un vertex et l'index buffer commun
 	void CreateVertexBuffer(CubeMesh* cubeMesh, float cubeSizeX);
@@ -67,4 +54,12 @@ private:
 
 	// Entity manager
 	EntityManager* m_entityManager;
+
+	// Vertex Buffer
+	ComPtr<ID3D12Resource> m_vertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+
+	// Index Buffer
+	ComPtr<ID3D12Resource> m_indexBuffer;
+	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 };

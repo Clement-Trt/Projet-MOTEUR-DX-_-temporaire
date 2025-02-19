@@ -48,14 +48,6 @@ bool InitDirect3DApp::Initialize()
 	m_depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 	m_depthStencilDesc.StencilEnable = FALSE;
 
-	float squareSize = 1.0f;
-	DirectX::XMFLOAT4 squareColor = { 1.0f, 0.0f, 0.0f, 0.0f };
-
-	/*m_meshFactory->CreateCube(1.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f);
-	m_meshFactory->CreateCube(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f);
-	m_meshFactory->CreateCube(2.0f, 2.0f, 2.0f, 3.0f, 0.0f, 0.0f);
-	m_meshFactory->CreateCube(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f);
-	m_meshFactory->CreateCube(3.0f, 1.0f, 3.0f, 0.0f, 0.0f, 0.0f);*/
 	//MessageBox(0, L"CreationDuCube", 0, 0);
 
 	return true;
@@ -83,20 +75,10 @@ void InitDirect3DApp::Update()
 			m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
 		}
 
-		/*if (InputManager::GetKeyDown(VK_LEFT)) m_Camera.Move(0, -0.1f, 0);
-		if (InputManager::GetKeyDown(VK_RIGHT)) m_Camera.Move(0, 0.1f, 0);
-		if (InputManager::GetKeyDown(VK_UP)) m_Camera.Move(0.1f, 0, 0);
-		if (InputManager::GetKeyDown(VK_DOWN)) m_Camera.Move(-0.1, 0, 0); */
-
 		if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
 		if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
 		if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
 		if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
-
-		/*if (InputManager::GetKeyDown('K')) m_Camera.Rotate(0, -0.01f);
-		if (InputManager::GetKeyDown('M')) m_Camera.Rotate(0, 0.01f);
-		if (InputManager::GetKeyDown('L')) m_Camera.Rotate(-0.01f, 0);
-		if (InputManager::GetKeyDown('O')) m_Camera.Rotate(0.01f, 0); */
 	}
 
 	// UPDATE DU JEU
@@ -108,61 +90,48 @@ void InitDirect3DApp::Render()
 	// Si il ya des entitees
 	if (m_entityManager->GetNbEntity() > 0)
 	{
+		// Configure le root signature et le pipeline
+		mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+		mCommandList->SetPipelineState(mPipelineState.Get());
+
+		// Definit les vertex et index buffers communs
+		mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
+		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());
+		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
+		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
+
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : m_entityManager->GetEntityTab())
 		{
 			if (entity == nullptr) 
 			{
-				break;
+				continue;
 			}
 
 			MeshComponent* entityMesh = nullptr;
 			TransformComponent* entityTransform = nullptr;
 
-			if (entity->id < 0)
-			{
-				entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentToAddTab()[entity->tab_index]->tab_components[Mesh_index]);
-				entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentToAddTab()[entity->tab_index]->tab_components[Transform_index]);
-			}
-			if (entity->id > 0)
-			{
-				entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
-				entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
-			}
-
-			// Configure le root signature et le pipeline
-			mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-			mCommandList->SetPipelineState(mPipelineState.Get());
-
-			// Definit les vertex et index buffers communs
-			mCommandList->IASetVertexBuffers(0, 1, &entityMesh->m_cubeMesh->m_vertexBufferView);
-			mCommandList->IASetIndexBuffer(&entityMesh->m_cubeMesh->m_indexBufferView);
-			mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
+			entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
 
 			// Calculer la matrice World-View-Projection
 			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());
-			DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
-			DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 			DirectX::XMMATRIX wvp = world * view * proj;
-
 			TransformConstants objConstants;
 			XMStoreFloat4x4(&objConstants.WorldViewProj, DirectX::XMMatrixTranspose(wvp));
 
-			// Mettre a jour le constant buffer du cube
-			void* pData;
-			CD3DX12_RANGE readRange(0, 0);
-			entityMesh->m_cubeMesh->m_constantBuffer.Get()->Map(0, &readRange, &pData);
-			memcpy(pData, &objConstants, sizeof(objConstants));
-			entityMesh->m_cubeMesh->m_constantBuffer.Get()->Unmap(0, nullptr);
+			// Mise a jour du constant buffer via le mapping persistant (m_mappedData)
+			memcpy(entityMesh->m_cubeMesh->m_mappedData, &objConstants, sizeof(objConstants));
 
-			// Attacher le constant buffer Ela racine (slot 0)
-			mCommandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer.Get()->GetGPUVirtualAddress());
+			// Attacher le constant buffer a la racine (slot 0)
+			mCommandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer->GetGPUVirtualAddress());
 
 			// Dessiner le cube (36 indices)
 			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_meshIndex, 1, 0, 0, 0);
 		}
 	}
-
 }
 
 void InitDirect3DApp::CreatePipelineState()
@@ -230,9 +199,11 @@ void InitDirect3DApp::CreatePipelineState()
 	psoDesc.PS = { pixelShader->GetBufferPointer(), pixelShader->GetBufferSize() };
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+
 	// psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-	psoDesc.DepthStencilState.DepthEnable = TRUE;
-	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	psoDesc.DepthStencilState = m_depthStencilDesc;
+	//psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
@@ -253,7 +224,7 @@ void InitDirect3DApp::CreatePipelineState()
 void InitDirect3DApp::UpdatePhysics()
 {
 
-	if (m_entityManager->GetEntityTab()[0] != nullptr)
+	if (m_entityManager->GetNbEntity() > 0 && m_entityManager->GetEntityTab()[0] != nullptr)
 	{
 		// Update
 		mScene->OnUpdate();

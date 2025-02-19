@@ -15,8 +15,6 @@ void Scene::Initialize(InitDirect3DApp* gameManager)
 
 	mMvmt = new Movement;
 	mMvmt->Initialize(mpGameManager);
-
-
 }
 
 void Scene::Update()

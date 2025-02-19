@@ -38,16 +38,18 @@ struct CubeMesh
 	// Buffer de constantes (matrices, couleurs, etc.)
 	ComPtr<ID3D12Resource> m_constantBuffer;
 
-	// Vertex Buffer
-	ComPtr<ID3D12Resource> m_vertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
-
-	// Index Buffer
-	ComPtr<ID3D12Resource> m_indexBuffer;
-	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
+	// Map
+	void* m_mappedData = nullptr;
 
 	// Nombre d'indices pour le rendu
 	UINT m_meshIndex;
+
+	// InitMap
+	void InitConstantBuffer()
+	{
+		CD3DX12_RANGE readRange(0, 0);
+		m_constantBuffer->Map(0, &readRange, &m_mappedData);
+	}
 };
 
 class Component

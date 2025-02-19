@@ -90,12 +90,5 @@ protected:
 	// Init3DApp
 	ComPtr<ID3D12PipelineState> mPipelineState;
 	ComPtr<ID3D12RootSignature> mRootSignature;
-	// Vertex & Index Buffer
-	//ComPtr<ID3D12Resource> mVertexBuffer;
-	//D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
-	//ComPtr<ID3D12Resource> mIndexBuffer;
-	//D3D12_INDEX_BUFFER_VIEW mIndexBufferView;
-
-
 };
 
