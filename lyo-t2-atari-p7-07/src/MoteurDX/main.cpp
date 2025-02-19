@@ -95,6 +95,11 @@ void InitDirect3DApp::Update()
     if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
     if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
 
+    if (InputManager::GetKeyIsPressed(VK_LEFT) && InputManager::GetKeyIsPressed(VK_SHIFT)) m_Camera.MoveRelative(0.0f, -0.2f, 0.0f);
+    if (InputManager::GetKeyIsPressed(VK_RIGHT) && InputManager::GetKeyIsPressed(VK_SHIFT)) m_Camera.MoveRelative(0.0f, 0.2f, 0.0f);
+    if (InputManager::GetKeyIsPressed(VK_UP) && InputManager::GetKeyIsPressed(VK_SHIFT)) m_Camera.MoveRelative(0.2f, 0.0f, 0.0f);
+    if (InputManager::GetKeyIsPressed(VK_DOWN) && InputManager::GetKeyIsPressed(VK_SHIFT)) m_Camera.MoveRelative(-0.2f, 0.0f, 0.0f);
+
     /*if (InputManager::GetKeyDown('K')) m_Camera.Rotate(0, -0.01f);
     if (InputManager::GetKeyDown('M')) m_Camera.Rotate(0, 0.01f);
     if (InputManager::GetKeyDown('L')) m_Camera.Rotate(-0.01f, 0);
