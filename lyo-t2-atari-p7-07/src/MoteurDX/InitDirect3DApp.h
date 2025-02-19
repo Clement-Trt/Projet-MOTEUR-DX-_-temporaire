@@ -12,12 +12,10 @@ class InitDirect3DApp : public WindowDX
 {
 public:
     InitDirect3DApp(HINSTANCE hInstance);
-    bool Initialize(Scene* scene);
+    bool Initialize();
     void Update() override;
     void UpdatePhysics();
     void Draw() override;
-
-    MeshFactory* GetFactory() { return m_meshFactory; }
 
     // __ Game loop __ 
     
@@ -29,7 +27,8 @@ public:
     void SetDeltaTime(float deltaTime) { mDeltaTime = deltaTime; }
     void SetScene(Scene* scene) { mScene = scene; }
 
-    EntityManager* GetEntityManager() { return mEM; }
+    EntityManager* GetEntityManager() { return m_entityManager; }
+    MeshFactory* GetFactory() { return m_meshFactory; }
 
     friend class Scene;
 
@@ -37,9 +36,9 @@ private:
     ComPtr<ID3D12PipelineState> mPSO;
     D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
     Camera m_Camera;
-    MeshFactory* m_meshFactory;
 
-    EntityManager* mEM;
+    MeshFactory* m_meshFactory;
+    EntityManager* m_entityManager;
 
     Scene* mScene;
 

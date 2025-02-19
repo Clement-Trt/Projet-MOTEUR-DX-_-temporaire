@@ -1,9 +1,15 @@
 #pragma once
 
 //#include <DirectXMath.h>
-//#include "Transform.h"
-#include "MeshFactory.h"
+#include "Transform.h"
 
+#include <d3d12.h>
+#include <dxgi1_4.h>
+#include <wrl.h>
+#include "d3dx12.h"
+#include <d3dcompiler.h>
+
+using namespace Microsoft::WRL;
 
 enum ComponentType {
 	COMPONENT_NONE = 0,
@@ -27,6 +33,23 @@ enum ComponentIndex
 	Heal_index		// Exemple
 };
 
+struct CubeMesh
+{
+	// Buffer de constantes (matrices, couleurs, etc.)
+	ComPtr<ID3D12Resource> m_constantBuffer;
+
+	// Vertex Buffer
+	ComPtr<ID3D12Resource> m_vertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+
+	// Index Buffer
+	ComPtr<ID3D12Resource> m_indexBuffer;
+	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
+
+	// Nombre d'indices pour le rendu
+	UINT m_meshIndex;
+};
+
 class Component
 {
 
@@ -34,7 +57,7 @@ class Component
 
 struct MeshComponent : public Component
 {
-	CubeMesh m_cubeMesh;
+	CubeMesh* m_cubeMesh;
 };
 
 

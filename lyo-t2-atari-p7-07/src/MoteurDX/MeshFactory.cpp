@@ -1,9 +1,6 @@
 #include "pch.h"
 
 #include "MeshFactory.h"
-#include "GameManager.h"
-#include "EntityManager.h"
-#include "Components.h"
 
 MeshFactory::MeshFactory()
 {
@@ -15,23 +12,34 @@ void MeshFactory::InitMeshFactory(ID3D12Device* device, EntityManager* entityMan
 	m_entityManager = entityManager;
 }
 
-//CubeMesh* MeshFactory::CreateCube(Entity* entity, float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ)
-//{
-//	
-//	//MeshComponent* newCube = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
-//	//TransformComponent* transform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
-//
-//	//transform->m_transform.Move(posX, posY, posZ);
-//	//transform->m_transform.Scale(sizeX, sizeY, sizeZ);
-//
-//	//// Cree la geometrie du cube
-//	//CreateVertexBuffer(&newCube->m_cubeMesh, sizeX);
-//
-//	//// Creer le constant buffer pour ce cube
-//	//CreateCubeConstantBuffer(&newCube->m_cubeMesh);
-//
-//	//return &newCube->m_cubeMesh;
-//}
+CubeMesh* MeshFactory::CreateCube(Entity* entity, float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ)
+{
+	CubeMesh* newMesh = new CubeMesh;
+
+	//MeshComponent* newCube = nullptr;
+	//TransformComponent* transform = nullptr;
+	//if (entity->id < 0) 
+	//{
+	//	newCube = static_cast<MeshComponent*>(m_entityManager->GetComponentToAddTab()[entity->tab_index]->tab_components[Mesh_index]);
+	//	transform = static_cast<TransformComponent*>(m_entityManager->GetComponentToAddTab()[entity->tab_index]->tab_components[Transform_index]);
+	//}
+	//if (entity->id > 0)
+	//{
+	//	newCube = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
+	//	transform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
+	//}
+
+	//transform->m_transform.Move(posX, posY, posZ);
+	//transform->m_transform.Scale(sizeX, sizeY, sizeZ);
+
+	// Cree la geometrie du cube
+	CreateVertexBuffer(newMesh, sizeX);
+
+	// Creer le constant buffer pour ce cube
+	CreateCubeConstantBuffer(newMesh);
+
+	return newMesh;
+}
 
 void MeshFactory::CreateVertexBuffer(CubeMesh* cubeMesh,float cubeSizeX)
 {

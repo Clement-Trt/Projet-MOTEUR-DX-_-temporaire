@@ -6,25 +6,32 @@
 #include "MeshFactory.h"
 #include "InputManager.h"
 #include "Scene.h"
-
+#include "EntityManager.h"
+#include "SceneTest.h"
 
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
 }
 
-bool InitDirect3DApp::Initialize(Scene* scene)
+bool InitDirect3DApp::Initialize()
 {
 	if (!WindowDX::Initialize())
 		return false;
 
 	// Initialisation Game Manager et Scene (ECS)
-	// ---
-	mEM = new EntityManager();
+	m_entityManager = new EntityManager();
+
+	// MeshFactory
+	m_meshFactory = new MeshFactory;
+	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager());
+	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
+
+	// Scene
+	SceneTest* scene = new SceneTest;
 	SetScene(scene);
 	mScene->Initialize(this);
 	mScene->OnInitialize();
-	// ---
 
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();
@@ -43,12 +50,6 @@ bool InitDirect3DApp::Initialize(Scene* scene)
 
 	float squareSize = 1.0f;
 	DirectX::XMFLOAT4 squareColor = { 1.0f, 0.0f, 0.0f, 0.0f };
-
-	// MeshFactory
-	m_meshFactory = new MeshFactory;
-	//m_Camera = new Camera; 
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager());
-	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
 	/*m_meshFactory->CreateCube(1.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f);
 	m_meshFactory->CreateCube(3.0f, 3.0f, 3.0f, 0.0f, 0.0f, 0.0f);
@@ -116,31 +117,55 @@ void InitDirect3DApp::Render()
 	mCommandList->IASetIndexBuffer(&mIndexBufferView);
 	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	// Mes a jour le constant buffer et dessiner chaque cube
-	//for (auto* cube : mEM->GetEntityTab())
-	//{
-	//	// Calculer la matrice World-View-Projection
-	//	DirectX::XMMATRIX world = XMLoadFloat4x4(&cube->m_Transform->GetMatrix());
-	//	DirectX::XMMATRIX view = m_Camera->GetViewMatrix();
-	//	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
-	//	DirectX::XMMATRIX wvp = world * view * proj;
+	// Si il ya des entitees
+	if (m_entityManager->GetNbEntity() > 0)
+	{
+		// Mes a jour le constant buffer et dessiner chaque cube
+		for (auto* entity : m_entityManager->GetEntityTab())
+		{
+			if (entity == nullptr) 
+			{
+				break;
+			}
 
-	//	TransformConstants objConstants;
-	//	XMStoreFloat4x4(&objConstants.WorldViewProj, DirectX::XMMatrixTranspose(wvp));
+			MeshComponent* entityMesh = nullptr;
+			TransformComponent* entityTransform = nullptr;
 
-	//	// Mettre a jour le constant buffer du cube
-	//	void* pData;
-	//	CD3DX12_RANGE readRange(0, 0);
-	//	cube->m_ConstantBuffer->Map(0, &readRange, &pData);
-	//	memcpy(pData, &objConstants, sizeof(objConstants));
-	//	cube->m_ConstantBuffer->Unmap(0, nullptr);
+			if (entity->id < 0)
+			{
+				entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentToAddTab()[entity->tab_index]->tab_components[Mesh_index]);
+				entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentToAddTab()[entity->tab_index]->tab_components[Transform_index]);
+			}
+			if (entity->id > 0)
+			{
+				entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
+				entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
+			}
 
-	//	// Attacher le constant buffer à la racine (slot 0)
-	//	mCommandList->SetGraphicsRootConstantBufferView(0, cube->m_ConstantBuffer->GetGPUVirtualAddress());
+			// Calculer la matrice World-View-Projection
+			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());
+			DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
+			DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
+			DirectX::XMMATRIX wvp = world * view * proj;
 
-	//	// Dessiner le cube (36 indices)
-	//	mCommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
-	//}
+			TransformConstants objConstants;
+			XMStoreFloat4x4(&objConstants.WorldViewProj, DirectX::XMMatrixTranspose(wvp));
+
+			// Mettre a jour le constant buffer du cube
+			void* pData;
+			CD3DX12_RANGE readRange(0, 0);
+			entityMesh->m_cubeMesh->m_constantBuffer.Get()->Map(0, &readRange, &pData);
+			memcpy(pData, &objConstants, sizeof(objConstants));
+			entityMesh->m_cubeMesh->m_constantBuffer.Get()->Unmap(0, nullptr);
+
+			// Attacher le constant buffer à la racine (slot 0)
+			mCommandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer.Get()->GetGPUVirtualAddress());
+
+			// Dessiner le cube (36 indices)
+			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_meshIndex, 1, 0, 0, 0);
+		}
+	}
+
 }
 
 void InitDirect3DApp::CreatePipelineState()
@@ -231,12 +256,13 @@ void InitDirect3DApp::CreatePipelineState()
 void InitDirect3DApp::UpdatePhysics()
 {
 
-	if (mEM->GetEntityTab()[0] != nullptr)
+	if (m_entityManager->GetEntityTab()[0] != nullptr)
 	{
 		// Update
 		mScene->OnUpdate();
 
 		// update transform of entites
+
 
 		// COLLISIONS a ajouter
 
@@ -244,20 +270,20 @@ void InitDirect3DApp::UpdatePhysics()
 
 
 	// DESTROY ENTITIES
-	for (auto& entityToDestroy : mEM->GetToDestroyTab())
+	for (auto& entityToDestroy : m_entityManager->GetToDestroyTab())
 	{
-		mEM->DestroyEntity(entityToDestroy);
+		m_entityManager->DestroyEntity(entityToDestroy);
 	}
-	mEM->GetToDestroyTab().clear();
+	m_entityManager->GetToDestroyTab().clear();
 
 	// ADD ENTITIES
-	for (auto& entityToAdd : mEM->GetEntityToAddTab())
+	for (auto& entityToAdd : m_entityManager->GetEntityToAddTab())
 	{
-		mEM->AddEntityToTab(entityToAdd, mEM->GetComponentToAddTab()[entityToAdd->tab_index]);
+		m_entityManager->AddEntityToTab(entityToAdd, m_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
 	}
-	mEM->GetEntityToAddTab().clear();
-	mEM->GetComponentToAddTab().clear();
-	mEM->ResetEntitiesToAdd();
+	m_entityManager->GetEntityToAddTab().clear();
+	m_entityManager->GetComponentToAddTab().clear();
+	m_entityManager->ResetEntitiesToAdd();
 }
 
 void InitDirect3DApp::Draw()

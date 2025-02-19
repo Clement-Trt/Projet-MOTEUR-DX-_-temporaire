@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "EntityManager.h"
-#include "GameManager.h"
 #include "Movement.h"
 #include "InitDirect3DApp.h"
 
@@ -17,8 +16,11 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent(entity1, COMPONENT_TRANSFORM | COMPONENT_MESH);
 	//mpEntityManager->GetComponentToAddTab()[entity1->tab_index].
 	MeshComponent* mesh = static_cast<MeshComponent*>(mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->tab_components[Mesh_index]);
+	TransformComponent* transform = static_cast<TransformComponent*>(mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->tab_components[Transform_index]);
 
-	//mesh->m_cubeMesh = CreateCubeMesh();
+	mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube(entity1,1.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f);
+	transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
+	transform->m_transform.Move(0.0f, 2.0f, 0.0f);
 }
 
 void SceneTest::OnUpdate()
@@ -29,6 +31,8 @@ void SceneTest::OnUpdate()
 		{
 			break;
 		}
+		TransformComponent* transform = static_cast<TransformComponent*>(mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity->tab_index]->tab_components[Transform_index]);
+		transform->m_transform.UpdateMatrix();
 	}
 }
 

@@ -3,7 +3,8 @@
 //#include <windows.h>
 
 #include "resource.h"
-
+#include "EntityManager.h"
+#include "MeshFactory.h"
 
 
 

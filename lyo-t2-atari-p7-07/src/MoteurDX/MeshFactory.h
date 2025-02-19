@@ -9,29 +9,28 @@
 #include <vector>
 
 #include "Transform.h"
-#include "EntityManager.h"
 
-class EntityManager;
-class GameManager;
+#include "EntityManager.h"
+#include "Components.h"
 
 using namespace Microsoft::WRL;
 
-struct CubeMesh 
-{
-	// Buffer de constantes (matrices, couleurs, etc.)
-	ComPtr<ID3D12Resource> m_constantBuffer;
-
-	// Vertex Buffer
-	ComPtr<ID3D12Resource> m_vertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
-
-	// Index Buffer
-	ComPtr<ID3D12Resource> m_indexBuffer;
-	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
-
-	// Nombre d'indices pour le rendu
-	UINT m_meshIndex;
-};
+//struct CubeMesh 
+//{
+//	// Buffer de constantes (matrices, couleurs, etc.)
+//	ComPtr<ID3D12Resource> m_constantBuffer;
+//
+//	// Vertex Buffer
+//	ComPtr<ID3D12Resource> m_vertexBuffer;
+//	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+//
+//	// Index Buffer
+//	ComPtr<ID3D12Resource> m_indexBuffer;
+//	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
+//
+//	// Nombre d'indices pour le rendu
+//	UINT m_meshIndex;
+//};
 
 struct VertexMesh
 {
@@ -54,7 +53,7 @@ public:
 	void InitMeshFactory(ID3D12Device* device, EntityManager* entityManager);
 
 	// Create a mesh inside
-	//CubeMesh* CreateCube(Entity* entity, float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
+	CubeMesh* CreateCube(Entity* entity, float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
 
 private:
 	// Cree un vertex et l'index buffer commun
