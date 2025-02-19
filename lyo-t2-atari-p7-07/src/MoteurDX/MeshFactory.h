@@ -53,7 +53,7 @@ public:
 	void InitMeshFactory(ID3D12Device* device, EntityManager* entityManager);
 
 	// Create a mesh inside
-	CubeMesh* CreateCube(Entity* entity, float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
+	CubeMesh* CreateCube(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
 
 private:
 	// Cree un vertex et l'index buffer commun

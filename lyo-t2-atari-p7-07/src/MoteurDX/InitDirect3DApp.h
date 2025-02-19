@@ -33,7 +33,7 @@ public:
     friend class Scene;
 
 private:
-    ComPtr<ID3D12PipelineState> mPSO;
+    //ComPtr<ID3D12PipelineState> mPSO;
     D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
     Camera m_Camera;
 

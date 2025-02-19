@@ -58,9 +58,6 @@ bool InitDirect3DApp::Initialize()
 	m_meshFactory->CreateCube(3.0f, 1.0f, 3.0f, 0.0f, 0.0f, 0.0f);*/
 	//MessageBox(0, L"CreationDuCube", 0, 0);
 
-	mPSO = mPipelineState;
-
-
 	return true;
 }
 void InitDirect3DApp::Update()
@@ -108,15 +105,6 @@ void InitDirect3DApp::Update()
 
 void InitDirect3DApp::Render()
 {
-	// Configure le root signature et le pipeline
-	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-	mCommandList->SetPipelineState(mPipelineState.Get());
-
-	// Definit les vertex et index buffers communs
-	mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
-	mCommandList->IASetIndexBuffer(&mIndexBufferView);
-	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
 	// Si il ya des entitees
 	if (m_entityManager->GetNbEntity() > 0)
 	{
@@ -142,6 +130,15 @@ void InitDirect3DApp::Render()
 				entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
 			}
 
+			// Configure le root signature et le pipeline
+			mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+			mCommandList->SetPipelineState(mPipelineState.Get());
+
+			// Definit les vertex et index buffers communs
+			mCommandList->IASetVertexBuffers(0, 1, &entityMesh->m_cubeMesh->m_vertexBufferView);
+			mCommandList->IASetIndexBuffer(&entityMesh->m_cubeMesh->m_indexBufferView);
+			mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 			// Calculer la matrice World-View-Projection
 			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());
 			DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
@@ -158,7 +155,7 @@ void InitDirect3DApp::Render()
 			memcpy(pData, &objConstants, sizeof(objConstants));
 			entityMesh->m_cubeMesh->m_constantBuffer.Get()->Unmap(0, nullptr);
 
-			// Attacher le constant buffer à la racine (slot 0)
+			// Attacher le constant buffer Ela racine (slot 0)
 			mCommandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer.Get()->GetGPUVirtualAddress());
 
 			// Dessiner le cube (36 indices)
