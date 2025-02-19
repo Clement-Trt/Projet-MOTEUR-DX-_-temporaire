@@ -136,6 +136,7 @@ void InitDirect3DApp::UpdatePhysics()
 	mEM->GetComponentToAddTab().clear();
 	mEM->ResetEntitiesToAdd();
 }
+
 void InitDirect3DApp::Draw()
 {
 	// Reinitialise le command allocator et la command list

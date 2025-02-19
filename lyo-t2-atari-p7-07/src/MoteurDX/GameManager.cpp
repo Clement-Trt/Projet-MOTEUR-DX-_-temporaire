@@ -19,13 +19,13 @@ void GameManager::Run()
 {
 	//sf::Clock clock; REMPLACER PAR SYSTEME DE TIMER
 
-		//SetDeltaTime(mDeltaTime); // CHANGER PAR SYSTEME DE TIMER
+		SetDeltaTime(mDeltaTime); // CHANGER PAR SYSTEME DE TIMER
 
-		//HandleInput(); // AJOUTER SYSTEME DE GESTION D'INPUT
+		HandleInput(); // AJOUTER SYSTEME DE GESTION D'INPUT
 
 	Update();
 
-	//Draw(); // AJOUTER SYSTEME DE DESSIN DIRECTX
+	Draw(); // AJOUTER SYSTEME DE DESSIN DIRECTX
 }
 
 void GameManager::Update()
