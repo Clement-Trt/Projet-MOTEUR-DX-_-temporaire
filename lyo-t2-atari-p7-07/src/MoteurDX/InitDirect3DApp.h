@@ -4,7 +4,7 @@
 #include "Camera.h";
 #include "Scene.h";
 
-class GameManager;
+//class GameManager;
 class MeshFactory;
 //class Camera;
 
@@ -19,14 +19,12 @@ public:
 
     MeshFactory* GetFactory() { return m_meshFactory; }
 
-
-
     // __ Game loop __ 
     
-    void UpdatePhysics();
-    void HandleInput();
-    void Update();
-    void Draw();
+    //void HandleInput();
+
+    void Render();
+    void CreatePipelineState();
 
     void SetDeltaTime(float deltaTime) { mDeltaTime = deltaTime; }
     void SetScene(Scene* scene) { mScene = scene; }
@@ -37,10 +35,10 @@ public:
 
 private:
     ComPtr<ID3D12PipelineState> mPSO;
+    D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
     Camera m_Camera;
     MeshFactory* m_meshFactory;
 
-    //GameManager* m_GM;
     EntityManager* mEM;
 
     Scene* mScene;

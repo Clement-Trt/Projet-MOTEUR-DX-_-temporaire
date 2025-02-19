@@ -1,7 +1,8 @@
 #include "pch.h"
-#include "InitDirect3DApp.h"
 
-//#include "GameManager.h"
+#include "InitDirect3DApp.h"
+#include <d3dcompiler.h>
+
 #include "MeshFactory.h"
 #include "InputManager.h"
 #include "Scene.h"
@@ -17,10 +18,6 @@ bool InitDirect3DApp::Initialize(Scene* scene)
 	if (!WindowDX::Initialize())
 		return false;
 
-	//SceneTest* scene = new SceneTest;
-
-
-
 	// Initialisation Game Manager et Scene (ECS)
 	// ---
 	mEM = new EntityManager();
@@ -29,15 +26,20 @@ bool InitDirect3DApp::Initialize(Scene* scene)
 	mScene->OnInitialize();
 	// ---
 
+	// Cree le pipeline(root signature & PSO)
+	CreatePipelineState();
+
+	// Set primitive topology (invariant pour tous les cubes)
+	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Positionner la camera a une position initiale
 	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
 
-	D3D12_DEPTH_STENCIL_DESC depthStencilDesc = {};
-	depthStencilDesc.DepthEnable = TRUE;
-	depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-	depthStencilDesc.StencilEnable = FALSE;
+	m_depthStencilDesc = {};
+	m_depthStencilDesc.DepthEnable = TRUE;
+	m_depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	m_depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	m_depthStencilDesc.StencilEnable = FALSE;
 
 	float squareSize = 1.0f;
 	DirectX::XMFLOAT4 squareColor = { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -45,7 +47,7 @@ bool InitDirect3DApp::Initialize(Scene* scene)
 	// MeshFactory
 	m_meshFactory = new MeshFactory;
 	//m_Camera = new Camera; 
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), mCommandQueue.Get(), mCommandList.Get(), mSwapChain.Get(), mRtvHeap.Get(), mDsvHeap.Get(), mRtvDescriptorSize, depthStencilDesc, &m_Camera);
+	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager());
 	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
 	/*m_meshFactory->CreateCube(1.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f);
@@ -55,7 +57,7 @@ bool InitDirect3DApp::Initialize(Scene* scene)
 	m_meshFactory->CreateCube(3.0f, 1.0f, 3.0f, 0.0f, 0.0f, 0.0f);*/
 	//MessageBox(0, L"CreationDuCube", 0, 0);
 
-	mPSO = m_meshFactory->GetPipelineState();
+	mPSO = mPipelineState;
 
 
 	return true;
@@ -101,9 +103,129 @@ void InitDirect3DApp::Update()
 
 	// UPDATE DU JEU
 	UpdatePhysics();
+}
 
-	// Update MeshFactory ==> A CHANGER EN UPDATE GRAPHICS (mesh factory fourni seulement la resource a dessiner)
-	m_meshFactory->Update();
+void InitDirect3DApp::Render()
+{
+	// Configure le root signature et le pipeline
+	mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
+	mCommandList->SetPipelineState(mPipelineState.Get());
+
+	// Definit les vertex et index buffers communs
+	mCommandList->IASetVertexBuffers(0, 1, &mVertexBufferView);
+	mCommandList->IASetIndexBuffer(&mIndexBufferView);
+	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Mes a jour le constant buffer et dessiner chaque cube
+	//for (auto* cube : mEM->GetEntityTab())
+	//{
+	//	// Calculer la matrice World-View-Projection
+	//	DirectX::XMMATRIX world = XMLoadFloat4x4(&cube->m_Transform->GetMatrix());
+	//	DirectX::XMMATRIX view = m_Camera->GetViewMatrix();
+	//	DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
+	//	DirectX::XMMATRIX wvp = world * view * proj;
+
+	//	TransformConstants objConstants;
+	//	XMStoreFloat4x4(&objConstants.WorldViewProj, DirectX::XMMatrixTranspose(wvp));
+
+	//	// Mettre a jour le constant buffer du cube
+	//	void* pData;
+	//	CD3DX12_RANGE readRange(0, 0);
+	//	cube->m_ConstantBuffer->Map(0, &readRange, &pData);
+	//	memcpy(pData, &objConstants, sizeof(objConstants));
+	//	cube->m_ConstantBuffer->Unmap(0, nullptr);
+
+	//	// Attacher le constant buffer à la racine (slot 0)
+	//	mCommandList->SetGraphicsRootConstantBufferView(0, cube->m_ConstantBuffer->GetGPUVirtualAddress());
+
+	//	// Dessiner le cube (36 indices)
+	//	mCommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+	//}
+}
+
+void InitDirect3DApp::CreatePipelineState()
+{
+	// Definition d'un parametre root pour un Constant Buffer (CBV)
+	CD3DX12_ROOT_PARAMETER slotRootParameter[1];
+	slotRootParameter[0].InitAsConstantBufferView(0);
+
+	// Creation de la Root Signature
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, slotRootParameter, 0, nullptr,D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	ComPtr<ID3DBlob> serializedRootSig = nullptr;
+	ComPtr<ID3DBlob> error = nullptr;
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,&serializedRootSig, &error);
+	if (FAILED(hr))
+	{
+		if (error) MessageBoxA(0, (char*)error->GetBufferPointer(), "RootSignature Error", MB_OK);
+		return;
+	}
+
+	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(),
+		serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
+	if (FAILED(hr))
+	{
+		MessageBox(0, L"CreateRootSignature failed!", L"Error", MB_OK);
+		return;
+	}
+
+	// Load and compile shaders
+	ComPtr<ID3DBlob> vertexShader;
+	ComPtr<ID3DBlob> pixelShader;
+
+	UINT compileFlags = 0;
+#if defined(DEBUG) || defined(_DEBUG)
+	compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#endif
+
+	hr = D3DCompileFromFile(L"../../../src/MoteurDX/VertexShader.hlsl", nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &error);
+	if (FAILED(hr))
+	{
+		wchar_t errorMsg[256];
+		swprintf_s(errorMsg, L"D3DCompileFromFileVertex failed with HRESULT 0x%08X.", hr);
+		MessageBox(0, errorMsg, L"D3DCompileFromFile Error", MB_OK);
+	}
+
+	hr = D3DCompileFromFile(L"../../../src/MoteurDX/PixelShader.hlsl", nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &error);
+	if (FAILED(hr))
+	{
+		wchar_t errorMsg[256];
+		swprintf_s(errorMsg, L"D3DCompileFromFilePixel failed with HRESULT 0x%08X.", hr);
+		MessageBox(0, errorMsg, L"D3DCompileFromFile Error", MB_OK);
+	}
+
+	// Define the input layout
+	D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+	};
+
+	// Create the pipeline state object
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
+	psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
+	psoDesc.pRootSignature = mRootSignature.Get();
+	psoDesc.VS = { vertexShader->GetBufferPointer(), vertexShader->GetBufferSize() };
+	psoDesc.PS = { pixelShader->GetBufferPointer(), pixelShader->GetBufferSize() };
+	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	// psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+	psoDesc.DepthStencilState.DepthEnable = TRUE;
+	psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	psoDesc.SampleMask = UINT_MAX;
+	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	psoDesc.NumRenderTargets = 1;
+	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	psoDesc.SampleDesc.Count = 1;
+	psoDesc.SampleDesc.Quality = 0;
+	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;  // Ajout du format Depth/Stencil
+	psoDesc.DepthStencilState = m_depthStencilDesc; // Utilisation de la valeur stockee
+
+	hr = mD3DDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPipelineState));
+	if (FAILED(hr))
+	{
+		MessageBox(0, L"CreateGraphicsPipelineState failed.", L"Error", MB_OK);
+		return;
+	}
 }
 
 void InitDirect3DApp::UpdatePhysics()
@@ -114,6 +236,7 @@ void InitDirect3DApp::UpdatePhysics()
 		// Update
 		mScene->OnUpdate();
 
+		// update transform of entites
 
 		// COLLISIONS a ajouter
 
@@ -136,6 +259,7 @@ void InitDirect3DApp::UpdatePhysics()
 	mEM->GetComponentToAddTab().clear();
 	mEM->ResetEntitiesToAdd();
 }
+
 void InitDirect3DApp::Draw()
 {
 	// Reinitialise le command allocator et la command list
@@ -177,12 +301,12 @@ void InitDirect3DApp::Draw()
 	mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
 	// Appeler le renderer des objets
-	m_meshFactory->Render();
+	Render();
 
 	// Change le titre de la fentre (peux servir pour le debug)
 	wchar_t title[256];
-	swprintf_s(title, 256, L"NBcube: %d", (int)m_meshFactory->GetCubeList()->size());
-	SetWindowText(GetActiveWindow(), title);
+	//swprintf_s(title, 256, L"NBcube: %d", (int)m_meshFactory->GetCubeList()->size());
+	//SetWindowText(GetActiveWindow(), title);
 
 	// Transitionner le back buffer de RENDER_TARGET a PRESENT pour la presentation.
 	CD3DX12_RESOURCE_BARRIER barrierStop = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
