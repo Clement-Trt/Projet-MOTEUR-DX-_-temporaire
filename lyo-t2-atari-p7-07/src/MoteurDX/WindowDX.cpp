@@ -97,8 +97,15 @@ int WindowDX::Run()
             DispatchMessage(&msg);
         }
         // Otherwise, do animation/game stuff.
+
         Update();
+        /*DWORD t = timeGetTime();*/
+
         Draw();
+        //DWORD dt = timeGetTime() - t;
+        //wchar_t title[256];
+        //swprintf_s(title, 256, L"lag meters: %d", (int)dt);
+        //SetWindowText(GetActiveWindow(), title);
     }
 
     return (int)msg.wParam;

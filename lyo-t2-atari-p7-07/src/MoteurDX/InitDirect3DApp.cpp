@@ -90,6 +90,8 @@ void InitDirect3DApp::Render()
 	// Si il ya des entitees
 	if (m_entityManager->GetNbEntity() > 0)
 	{
+
+
 		// Configure le root signature et le pipeline
 		mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 		mCommandList->SetPipelineState(mPipelineState.Get());
@@ -101,6 +103,8 @@ void InitDirect3DApp::Render()
 
 		DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
+
+
 
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : m_entityManager->GetEntityTab())
@@ -130,6 +134,7 @@ void InitDirect3DApp::Render()
 
 			// Dessiner le cube (36 indices)
 			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_meshIndex, 1, 0, 0, 0);
+
 		}
 	}
 }
@@ -256,6 +261,8 @@ void InitDirect3DApp::UpdatePhysics()
 
 void InitDirect3DApp::Draw()
 {
+	DWORD t = timeGetTime();
+
 	// Reinitialise le command allocator et la command list
 	HRESULT hr = mCommandAllocator->Reset();
 	if (FAILED(hr))
@@ -298,7 +305,7 @@ void InitDirect3DApp::Draw()
 	Render();
 
 	// Change le titre de la fentre (peux servir pour le debug)
-	wchar_t title[256];
+	//wchar_t title[256];
 	//swprintf_s(title, 256, L"NBcube: %d", (int)m_meshFactory->GetCubeList()->size());
 	//SetWindowText(GetActiveWindow(), title);
 
@@ -313,6 +320,12 @@ void InitDirect3DApp::Draw()
 
 	// Attendre la fin de l'execution des commandes et presenter le swap chain.
 	FlushCommandQueue();
+
 	mSwapChain->Present(0, 0);
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
+
+	DWORD dt = timeGetTime() - t;
+	wchar_t title[256];
+	swprintf_s(title, 256, L"lag meters: %d", (int)dt);
+	SetWindowText(GetActiveWindow(), title);
 }

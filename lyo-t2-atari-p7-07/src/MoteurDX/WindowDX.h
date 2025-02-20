@@ -20,6 +20,9 @@
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
+#include <timeapi.h>
+#pragma comment(lib, "winmm.lib")
+
 using Microsoft::WRL::ComPtr;
 
 class WindowDX
