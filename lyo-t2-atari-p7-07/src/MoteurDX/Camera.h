@@ -15,5 +15,5 @@ public:
 
 private:
     DirectX::XMFLOAT3 m_Position;
-    float m_Pitch, m_Yaw; // Rotation de la caméra
+    float m_Pitch, m_Yaw; // Rotation de la camera
 };

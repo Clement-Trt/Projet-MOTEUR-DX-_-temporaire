@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "MeshFactory.h"
+// #include "TextureLoader.h"
+#include "TextureLoaderDuLivre.h"
 
 MeshFactory::MeshFactory()
 {
@@ -19,6 +21,64 @@ void MeshFactory::InitMeshFactory(ID3D12Device* device, ID3D12CommandQueue* comm
 
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();
+
+	// Charger la texture DDS
+	//HRESULT hr = S_OK;
+	//try
+	//{
+	//	TextureLoader::LoadDDSTexture(
+	//		m_Device.Get(),
+	//		m_CommandList.Get(),
+	//		L"../../../src/MoteurDX/stone.dds", // chemin de votre texture
+	//		m_Texture,
+	//		m_TextureUploadHeap);
+	//}
+	//catch (const std::exception& e)
+	//{
+	//	MessageBoxA(0, e.what(), "Texture Load Error", MB_OK);
+	//	return;
+	//}
+
+	// Charger la texture depuis un fichier DDS
+	HRESULT hr = DirectX::CreateDDSTextureFromFile12(
+		m_Device.Get(),
+		m_CommandList.Get(),
+		L"../../../src/MoteurDX/bricks.dds",
+		m_Texture,
+		m_TextureUploadHeap);
+	if (FAILED(hr))
+	{
+		MessageBox(0, L"echec du chargement de la texture !", L"Error", MB_OK);
+		return;
+	}
+
+	// Creer un descriptor heap pour le SRV (1 descripteur suffira) 
+	// Le descriptor heap est une zone mémoire réservée sur la carte graphique qui stocke plusieurs descripteurs. Dans le cas du SRV, il contient les 
+	// descriptions de ressources (comme les textures) afin que le GPU puisse y accéder directement lors du rendu. Une fois créé et rempli, le heap permet 
+	// de regrouper et de gérer ces descripteurs de façon efficace et de les rendre visibles aux shaders.
+	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+	srvHeapDesc.NumDescriptors = 1;
+	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	hr = m_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_SrvHeap));
+	if (FAILED(hr))
+	{
+		MessageBox(0, L"Failed to create SRV Heap!", L"Error", MB_OK);
+		return;
+	}
+
+	// Creer le SRV pour la texture
+	// Le Shader Resource View (SRV) est un descripteur qui définit comment une ressource (ici une texture) est vue par les shaders. Il précise notamment 
+	// le format de la texture, le nombre de mipmaps et la dimension de la ressource. Grâce au SRV, le shader (souvent le pixel shader) peut échantillonner 
+	// la texture pour en extraire les données de couleur lors du rendu.
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = m_Texture->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = m_Texture->GetDesc().MipLevels;
+	m_Device->CreateShaderResourceView(m_Texture.Get(), &srvDesc, m_SrvHeap->GetCPUDescriptorHandleForHeapStart());
+
 
 	// Cree la geometrie du cube (ici un cube unitaire)
 	CreateVertexBuffer(1.0f);
@@ -65,6 +125,12 @@ void MeshFactory::Render()
 	m_CommandList->SetGraphicsRootSignature(m_RootSignature.Get());
 	m_CommandList->SetPipelineState(m_PipelineState.Get());
 
+	// Lier le descriptor heap contenant le SRV de la texture
+	ID3D12DescriptorHeap* descriptorHeaps[] = { m_SrvHeap.Get() };
+	m_CommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+	// Le slot 1 de la root signature (table de descripteurs) pointe sur notre texture
+	m_CommandList->SetGraphicsRootDescriptorTable(3, m_SrvHeap->GetGPUDescriptorHandleForHeapStart());
+
 	// Definit les vertex et index buffers communs
 	m_CommandList->IASetVertexBuffers(0, 1, &m_VertexBufferView);
 	m_CommandList->IASetIndexBuffer(&m_IndexBufferView);
@@ -89,7 +155,7 @@ void MeshFactory::Render()
 		memcpy(pData, &objConstants, sizeof(objConstants));
 		cube->m_ConstantBuffer->Unmap(0, nullptr);
 
-		// Attacher le constant buffer à la racine (slot 0)
+		// Attacher le constant buffer a la racine (slot 0)
 		m_CommandList->SetGraphicsRootConstantBufferView(0, cube->m_ConstantBuffer->GetGPUVirtualAddress());
 
 		// Dessiner le cube (36 indices)
@@ -104,18 +170,17 @@ void MeshFactory::CreateVertexBuffer(float size)
 
 	VertexMesh vertices[] =
 	{
-
 		// Face avant
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, halfSize), { 1.0f, 0.0f, 0.0f, 1.0f } }, // Bas gauche  (0)
-		{ DirectX::XMFLOAT3(halfSize,  -halfSize, halfSize), { 1.0f, 0.0f, 0.0f, 1.0f } }, // Bas droit   (1)
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, halfSize), { 0.0f, 1.0f, 0.0f, 1.0f } },  // Haut droit  (2)
-		{ DirectX::XMFLOAT3(-halfSize, halfSize, halfSize), { 1.0f, 0.0f, 0.0f, 1.0f } },  // Haut gauche (3)
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, halfSize), { 1, 0, 0, 1 }, { 0.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, halfSize), { 1, 0, 0, 1 }, { 1.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, halfSize), { 0, 1, 0, 1 }, { 1.0f, 0.0f } },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, halfSize), { 1, 0, 0, 1 }, { 0.0f, 0.0f } },	
 
 		// Face arriere
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },  // Bas gauche  (4)
-		{ DirectX::XMFLOAT3(halfSize,  -halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },  // Bas droit   (5)
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },   // Haut droit  (6)
-		{ DirectX::XMFLOAT3(-halfSize, halfSize, -halfSize), { 0.0f, 1.0f, 0.0f, 1.0f } }    // Haut gauche (7)
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), { 0, 0, 1, 1 }, { 1.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), { 0, 0, 1, 1 }, { 0.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), { 0, 0, 1, 1 }, { 0.0f, 0.0f } },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), { 0, 1, 0, 1 }, { 1.0f, 0.0f } }
 	};
 
 	uint16_t indices[] =
@@ -150,14 +215,14 @@ void MeshFactory::CreateVertexBuffer(float size)
 	// Index Buffer
 	m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &ibDesc,D3D12_RESOURCE_STATE_GENERIC_READ, nullptr,IID_PPV_ARGS(&m_IndexBuffer));
 
-	// Copier les données dans le vertex buffer
+	// Copier les donnees dans le vertex buffer
 	void* pVertexData;
 	CD3DX12_RANGE readRange(0, 0);
 	HRESULT hr = m_VertexBuffer->Map(0, &readRange, &pVertexData);
 	memcpy(pVertexData, vertices, vSize);
 	m_VertexBuffer->Unmap(0, nullptr);
 
-	// Copier les données dans l'index buffer
+	// Copier les donnees dans l'index buffer
 	void* pIndexData;
 	hr = m_IndexBuffer->Map(0, &readRange, &pIndexData);
 	memcpy(pIndexData, indices, iSize);
@@ -176,12 +241,26 @@ void MeshFactory::CreateVertexBuffer(float size)
 void MeshFactory::CreatePipelineState()
 {
 	// Definition d'un parametre root pour un Constant Buffer (CBV)
-	CD3DX12_ROOT_PARAMETER slotRootParameter[1];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[2]; // 2 parametres au lieu de 1 pour la texture
+	// Parametre 0 : constant buffer (transformation)
 	slotRootParameter[0].InitAsConstantBufferView(0);
+	// Parametre 1 : table de descripteurs pour la texture (register t0)
+	CD3DX12_DESCRIPTOR_RANGE texTable;
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	slotRootParameter[1].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	// Creation de la Root Signature
-	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, slotRootParameter, 0, nullptr,
+	// Declarez le static sampler pour register(s0) 
+	CD3DX12_STATIC_SAMPLER_DESC samplerDesc(0); // register s0
+	samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;	// Creation de la Root Signature
+
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 1, &samplerDesc,
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	/*CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 0, nullptr,
+		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);*/
 
 	ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	ComPtr<ID3DBlob> error = nullptr;
@@ -229,7 +308,8 @@ void MeshFactory::CreatePipelineState()
 	// Define the input layout
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 
 	// Create the pipeline state object

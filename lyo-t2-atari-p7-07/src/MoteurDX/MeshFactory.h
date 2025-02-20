@@ -25,6 +25,7 @@ struct VertexMesh
 {
 	DirectX::XMFLOAT3 Position;
 	DirectX::XMFLOAT4 Color;
+	DirectX::XMFLOAT2 TexCoord;
 };
 
 // Structure pour les constantes (matrice WorldViewProj)
@@ -55,6 +56,7 @@ public:
 
 	std::vector<CubeMesh*>* GetCubeList() { return &cubeList; };
 	ID3D12PipelineState* GetPipelineState() { return m_PipelineState.Get(); };
+
 private:
 	// Methode pour creer le pipeline (root signature & PSO)
 	void CreatePipelineState();
@@ -86,4 +88,10 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW m_VertexBufferView;
 	ComPtr<ID3D12Resource> m_IndexBuffer;
 	D3D12_INDEX_BUFFER_VIEW m_IndexBufferView;
+
+	// Textures:
+	ComPtr<ID3D12Resource> m_Texture;
+	ComPtr<ID3D12Resource> m_TextureUploadHeap;
+	ComPtr<ID3D12DescriptorHeap> m_SrvHeap;
+
 };
