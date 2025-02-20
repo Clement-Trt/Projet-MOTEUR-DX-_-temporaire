@@ -113,8 +113,28 @@ void InitDirect3DApp::Render()
 			MeshComponent* entityMesh = nullptr;
 			TransformComponent* entityTransform = nullptr;
 
-			entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
-			entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);
+			for (auto& component : m_entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
+			{
+				if (!entityMesh && component->ID == Mesh_ID)
+				{
+					entityMesh = static_cast<MeshComponent*>(component);
+				}
+				if (!entityTransform && component->ID == Transform_ID)
+				{
+					entityTransform = static_cast<TransformComponent*>(component);
+				}
+				if (entityMesh && entityTransform)
+				{
+					break; // On arrête la boucle dès qu'on a trouvé les deux composants
+				}
+			}
+			if (!entityMesh || !entityTransform)
+			{
+				// Gérer l'erreur (afficher un message, ignorer le rendu, etc.)
+				return;
+			}
+			/*entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
+			entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);*/
 
 			// Calculer la matrice World-View-Projection
 			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());

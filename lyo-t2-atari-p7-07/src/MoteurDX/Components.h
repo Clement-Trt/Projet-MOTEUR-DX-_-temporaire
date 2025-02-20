@@ -11,6 +11,8 @@
 
 using namespace Microsoft::WRL;
 
+using ComponentMask = uint32_t;
+
 enum ComponentType {
 	COMPONENT_NONE = 0,
 	COMPONENT_CAMERA = 1 << 0,
@@ -54,7 +56,7 @@ struct CubeMesh
 	}
 };
 
-enum Component
+enum ComponentID
 {
 	Camera_ID,
 	Mesh_ID,
@@ -67,35 +69,32 @@ enum Component
 
 struct Component
 {
-	//int ID = -1;
-	//ComponentMask mask = 0;
+	Component(int id, ComponentMask m) : ID(id), mask(m) {}
+	int ID = -1;
+	ComponentMask mask = 0;
 };
 
 struct CameraComponent : public Component
 {
-	int ID = Camera_ID;
-	ComponentMask mask = COMPONENT_CAMERA; 
+	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
 };
 
 struct MeshComponent : public Component
 {
+	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
 	CubeMesh* m_cubeMesh;
-	int ID = Mesh_ID;
-	ComponentMask mask = COMPONENT_MESH;
 };
 
 struct TransformComponent : public Component
 {
-	int ID = Transform_ID;
-	ComponentMask mask = COMPONENT_TRANSFORM;
+	TransformComponent() : Component(Transform_ID, COMPONENT_TRANSFORM) {}
 	Transform m_transform;	
 };
 
 
 struct VelocityComponent : public Component
 {
-	int ID = Velocity_ID;
-	ComponentMask mask = COMPONENT_VELOCITY;
+	VelocityComponent() : Component(Velocity_ID, COMPONENT_VELOCITY) {}
 	float vz = 0.0f;
 	float vx = 0.0f;
 	float vy = 0.0f;
