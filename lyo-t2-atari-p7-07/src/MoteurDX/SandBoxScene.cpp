@@ -53,6 +53,11 @@ void SandBoxScene::OnUpdate()
 
 		if (mpEntityManager->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY)) {
 
+			for (auto& component : mpEntityManager->GetComponentsTab()[entity->tab_index]->vec_components)
+			{
+				//if (component)
+			}
+
 			transform->m_transform.Move(velocity->vz, velocity->vx, velocity->vy);
 
 			std::cout << "Entite " << entity->id << " nouvelle position: ("

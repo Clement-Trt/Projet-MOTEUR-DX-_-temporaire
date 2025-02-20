@@ -80,72 +80,72 @@ void EntityManager::ToDestroy(Entity* entity)
 	tab_toDestroy.push_back(entity);
 }
 
-void EntityManager::AddComponent(Entity* entity, ComponentMask componentMask) {
-
-	if (entity->id < 0)
-	{
-		tab_compToAdd[entity->tab_index]->mask |= componentMask;
-
-		if (componentMask & COMPONENT_TRANSFORM)
-		{
-			if (tab_compToAdd[entity->tab_index]->tab_components[Transform_index] == nullptr)
-			{
-				TransformComponent* newTransformComp = new TransformComponent;
-				tab_compToAdd[entity->tab_index]->tab_components[Transform_index] = newTransformComp;
-			}
-		}
-
-		if (componentMask & COMPONENT_MESH)
-		{
-			if (tab_compToAdd[entity->tab_index]->tab_components[Mesh_index] == nullptr)
-			{
-				MeshComponent* newMeshComp = new MeshComponent;
-				tab_compToAdd[entity->tab_index]->tab_components[Mesh_index] = newMeshComp;
-			}
-		}
-
-		if (componentMask & COMPONENT_VELOCITY)
-		{
-			if (tab_compToAdd[entity->tab_index]->tab_components[Velocity_index] == nullptr)
-			{
-				VelocityComponent* newVelocityComp = new VelocityComponent;
-				tab_compToAdd[entity->tab_index]->tab_components[Velocity_index] = newVelocityComp;
-			}
-		}
-	}
-	else // id > 0
-	{
-		tab_Components[entity->tab_index]->mask |= componentMask;
-
-
-		if (componentMask & COMPONENT_TRANSFORM)
-		{
-			if (tab_Components[entity->tab_index]->tab_components[Transform_index] == nullptr)
-			{
-				TransformComponent* newTransformComp = new TransformComponent;
-				tab_Components[entity->tab_index]->tab_components[Transform_index] = newTransformComp;
-			}
-		}
-
-		if (componentMask & COMPONENT_MESH)
-		{
-			if (tab_Components[entity->tab_index]->tab_components[Mesh_index] == nullptr)
-			{
-				MeshComponent* newMeshComp = new MeshComponent;
-				tab_Components[entity->tab_index]->tab_components[Mesh_index] = newMeshComp;
-			}
-		}
-
-		if (componentMask & COMPONENT_VELOCITY)
-		{
-			if (tab_Components[entity->tab_index]->tab_components[Velocity_index] == nullptr)
-			{
-				VelocityComponent* newVelocityComp = new VelocityComponent;
-				tab_Components[entity->tab_index]->tab_components[Velocity_index] = newVelocityComp;
-			}
-		}
-	}
-}
+//void EntityManager::AddComponent(Entity* entity, ComponentMask componentMask) {
+//
+//	if (entity->id < 0)
+//	{
+//		tab_compToAdd[entity->tab_index]->mask |= componentMask;
+//
+//		if (componentMask & COMPONENT_TRANSFORM)
+//		{
+//			if (tab_compToAdd[entity->tab_index]->tab_components[Transform_index] == nullptr)
+//			{
+//				TransformComponent* newTransformComp = new TransformComponent;
+//				tab_compToAdd[entity->tab_index]->tab_components[Transform_index] = newTransformComp;
+//			}
+//		}
+//
+//		if (componentMask & COMPONENT_MESH)
+//		{
+//			if (tab_compToAdd[entity->tab_index]->tab_components[Mesh_index] == nullptr)
+//			{
+//				MeshComponent* newMeshComp = new MeshComponent;
+//				tab_compToAdd[entity->tab_index]->tab_components[Mesh_index] = newMeshComp;
+//			}
+//		}
+//
+//		if (componentMask & COMPONENT_VELOCITY)
+//		{
+//			if (tab_compToAdd[entity->tab_index]->tab_components[Velocity_index] == nullptr)
+//			{
+//				VelocityComponent* newVelocityComp = new VelocityComponent;
+//				tab_compToAdd[entity->tab_index]->tab_components[Velocity_index] = newVelocityComp;
+//			}
+//		}
+//	}
+//	else // id > 0
+//	{
+//		tab_Components[entity->tab_index]->mask |= componentMask;
+//
+//
+//		if (componentMask & COMPONENT_TRANSFORM)
+//		{
+//			if (tab_Components[entity->tab_index]->tab_components[Transform_index] == nullptr)
+//			{
+//				TransformComponent* newTransformComp = new TransformComponent;
+//				tab_Components[entity->tab_index]->tab_components[Transform_index] = newTransformComp;
+//			}
+//		}
+//
+//		if (componentMask & COMPONENT_MESH)
+//		{
+//			if (tab_Components[entity->tab_index]->tab_components[Mesh_index] == nullptr)
+//			{
+//				MeshComponent* newMeshComp = new MeshComponent;
+//				tab_Components[entity->tab_index]->tab_components[Mesh_index] = newMeshComp;
+//			}
+//		}
+//
+//		if (componentMask & COMPONENT_VELOCITY)
+//		{
+//			if (tab_Components[entity->tab_index]->tab_components[Velocity_index] == nullptr)
+//			{
+//				VelocityComponent* newVelocityComp = new VelocityComponent;
+//				tab_Components[entity->tab_index]->tab_components[Velocity_index] = newVelocityComp;
+//			}
+//		}
+//	}
+//}
 
 void EntityManager::RemoveComponent(Entity* entity, ComponentMask componentMask) {
 	if (entity->id < 0)

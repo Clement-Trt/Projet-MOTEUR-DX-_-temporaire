@@ -39,6 +39,7 @@ struct EntityComponents
 	uint32_t tab_index = 0;
 	ComponentMask mask = 0;
 	Component* tab_components[TOTALCOMPONENT] = { nullptr };
+	std::vector<Component*> vec_components;
 };
 
 
@@ -59,9 +60,9 @@ private:
 
 public:
 
-	Entity*(&GetEntityTab())[64000] { return tab_entity; }
+	Entity* (&GetEntityTab())[64000] { return tab_entity; }
 
-	EntityComponents*(&GetComponentsTab())[64000] {	return tab_Components; }
+	EntityComponents* (&GetComponentsTab())[64000] {	return tab_Components; }
 
 	std::vector<Entity*>& GetToDestroyTab() { return tab_toDestroy; }
 	std::vector<Entity*>& GetEntityToAddTab() { return tab_entitiesToAdd; }
@@ -77,7 +78,7 @@ public:
 	void DestroyEntity(Entity* entity);
 
 	// Ajoute un composant a une entite (en "ou"-ant le bit)
-	void AddComponent(Entity* entity, ComponentMask componentMask);
+	//void AddComponent(Entity* entity, ComponentMask componentMask);
 
 	// Retire un composant a une entite (en effaçant le bit)
 	void RemoveComponent(Entity* entity, ComponentMask componentMask);
@@ -88,4 +89,32 @@ public:
 	void ResetEntitiesToAdd() { entitiesToAddIndex = 0; }
 
 	void AddEntityToTab(Entity* entity, EntityComponents* components);
+
+	template <typename T>
+	T AddComponent(Entity* entity/*, ComponentMask componentMask*/)
+	{
+		T newComp = new T;
+
+		for (auto* component : tab_Components[entity->tab_index]->vec_components)
+		{
+			if (newComp.ID == component->ID)
+			{
+				std::cout << "Entity already has this component" << std::endl;
+				return;
+			}
+		}
+
+		if (entity->id < 0)
+		{
+			tab_compToAdd[entity->tab_index]->mask |= componentMask;
+
+			tab_compToAdd[entity->tab_index]->vec_components.push_back(newComp);
+		}
+		else // entity id > 0
+		{
+			tab_Components[entity->tab_index]->mask |= componentMask;
+
+			tab_Components[entity->tab_index]->vec_components.push_back(newComp);
+		}
+	}
 };
