@@ -3,30 +3,6 @@
 #include <vector>
 #include "Components.h"
 
-using ComponentMask = uint32_t;
-
-//enum ComponentType {
-//	COMPONENT_NONE = 0,
-//	COMPONENT_TRANSFORM = 1 << 0,
-//	COMPONENT_MESH = 1 << 1,
-//	COMPONENT_VELOCITY = 1 << 2,
-//	COMPONENT_HEALTH = 1 << 3,
-//
-//	COMPONENT_HEAL = 1 << 4,		// Exemple
-//
-//	TOTALCOMPONENT
-//};
-//
-//enum ComponentIndex
-//{
-//	Transform_index,
-//	Mesh_index,
-//	Velocity_index,
-//	Health_index,
-//
-//	Heal_index		// Exemple
-//};
-
 class Entity
 {
 public:
@@ -38,7 +14,7 @@ struct EntityComponents
 {
 	uint32_t tab_index = 0;
 	ComponentMask mask = 0;
-	Component* tab_components[TOTALCOMPONENT] = { nullptr };
+	std::vector<Component*> vec_components;
 };
 
 
@@ -59,9 +35,9 @@ private:
 
 public:
 
-	Entity*(&GetEntityTab())[64000] { return tab_entity; }
+	Entity* (&GetEntityTab())[64000] { return tab_entity; }
 
-	EntityComponents*(&GetComponentsTab())[64000] {	return tab_Components; }
+	EntityComponents* (&GetComponentsTab())[64000] {	return tab_Components; }
 
 	std::vector<Entity*>& GetToDestroyTab() { return tab_toDestroy; }
 	std::vector<Entity*>& GetEntityToAddTab() { return tab_entitiesToAdd; }
@@ -76,16 +52,92 @@ public:
 	void ToDestroy(Entity* entity);
 	void DestroyEntity(Entity* entity);
 
-	// Ajoute un composant a une entite (en "ou"-ant le bit)
-	void AddComponent(Entity* entity, ComponentMask componentMask);
-
-	// Retire un composant a une entite (en effaçant le bit)
-	void RemoveComponent(Entity* entity, ComponentMask componentMask);
-
 	// Verifie si l'entite possede le(s) composant(s) indique(s)
 	bool HasComponent(Entity* entity, ComponentMask componentMask) const;
 
 	void ResetEntitiesToAdd() { entitiesToAddIndex = 0; }
 
 	void AddEntityToTab(Entity* entity, EntityComponents* components);
+
+	template <typename T>
+	void AddComponent(Entity* entity)
+	{
+		T* newComp = new T;
+
+
+		if (entity->id < 0) // Entity a ajouter
+		{
+			for (auto* component : tab_compToAdd[entity->tab_index]->vec_components)
+			{
+				if (newComp->ID == component->ID)
+				{
+					std::cout << "Entity already has this component" << std::endl;
+					return;
+				}
+			}
+			tab_compToAdd[entity->tab_index]->mask |= newComp->mask;
+
+			tab_compToAdd[entity->tab_index]->vec_components.push_back(newComp);
+		}
+		else // entity existante
+		{
+			for (auto* component : tab_Components[entity->tab_index]->vec_components)
+			{
+				if (newComp->ID == component->ID)
+				{
+					return;
+				}
+			}
+			tab_Components[entity->tab_index]->mask |= newComp->mask;
+
+			tab_Components[entity->tab_index]->vec_components.push_back(newComp);
+		}
+	}
+
+	template <typename T>
+	void RemoveComponent(Entity* entity)
+	{
+		T* compToRemove = new T;
+
+		if (entity->id < 0) // Entity a ajouter
+		{
+			int i = 0;
+			for (auto* component : tab_compToAdd[entity->tab_index]->vec_components)
+			{
+				if (compToRemove->ID == component->ID)
+				{
+					tab_compToAdd[entity->tab_index]->mask &= ~compToRemove->mask;
+
+					if (component != nullptr)
+					{
+						delete component;
+						component = nullptr;
+						tab_compToAdd[entity->tab_index]->vec_components.erase(tab_compToAdd[entity->tab_index]->vec_components.begin() + i);
+					}
+					return;
+				}
+				i++;
+			}
+		}
+		else // entity existante
+		{
+			int i = 0;
+			for (auto* component : tab_Components[entity->tab_index]->vec_components)
+			{
+				if (compToRemove->ID == component->ID)
+				{
+					tab_Components[entity->tab_index]->mask &= ~compToRemove->mask;
+
+					if (component != nullptr)
+					{
+						delete component;
+						component = nullptr;
+						tab_Components[entity->tab_index]->vec_components.erase(tab_Components[entity->tab_index]->vec_components.begin() + i);
+					}
+					return;
+				}
+				i++;
+			}
+		}
+	}
 };
