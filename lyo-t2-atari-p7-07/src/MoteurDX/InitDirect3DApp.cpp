@@ -19,6 +19,8 @@ bool InitDirect3DApp::Initialize()
 	if (!WindowDX::Initialize())
 		return false;
 
+	FlushCommandQueue();
+
 	mCurrentFence = 0; // Initialisation de la valeur du fence
 
 	HRESULT hr = mD3DDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
