@@ -19,6 +19,26 @@ bool InitDirect3DApp::Initialize()
 	if (!WindowDX::Initialize())
 		return false;
 
+	mCurrentFence = 0; // Initialisation de la valeur du fence
+
+	HRESULT hr = mD3DDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
+	if (FAILED(hr))
+	{
+		MessageBox(0, L"echec de la creation du Fence.", L"Erreur", MB_OK);
+		return false;
+	}
+
+	// Init les frame Ressources
+	for (int i = 0; i < gNumFrameResources; i++)
+	{
+		auto frameResource = std::make_unique<FrameResource>();
+		mD3DDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&frameResource->CmdListAlloc));
+		frameResource->Fence = 0;
+		mFrameResources.push_back(std::move(frameResource));
+	}
+
+	mCurrFrameResource = mFrameResources[0].get();
+
 	// Initialisation Game Manager et Scene (ECS)
 	m_entityManager = new EntityManager();
 
@@ -90,8 +110,6 @@ void InitDirect3DApp::Render()
 	// Si il ya des entitees
 	if (m_entityManager->GetNbEntity() > 0)
 	{
-
-
 		// Configure le root signature et le pipeline
 		mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 		mCommandList->SetPipelineState(mPipelineState.Get());
@@ -103,8 +121,6 @@ void InitDirect3DApp::Render()
 
 		DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
-
-
 
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : m_entityManager->GetEntityTab())
@@ -129,7 +145,7 @@ void InitDirect3DApp::Render()
 				}
 				if (entityMesh && entityTransform)
 				{
-					break; // On arrête la boucle dès qu'on a trouvé les deux composants
+					break; // On arrive la boucle d qu'on a trouve les deux composants
 				}
 			}
 			if (!entityMesh || !entityTransform)
@@ -177,8 +193,7 @@ void InitDirect3DApp::CreatePipelineState()
 		return;
 	}
 
-	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(),
-		serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
+	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(),serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"CreateRootSignature failed!", L"Error", MB_OK);
@@ -281,21 +296,23 @@ void InitDirect3DApp::UpdatePhysics()
 
 void InitDirect3DApp::Draw()
 {
-	DWORD t = timeGetTime();
-
 	// Reinitialise le command allocator et la command list
-	HRESULT hr = mCommandAllocator->Reset();
-	if (FAILED(hr))
+
+	mCurrFrameIndex = (mCurrFrameIndex + 1) % gNumFrameResources;
+	mCurrFrameResource = mFrameResources[mCurrFrameIndex].get();
+
+	DWORD t = timeGetTime();
+	// Attendre que la frame precedente soit terminee
+	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
 	{
-		MessageBox(0, L"Erreur lors du Reset du Command Allocator.", 0, 0);
-		return;
+		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle);
+		WaitForSingleObject(eventHandle, INFINITE);
+		CloseHandle(eventHandle);
 	}
-	hr = mCommandList->Reset(mCommandAllocator.Get(), nullptr); // rajouter le pipeline state
-	if (FAILED(hr))
-	{
-		MessageBox(0, L"Erreur lors du Reset de la Command List.", 0, 0);
-		return;
-	}
+
+	mCurrFrameResource->CmdListAlloc->Reset();
+	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
 
 	// Definir le viewport et le rectangle de decoupe (scissor) pour le rendu.
 	mCommandList->RSSetViewports(1, &mScreenViewport);
@@ -324,11 +341,6 @@ void InitDirect3DApp::Draw()
 	// Appeler le renderer des objets
 	Render();
 
-	// Change le titre de la fentre (peux servir pour le debug)
-	//wchar_t title[256];
-	//swprintf_s(title, 256, L"NBcube: %d", (int)m_meshFactory->GetCubeList()->size());
-	//SetWindowText(GetActiveWindow(), title);
-
 	// Transitionner le back buffer de RENDER_TARGET a PRESENT pour la presentation.
 	CD3DX12_RESOURCE_BARRIER barrierStop = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	mCommandList->ResourceBarrier(1, &barrierStop);
@@ -338,11 +350,23 @@ void InitDirect3DApp::Draw()
 	ID3D12CommandList* ppCommandLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-	// Attendre la fin de l'execution des commandes et presenter le swap chain.
-	FlushCommandQueue();
+	// Soumettre les commandes au GPU
+	//mCommandList->Close();
+	//ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
+	//mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+	//FlushCommandQueue();
 
 	mSwapChain->Present(0, 0);
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
+
+	// Advance the fence value to mark commands up to this fence point.
+	mCurrFrameResource->Fence = ++mCurrentFence;
+
+	// Add an instruction to the command queue to set a new fence point. 
+	// Because we are on the GPU timeline, the new fence point won't be 
+	// set until the GPU finishes processing all the commands prior to this Signal().
+	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 
 	DWORD dt = timeGetTime() - t;
 	wchar_t title[256];

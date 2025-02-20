@@ -25,6 +25,13 @@
 
 using Microsoft::WRL::ComPtr;
 
+struct FrameResource
+{
+	ComPtr<ID3D12CommandAllocator> CmdListAlloc;
+	ComPtr<ID3D12Resource> PassCB;  // Buffer constant par frame (optionnel)
+	UINT64 Fence = 0; // Fence de la frame pour la synchronisation
+};
+
 class WindowDX
 {
 public:
@@ -93,5 +100,13 @@ protected:
 	// Init3DApp
 	ComPtr<ID3D12PipelineState> mPipelineState;
 	ComPtr<ID3D12RootSignature> mRootSignature;
+
+	//remplace flush
+	const int gNumFrameResources = 3; // Triple buffering
+	std::vector<std::unique_ptr<FrameResource>> mFrameResources;
+	FrameResource* mCurrFrameResource = nullptr;
+	int mCurrFrameIndex = 0;
+
+	UINT64 mCurrentFence = 0;
 };
 

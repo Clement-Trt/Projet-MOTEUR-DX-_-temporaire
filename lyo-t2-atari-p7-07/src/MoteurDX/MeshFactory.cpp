@@ -12,6 +12,11 @@ void MeshFactory::InitMeshFactory(ID3D12Device* device, EntityManager* entityMan
 	m_entityManager = entityManager;
 
 	CreateSharedCubeGeometry();
+
+	if (m_indexBufferView.SizeInBytes < 72)
+	{
+		MessageBox(0, L"ERREUR: Le buffer d'indices est trop petit!", L"Erreur", MB_OK);
+	}
 }
 
 CubeMesh* MeshFactory::CreateCube(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ)
@@ -21,12 +26,15 @@ CubeMesh* MeshFactory::CreateCube(float sizeX, float sizeY, float sizeZ, float p
 	// Cree la geometrie du cube
 	//CreateVertexBuffer(newMesh, sizeX);
 
+	newMesh->m_meshIndex = 36;
+
 	// Creer le constant buffer pour ce cube
 	CreateCubeConstantBuffer(newMesh);
 	newMesh->InitConstantBuffer();
 
 	return newMesh;
 }
+
 void MeshFactory::CreateSharedCubeGeometry()
 {
 	// On cree ici la geometrie d'un cube unitaire (de taille 1) ; pour obtenir des cubes de tailles differentes,
