@@ -3,6 +3,41 @@
 #include "EntityManager.h"
 #include <iostream>
 
+EntityManager::~EntityManager()
+{	 
+	for (auto& entity : tab_entity)
+	{
+		delete entity;
+		entity = nullptr;
+	}
+	
+	for (auto& entity : tab_Components)
+	{
+		delete entity;
+		entity = nullptr;
+	}
+	
+	for (auto& entity : tab_toDestroy)
+	{
+		delete entity;
+		entity = nullptr;
+	}
+	tab_toDestroy.clear();
+
+	for (auto& entity : tab_entitiesToAdd)
+	{
+		delete entity;
+		entity = nullptr;
+	}
+	tab_entitiesToAdd.clear();
+	for (auto& component :tab_compToAdd)
+	{
+		delete component;
+		component = nullptr;
+	}
+	tab_compToAdd.clear();
+}
+
 Entity* EntityManager::CreateEntity() {
 
 	Entity* entity = new Entity;
