@@ -309,15 +309,6 @@ void InitDirect3DApp::Draw()
 	// Start du lag meter
 	DWORD t = timeGetTime();
 
-	// Attendre que la frame precedente soit terminee
-	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
-	{
-		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle);
-		WaitForSingleObject(eventHandle, INFINITE);
-		CloseHandle(eventHandle);
-	}
-
 	// Reinitialise le command allocator et la command list
 	mCurrFrameResource->CmdListAlloc->Reset();
 	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
@@ -370,7 +361,15 @@ void InitDirect3DApp::Draw()
 	// set until the GPU finishes processing all the commands prior to this Signal().
 	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 
-	// End of the lag meter
+	// Attendre que la frame precedente soit terminee
+	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
+	{
+		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle);
+		WaitForSingleObject(eventHandle, INFINITE);
+		CloseHandle(eventHandle);
+	}
+
 	DWORD dt = timeGetTime() - t;
 
 	// Affichage du lag meter
