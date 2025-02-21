@@ -13,6 +13,8 @@ using namespace Microsoft::WRL;
 
 using ComponentMask = uint32_t;
 
+class Camera;
+
 enum ComponentType {
 	COMPONENT_NONE = 0,
 	COMPONENT_CAMERA = 1 << 0,
@@ -77,6 +79,7 @@ struct Component
 struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
+	Camera* m_camera;
 };
 
 struct MeshComponent : public Component

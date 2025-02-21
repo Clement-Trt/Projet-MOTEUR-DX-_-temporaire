@@ -44,4 +44,9 @@ private:
 
     float mDeltaTime; //    /!\/!\/!\/!\    A UTILISER DANS LA BOUCLE DE JEU    /!\/!\/!\/!\/
 
+    // Textures:
+    ComPtr<ID3D12Resource> m_Texture;
+    ComPtr<ID3D12Resource> m_TextureUploadHeap;
+    ComPtr<ID3D12DescriptorHeap> m_SrvHeap;
+
 };

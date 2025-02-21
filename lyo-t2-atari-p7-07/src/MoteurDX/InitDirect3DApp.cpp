@@ -8,7 +8,7 @@
 #include "Scene.h"
 #include "EntityManager.h"
 #include "SceneTest.h"
-
+#include "TextureLoaderDuLivre.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
@@ -56,6 +56,48 @@ bool InitDirect3DApp::Initialize()
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();
 
+	// CHARGEMENT TEXTURE :
+	// Charger la texture depuis un fichier DDS
+	hr = DirectX::CreateDDSTextureFromFile12(
+		mD3DDevice.Get(),
+		mCommandList.Get(),
+		L"../../../src/MoteurDX/bricks.dds",
+		m_Texture,
+		m_TextureUploadHeap);
+	if (FAILED(hr))
+	{
+		MessageBox(0, L"echec du chargement de la texture !", L"Error", MB_OK);
+		//return;
+	}
+
+	// Creer un descriptor heap pour le SRV (1 descripteur suffira) 
+	// Le descriptor heap est une zone mémoire réservée sur la carte graphique qui stocke plusieurs descripteurs. Dans le cas du SRV, il contient les 
+	// descriptions de ressources (comme les textures) afin que le GPU puisse y accéder directement lors du rendu. Une fois créé et rempli, le heap permet 
+	// de regrouper et de gérer ces descripteurs de façon efficace et de les rendre visibles aux shaders.
+	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+	srvHeapDesc.NumDescriptors = 1;
+	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	hr = mD3DDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_SrvHeap));
+	if (FAILED(hr))
+	{
+		MessageBox(0, L"Failed to create SRV Heap!", L"Error", MB_OK);
+		//return;
+	}
+
+	// Creer le SRV pour la texture
+	// Le Shader Resource View (SRV) est un descripteur qui définit comment une ressource (ici une texture) est vue par les shaders. Il précise notamment 
+	// le format de la texture, le nombre de mipmaps et la dimension de la ressource. Grâce au SRV, le shader (souvent le pixel shader) peut échantillonner 
+	// la texture pour en extraire les données de couleur lors du rendu.
+	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	srvDesc.Format = m_Texture->GetDesc().Format;
+	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = m_Texture->GetDesc().MipLevels;
+	mD3DDevice->CreateShaderResourceView(m_Texture.Get(), &srvDesc, m_SrvHeap->GetCPUDescriptorHandleForHeapStart());
+
+
 	// Set primitive topology (invariant pour tous les cubes)
 	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -70,7 +112,9 @@ bool InitDirect3DApp::Initialize()
 
 	//MessageBox(0, L"CreationDuCube", 0, 0);
 
-	return true;
+	FlushCommandQueue();
+
+	// return true;
 }
 void InitDirect3DApp::Update()
 {
@@ -113,6 +157,12 @@ void InitDirect3DApp::Render()
 		// Configure le root signature et le pipeline
 		mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 		mCommandList->SetPipelineState(mPipelineState.Get());
+
+		// Lier le descriptor heap contenant le SRV de la texture
+		ID3D12DescriptorHeap* descriptorHeaps[] = { m_SrvHeap.Get() };
+		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+		// Le slot 1 de la root signature (table de descripteurs) pointe sur notre texture
+		mCommandList->SetGraphicsRootDescriptorTable(1, m_SrvHeap->GetGPUDescriptorHandleForHeapStart());
 
 		// Definit les vertex et index buffers communs
 		mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
@@ -178,11 +228,30 @@ void InitDirect3DApp::Render()
 void InitDirect3DApp::CreatePipelineState()
 {
 	// Definition d'un parametre root pour un Constant Buffer (CBV)
-	CD3DX12_ROOT_PARAMETER slotRootParameter[1];
+	/*CD3DX12_ROOT_PARAMETER slotRootParameter[1];
+	slotRootParameter[0].InitAsConstantBufferView(0);*/
+
+	// Definition d'un parametre root pour un Constant Buffer (CBV)
+	CD3DX12_ROOT_PARAMETER slotRootParameter[2]; // 2 parametres au lieu de 1 pour la texture
+	// Parametre 0 : constant buffer (transformation)
 	slotRootParameter[0].InitAsConstantBufferView(0);
+	// Parametre 1 : table de descripteurs pour la texture (register t0)
+	CD3DX12_DESCRIPTOR_RANGE texTable;
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	slotRootParameter[1].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	// Declarez le static sampler pour register(s0) 
+	CD3DX12_STATIC_SAMPLER_DESC samplerDesc(0); // register s0
+	samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	// Creation de la Root Signature
-	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, slotRootParameter, 0, nullptr,D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+	// Creation de la Root Signature
+	// CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, slotRootParameter, 0, nullptr,D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	ComPtr<ID3DBlob> error = nullptr;
@@ -228,7 +297,8 @@ void InitDirect3DApp::CreatePipelineState()
 	// Define the input layout
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 
 	// Create the pipeline state object
