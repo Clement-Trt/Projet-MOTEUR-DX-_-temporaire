@@ -58,13 +58,37 @@ bool InitDirect3DApp::Initialize()
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();
 
-	// RESET A ajouter
+	// Réinitialiser le command allocator et la command list
 	mCurrFrameResource->CmdListAlloc->Reset();
 	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
 
-	// CHARGEMENT TEXTURE :
+	if (!InitTexture())
+	{
+		MessageBox(0, L"Échec du chargement de la texture !", L"Erreur", MB_OK);
+		return false;
+	}
+
+	// Positionner la camera a une position initiale
+	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
+
+	m_depthStencilDesc = {};
+	m_depthStencilDesc.DepthEnable = TRUE;
+	m_depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	m_depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
+	m_depthStencilDesc.StencilEnable = FALSE;
+
+	mCommandList->Close();
+	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+	FlushCommandQueue();
+
+	return true;
+}
+
+bool InitDirect3DApp::InitTexture()
+{
 	// Charger la texture depuis un fichier DDS
-	hr = DirectX::CreateDDSTextureFromFile12(
+	HRESULT hr = DirectX::CreateDDSTextureFromFile12(
 		mD3DDevice.Get(),
 		mCommandList.Get(),
 		L"../../../src/MoteurDX/tile.dds",
@@ -73,12 +97,8 @@ bool InitDirect3DApp::Initialize()
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"echec du chargement de la texture !", L"Error", MB_OK);
-		//return;
+		return false;
 	}
-
-	/*CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_Texture.Get(),
-		D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-	mCommandList->ResourceBarrier(1, &barrier);*/
 
 	// Creer un descriptor heap pour le SRV (1 descripteur suffira) 
 	// Le descriptor heap est une zone mémoire réservée sur la carte graphique qui stocke plusieurs descripteurs. Dans le cas du SRV, il contient les 
@@ -92,7 +112,7 @@ bool InitDirect3DApp::Initialize()
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"Failed to create SRV Heap!", L"Error", MB_OK);
-		//return;
+		return false;
 	}
 
 	// Creer le SRV pour la texture
@@ -106,26 +126,6 @@ bool InitDirect3DApp::Initialize()
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = m_Texture->GetDesc().MipLevels;
 	mD3DDevice->CreateShaderResourceView(m_Texture.Get(), &srvDesc, m_SrvHeap->GetCPUDescriptorHandleForHeapStart());
-
-
-	// Set primitive topology (invariant pour tous les cubes)
-	// mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// Positionner la camera a une position initiale
-	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
-
-	m_depthStencilDesc = {};
-	m_depthStencilDesc.DepthEnable = TRUE;
-	m_depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
-	m_depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-	m_depthStencilDesc.StencilEnable = FALSE;
-
-	//MessageBox(0, L"CreationDuCube", 0, 0);
-
-	mCommandList->Close();
-	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
-	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
-	FlushCommandQueue();
 
 	return true;
 }

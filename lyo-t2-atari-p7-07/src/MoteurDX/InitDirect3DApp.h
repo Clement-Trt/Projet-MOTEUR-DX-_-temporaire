@@ -13,6 +13,7 @@ class InitDirect3DApp : public WindowDX
 public:
     InitDirect3DApp(HINSTANCE hInstance);
     bool Initialize();
+    bool InitTexture();
     void Update() override;
     void UpdatePhysics();
     void Draw() override;
