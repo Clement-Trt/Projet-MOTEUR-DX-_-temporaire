@@ -43,16 +43,16 @@ void MeshFactory::CreateSharedCubeGeometry()
 	VertexMesh vertices[] =
 	{
 		// Face avant
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, halfSize),  { 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, halfSize),  { 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, halfSize),  { 0.0f, 1.0f, 0.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, halfSize),  { 1.0f, 0.0f, 0.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, halfSize),  { 1,1,1,1 }, { 0.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, halfSize),  { 1,1,1,1 }, { 1.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, halfSize),  { 1,1,1,1 }, { 1.0f, 0.0f } },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, halfSize),  { 1,1,1,1 }, { 0.0f, 0.0f } },
 
 		// Face arriere
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), { 0.0f, 1.0f, 0.0f, 1.0f } }
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), { 1,1,1,1 }, { 1.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), { 1,1,1,1 }, { 0.0f, 1.0f } },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), { 1,1,1,1 }, { 0.0f, 0.0f } },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), { 1,1,1,1 }, { 1.0f, 0.0f } }
 	};
 
 	uint16_t indices[] =
@@ -148,6 +148,63 @@ void MeshFactory::CreateVertexBuffer(CubeMesh* cubeMesh,float cubeSizeX)
 		// Face bas
 		4, 0, 3,  4, 3, 7
 	};
+
+	//// 6 faces * 4 sommets chacune = 24 sommets
+	//VertexMesh vertices[24] =
+	//{
+	//	// Front face (z = +halfSize)
+	//	{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+	//	{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+	//	// Back face (z = -halfSize)
+	//	{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+	//	// Left face (x = -halfSize)
+	//	{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+	//	{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+	//	// Right face (x = +halfSize)
+	//	{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+	//	// Top face (y = +halfSize)
+	//	{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+	//	{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+	//	// Bottom face (y = -halfSize)
+	//	{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+	//	{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+	//	{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+	//};
+
+	//// Indices : 6 faces * 2 triangles par face * 3 indices par triangle = 36 indices
+	//uint16_t indices[36] =
+	//{
+	//	// Front face
+	//	0,  1,  2,  0,  2,  3,
+	//	// Back face
+	//	4,  5,  6,  4,  6,  7,
+	//	// Left face
+	//	8,  9, 10,  8, 10, 11,
+	//	// Right face
+	//	12, 13, 14, 12, 14, 15,
+	//	// Top face
+	//	16, 17, 18, 16, 18, 19,
+	//	// Bottom face
+	//	20, 21, 22, 20, 22, 23
+	//};
 
 	// Creation des buffers pour stocker les sommets et indices
 	const UINT vSize = sizeof(vertices);

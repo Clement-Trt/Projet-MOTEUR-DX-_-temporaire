@@ -58,12 +58,16 @@ bool InitDirect3DApp::Initialize()
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();
 
+	// RESET A ajouter
+	mCurrFrameResource->CmdListAlloc->Reset();
+	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
+
 	// CHARGEMENT TEXTURE :
 	// Charger la texture depuis un fichier DDS
 	hr = DirectX::CreateDDSTextureFromFile12(
 		mD3DDevice.Get(),
 		mCommandList.Get(),
-		L"../../../src/MoteurDX/bricks.dds",
+		L"../../../src/MoteurDX/WoodCrate02.dds",
 		m_Texture,
 		m_TextureUploadHeap);
 	if (FAILED(hr))
@@ -71,6 +75,10 @@ bool InitDirect3DApp::Initialize()
 		MessageBox(0, L"echec du chargement de la texture !", L"Error", MB_OK);
 		//return;
 	}
+
+	/*CD3DX12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition(m_Texture.Get(),
+		D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+	mCommandList->ResourceBarrier(1, &barrier);*/
 
 	// Creer un descriptor heap pour le SRV (1 descripteur suffira) 
 	// Le descriptor heap est une zone mémoire réservée sur la carte graphique qui stocke plusieurs descripteurs. Dans le cas du SRV, il contient les 
@@ -101,7 +109,7 @@ bool InitDirect3DApp::Initialize()
 
 
 	// Set primitive topology (invariant pour tous les cubes)
-	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Positionner la camera a une position initiale
 	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
@@ -114,10 +122,14 @@ bool InitDirect3DApp::Initialize()
 
 	//MessageBox(0, L"CreationDuCube", 0, 0);
 
+	mCommandList->Close();
+	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 	FlushCommandQueue();
 
-	// return true;
+	return true;
 }
+
 void InitDirect3DApp::Update()
 {
 	//SetDeltaTime(mDeltaTime); // AJOUTER SYSTEME DE TIMER
@@ -425,7 +437,7 @@ void InitDirect3DApp::Draw()
 	//ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
 	//mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-	//FlushCommandQueue();
+	// FlushCommandQueue();
 
 	mSwapChain->Present(0, 0);
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;

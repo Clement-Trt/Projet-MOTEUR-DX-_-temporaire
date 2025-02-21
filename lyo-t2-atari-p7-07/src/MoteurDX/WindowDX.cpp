@@ -411,7 +411,9 @@ void WindowDX::FlushCommandQueue()
     // Wait until the GPU has completed commands up to this fence point.
     if (mFence->GetCompletedValue() < mFenceValue)
     {
+        // HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
         HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
         hr = mFence->SetEventOnCompletion(mFenceValue, eventHandle);
         if (FAILED(hr))
         {

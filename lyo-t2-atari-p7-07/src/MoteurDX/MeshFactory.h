@@ -19,6 +19,7 @@ struct VertexMesh
 {
 	DirectX::XMFLOAT3 Position;
 	DirectX::XMFLOAT4 Color;
+	DirectX::XMFLOAT2 TexCoord;
 };
 
 // Structure pour les constantes (matrice WorldViewProj)
