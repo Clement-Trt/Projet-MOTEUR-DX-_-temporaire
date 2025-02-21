@@ -22,7 +22,7 @@ void SceneTest::OnInitialize()
 		if (component->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(component);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube(1.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f);
+			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
 		}
 		if (component->ID == Transform_ID)
 		{
@@ -42,7 +42,7 @@ void SceneTest::OnInitialize()
 		if (component->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(component);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube(1.0f, 1.0f, 1.0f, 3.0f, 3.0f, 3.0f);
+			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
 		}
 		if (component->ID == Transform_ID)
 		{
@@ -127,7 +127,7 @@ void SceneTest::OnUpdate()
 			if (component->ID == Mesh_ID)
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(component);
-				mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube(1.0f, 1.0f, 10.0f, 0.0f, 2.0f, 0.0f);
+				mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
 			}
 			if (component->ID == Transform_ID)
 			{

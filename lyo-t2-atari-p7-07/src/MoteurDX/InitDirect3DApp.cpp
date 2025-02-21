@@ -64,13 +64,12 @@ bool InitDirect3DApp::Initialize()
 	// Positionner la camera a une position initiale
 	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
 
+	// Initialisation du DepthStencil
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
 	m_depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	m_depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 	m_depthStencilDesc.StencilEnable = FALSE;
-
-	//MessageBox(0, L"CreationDuCube", 0, 0);
 
 	return true;
 }
@@ -133,6 +132,7 @@ void InitDirect3DApp::Render()
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : m_entityManager->GetEntityTab())
 		{
+			// Check si l'entity dans la table est null
 			if (entity == nullptr) 
 			{
 				continue;
@@ -158,11 +158,9 @@ void InitDirect3DApp::Render()
 			}
 			if (!entityMesh || !entityTransform)
 			{
-				// Gérer l'erreur (afficher un message, ignorer le rendu, etc.)
+				// Gerer l'erreur (afficher un message, ignorer le rendu, etc.)
 				return;
 			}
-			/*entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
-			entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);*/
 
 			// Calculer la matrice World-View-Projection
 			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());
@@ -178,7 +176,6 @@ void InitDirect3DApp::Render()
 
 			// Dessiner le cube (36 indices)
 			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_meshIndex, 1, 0, 0, 0);
-
 		}
 	}
 }
@@ -304,12 +301,14 @@ void InitDirect3DApp::UpdatePhysics()
 
 void InitDirect3DApp::Draw()
 {
-	// Reinitialise le command allocator et la command list
 
+	// Start des frames
 	mCurrFrameIndex = (mCurrFrameIndex + 1) % gNumFrameResources;
 	mCurrFrameResource = mFrameResources[mCurrFrameIndex].get();
 
+	// Start du lag meter
 	DWORD t = timeGetTime();
+
 	// Attendre que la frame precedente soit terminee
 	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
 	{
@@ -319,6 +318,7 @@ void InitDirect3DApp::Draw()
 		CloseHandle(eventHandle);
 	}
 
+	// Reinitialise le command allocator et la command list
 	mCurrFrameResource->CmdListAlloc->Reset();
 	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
 
@@ -359,12 +359,6 @@ void InitDirect3DApp::Draw()
 	mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
 	// Soumettre les commandes au GPU
-	//mCommandList->Close();
-	//ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-	//mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-	//FlushCommandQueue();
-
 	mSwapChain->Present(0, 0);
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 
@@ -376,7 +370,10 @@ void InitDirect3DApp::Draw()
 	// set until the GPU finishes processing all the commands prior to this Signal().
 	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
 
+	// End of the lag meter
 	DWORD dt = timeGetTime() - t;
+
+	// Affichage du lag meter
 	wchar_t title[256];
 	swprintf_s(title, 256, L"lag meters: %d", (int)dt);
 	SetWindowText(GetActiveWindow(), title);
