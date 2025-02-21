@@ -82,31 +82,31 @@ void InitDirect3DApp::Update()
 
 	// GESTION DES INPUTS
 	{
-		// Mettez a jour la souris en passant le handle de la fenetre
-		InputManager::UpdateMouse(GetActiveWindow());
+		//// Mettez a jour la souris en passant le handle de la fenetre
+		//InputManager::UpdateMouse(GetActiveWindow());
 
-		// Recuperer le deplacement de la souris
-		int deltaX = InputManager::GetMouseDeltaX();
-		int deltaY = InputManager::GetMouseDeltaY();
+		//// Recuperer le deplacement de la souris
+		//int deltaX = InputManager::GetMouseDeltaX();
+		//int deltaY = InputManager::GetMouseDeltaY();
 
-		// Sensibilite de la souris
-		const float sensitivity = 0.005f;
-		if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-		{
-			// Mettre a jour la rotation de la camera en fonction du delta
-			m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
-		}
+		//// Sensibilite de la souris
+		//const float sensitivity = 0.005f;
+		//if (InputManager::GetKeyIsPressed(MK_LBUTTON))
+		//{
+		//	// Mettre a jour la rotation de la camera en fonction du delta
+		//	m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
+		//}
 
-		/*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
-		if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
-		if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
+		///*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
+		//if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
+		//if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
 	}
 
 	// UPDATE DU JEU
