@@ -310,14 +310,6 @@ void InitDirect3DApp::Draw()
 	mCurrFrameResource = mFrameResources[mCurrFrameIndex].get();
 
 	DWORD t = timeGetTime();
-	// Attendre que la frame precedente soit terminee
-	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
-	{
-		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle);
-		WaitForSingleObject(eventHandle, INFINITE);
-		CloseHandle(eventHandle);
-	}
 
 	mCurrFrameResource->CmdListAlloc->Reset();
 	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
@@ -375,6 +367,15 @@ void InitDirect3DApp::Draw()
 	// Because we are on the GPU timeline, the new fence point won't be 
 	// set until the GPU finishes processing all the commands prior to this Signal().
 	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
+
+	// Attendre que la frame precedente soit terminee
+	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
+	{
+		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle);
+		WaitForSingleObject(eventHandle, INFINITE);
+		CloseHandle(eventHandle);
+	}
 
 	DWORD dt = timeGetTime() - t;
 	wchar_t title[256];

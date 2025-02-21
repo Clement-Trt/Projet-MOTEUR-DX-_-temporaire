@@ -114,7 +114,7 @@ void SceneTest::OnUpdate()
 	/*compteur2--;
 	if (compteur2 <= 0)
 	{*/
-		compteur2 = 150;
+		/*compteur2 = 150;
 
 		Entity* newEntity = mpEntityManager->CreateEntity();
 
@@ -139,7 +139,7 @@ void SceneTest::OnUpdate()
 				VelocityComponent* velComponent = static_cast<VelocityComponent*>(component);
 				mMvmt->SetVelocity(velComponent, 0.5f, 0.0f, 0.0f);
 			}
-		}
+		}*/
 	//}
 }
 
