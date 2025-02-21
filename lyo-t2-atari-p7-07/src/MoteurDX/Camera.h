@@ -1,5 +1,8 @@
 #pragma once
 #include <DirectXMath.h>
+//#include "Transform.h"
+
+class Transform;
 
 class Camera
 {
@@ -13,7 +16,16 @@ public:
 
     DirectX::XMMATRIX GetViewMatrix() const;
 
+    DirectX::XMMATRIX GetViewMatrixT() const;
+
+    void SetViewMatrixT(DirectX::XMFLOAT4X4& transformMatrix) { matrix = transformMatrix; }
+    void SetTransform(Transform* transformComponent) { transform = transformComponent; }
+
 private:
     DirectX::XMFLOAT3 m_Position;
     float m_Pitch, m_Yaw; // Rotation de la caméra
+
+    DirectX::XMFLOAT4X4 matrix;
+
+    Transform* transform = nullptr;
 };

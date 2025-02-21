@@ -114,3 +114,10 @@ void Transform::Scale(float scaleX, float scaleY, float scaleZ)
     UpdateMatrix();
 }
 
+//DirectX::XMMATRIX& Transform::GetXMMatrix()
+//{
+//    DirectX::XMMATRIX m = DirectX::XMLoadFloat4x4(&matrix);
+//    return m;
+//    // TODO: insérer une instruction return ici
+//}
+

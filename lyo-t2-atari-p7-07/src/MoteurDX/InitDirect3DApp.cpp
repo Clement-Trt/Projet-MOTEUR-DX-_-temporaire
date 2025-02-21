@@ -62,7 +62,7 @@ bool InitDirect3DApp::Initialize()
 	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Positionner la camera a une position initiale
-	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
+	m_Camera.SetPosition(0.0f, 0.0f, 5.0f); // Place la camera en arriere pour voir la scene
 
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
@@ -378,7 +378,7 @@ void InitDirect3DApp::Draw()
 	}
 
 	DWORD dt = timeGetTime() - t;
-	wchar_t title[256];
+	/*wchar_t title[256];
 	swprintf_s(title, 256, L"lag meters: %d", (int)dt);
-	SetWindowText(GetActiveWindow(), title);
+	SetWindowText(GetActiveWindow(), title);*/
 }

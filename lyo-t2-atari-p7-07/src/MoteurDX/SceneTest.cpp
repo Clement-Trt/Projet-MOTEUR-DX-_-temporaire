@@ -31,7 +31,12 @@ void SceneTest::OnInitialize()
 		{
 			TransformComponent* transform = static_cast<TransformComponent*>(component);
 			transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
-		}
+		}/*
+		if (component->ID == Camera_ID)
+		{
+			CameraComponent* cam = static_cast<CameraComponent*>(component);
+			mpGameManager->SetCamera(&cam->m_camera);
+		}*/
 	}
 
 	// 2
@@ -94,38 +99,41 @@ void SceneTest::OnUpdate()
 			}
 
 
-			//// Mettez a jour la souris en passant le handle de la fenetre
-			//InputManager::UpdateMouse(GetActiveWindow());
+			// Mettez a jour la souris en passant le handle de la fenetre
+			InputManager::UpdateMouse(GetActiveWindow());
 
-			//// Recuperer le deplacement de la souris
-			//int deltaX = InputManager::GetMouseDeltaX();
-			//int deltaY = InputManager::GetMouseDeltaY();
+			// Recuperer le deplacement de la souris
+			int deltaX = InputManager::GetMouseDeltaX();
+			int deltaY = InputManager::GetMouseDeltaY();
 
-			//// Sensibilite de la souris
-			//const float sensitivity = 0.005f;
-			////if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-			////{
-			////	// Mettre a jour la rotation de la camera en fonction du delta
-			////	transform->m_transform.Rotation(0.0f, -deltaY * sensitivity, deltaX * sensitivity);
-			////}
+			// Sensibilite de la souris
+			const float sensitivity = 0.005f;
+			if (InputManager::GetKeyIsPressed(MK_LBUTTON))
+			{
+				// Mettre a jour la rotation de la camera en fonction du delta
+				transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
+			}
 
-			//if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, 0.1f, 0.0f);
-			//if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, -0.1f, 0.0f);
+			if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -0.1f, 0.0f);
+			if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 0.1f, 0.0f);
 
-			//if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(-0.1f, 0.0f, 0.0f);
-			//if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(0.1f, 0.0f, 0.0f);
+			if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(0.1f, 0.0f, 0.0f);
+			if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-0.1f, 0.0f, 0.0f);
 
-			//if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.1f);
-			//if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.1f);
+			if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.1f);
+			if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.1f);
 
-			//if (transform != nullptr && camComponent != nullptr)
-			//{
-			//	//transform->m_transform
-			//	if (transform->m_transform.GetPositionX() && transform->m_transform.GetPositionY() && transform->m_transform.GetPositionZ())
-			//		camComponent->m_camera->Move(transform->m_transform.GetPositionX(), transform->m_transform.GetPositionY(), transform->m_transform.GetPositionZ());
-			//	//camComponent->m_camera->Move(transform->m_transform.GetPositionX(), transform->m_transform.GetPositionY(), transform->m_transform.GetPositionZ());
-			//	//camComponent->m_camera->Move(transform->m_transform.GetPositionX(), transform->m_transform.GetPositionY(), transform->m_transform.GetPositionZ());
-			//}
+			/*DWORD t = timeGetTime();
+			DWORD dt = timeGetTime() - t;*/
+			/*wchar_t title[256];
+			swprintf_s(title, 256, L"lFrontDir = ", transform->m_transform.GetPositionZ());
+			SetWindowText(GetActiveWindow(), title);*/
+
+			if (transform != nullptr && camComponent != nullptr)
+			{
+				camComponent->m_camera.SetTransform(&transform->m_transform);
+				mpGameManager->SetCamera(&camComponent->m_camera);
+			}
 		}
 	}
 

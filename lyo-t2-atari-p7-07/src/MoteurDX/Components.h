@@ -2,6 +2,7 @@
 
 //#include <DirectXMath.h>
 #include "Transform.h"
+#include "Camera.h"
 
 #include <d3d12.h>
 #include <dxgi1_4.h>
@@ -13,7 +14,6 @@ using namespace Microsoft::WRL;
 
 using ComponentMask = uint32_t;
 
-class Camera;
 
 enum ComponentType {
 	COMPONENT_NONE = 0,
@@ -79,7 +79,7 @@ struct Component
 struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
-	Camera* m_camera;
+	Camera m_camera;
 };
 
 struct MeshComponent : public Component
