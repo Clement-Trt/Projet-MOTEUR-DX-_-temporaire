@@ -15,7 +15,8 @@ public:
 
 protected:
 
-
+	int compteur;
+	int compteur2;
 
 };
 

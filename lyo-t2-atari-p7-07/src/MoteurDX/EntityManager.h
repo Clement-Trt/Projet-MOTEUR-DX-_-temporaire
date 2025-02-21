@@ -34,6 +34,7 @@ private:
 	std::vector<EntityComponents*> tab_compToAdd;
 
 public:
+	~EntityManager();
 
 	Entity* (&GetEntityTab())[64000] { return tab_entity; }
 

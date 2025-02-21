@@ -19,6 +19,8 @@ bool InitDirect3DApp::Initialize()
 	if (!WindowDX::Initialize())
 		return false;
 
+	FlushCommandQueue();
+
 	mCurrentFence = 0; // Initialisation de la valeur du fence
 
 	HRESULT hr = mD3DDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
@@ -139,10 +141,16 @@ void InitDirect3DApp::Update()
 			m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
 		}
 
-		if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		/*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
 		if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
 		if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
+		if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
+		if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
+		if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
+		if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
 	}
 
 	// UPDATE DU JEU
@@ -372,14 +380,6 @@ void InitDirect3DApp::Draw()
 	mCurrFrameResource = mFrameResources[mCurrFrameIndex].get();
 
 	DWORD t = timeGetTime();
-	// Attendre que la frame precedente soit terminee
-	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
-	{
-		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle);
-		WaitForSingleObject(eventHandle, INFINITE);
-		CloseHandle(eventHandle);
-	}
 
 	mCurrFrameResource->CmdListAlloc->Reset();
 	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
@@ -437,6 +437,15 @@ void InitDirect3DApp::Draw()
 	// Because we are on the GPU timeline, the new fence point won't be 
 	// set until the GPU finishes processing all the commands prior to this Signal().
 	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
+
+	// Attendre que la frame precedente soit terminee
+	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
+	{
+		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+		mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle);
+		WaitForSingleObject(eventHandle, INFINITE);
+		CloseHandle(eventHandle);
+	}
 
 	DWORD dt = timeGetTime() - t;
 	wchar_t title[256];
