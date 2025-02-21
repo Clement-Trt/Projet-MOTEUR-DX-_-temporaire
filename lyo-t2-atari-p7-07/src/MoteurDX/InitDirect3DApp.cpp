@@ -8,6 +8,7 @@
 #include "Scene.h"
 #include "EntityManager.h"
 #include "SceneTest.h"
+#include "CameraSystem.h"
 
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
@@ -62,7 +63,8 @@ bool InitDirect3DApp::Initialize()
 	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Positionner la camera a une position initiale
-	m_Camera.SetPosition(0.0f, 0.0f, 5.0f); // Place la camera en arriere pour voir la scene
+	m_mainView = new CameraComponent;
+	m_mainView->cameraView = CameraSystem::DefaultView();
 
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
@@ -127,7 +129,7 @@ void InitDirect3DApp::Render()
 		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
+		DirectX::XMMATRIX view = m_mainView->cameraView;
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube
@@ -161,8 +163,6 @@ void InitDirect3DApp::Render()
 				// Gérer l'erreur (afficher un message, ignorer le rendu, etc.)
 				return;
 			}
-			/*entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
-			entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);*/
 
 			// Calculer la matrice World-View-Projection
 			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());

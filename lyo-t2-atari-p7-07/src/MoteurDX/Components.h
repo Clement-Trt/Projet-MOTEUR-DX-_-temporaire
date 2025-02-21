@@ -80,6 +80,8 @@ struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
 	Camera m_camera;
+
+	DirectX::XMMATRIX cameraView;
 };
 
 struct MeshComponent : public Component
@@ -106,5 +108,4 @@ struct VelocityComponent : public Component
 
 //class PositionComponent : public Component
 //{
-	// /!\/!\/!\/!\/!\/!\/!\/!\/!\/!\  ---   Pourrait etre utilise pour optimiser l'utilisation : pas besoin du Transform entier tout le temps je pense ?   ---   /!\/!\/!\/!\/!\/!\/!\/!\/!\/!\
-};
+//};

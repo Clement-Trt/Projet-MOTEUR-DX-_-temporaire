@@ -26,17 +26,20 @@ public:
 
     void SetDeltaTime(float deltaTime) { mDeltaTime = deltaTime; }
     void SetScene(Scene* scene) { mScene = scene; }
-    void SetCamera(Camera* camView) { m_Camera = *camView; }
+    //void SetCamera(Camera* camView) { m_Camera = camView; }
 
     EntityManager* GetEntityManager() { return m_entityManager; }
     MeshFactory* GetFactory() { return m_meshFactory; }
+
+    CameraComponent* GetMainView() { return m_mainView; }
 
     friend class Scene;
 
 private:
     //ComPtr<ID3D12PipelineState> mPSO;
     D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
-    Camera m_Camera;
+
+    CameraComponent* m_mainView;
 
     MeshFactory* m_meshFactory;
     EntityManager* m_entityManager;
