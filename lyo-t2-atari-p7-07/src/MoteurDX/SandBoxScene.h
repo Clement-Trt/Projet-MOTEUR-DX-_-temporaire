@@ -2,7 +2,6 @@
 
 #include "Scene.h"
 
-
 class SandBoxScene : public Scene
 {
 public:

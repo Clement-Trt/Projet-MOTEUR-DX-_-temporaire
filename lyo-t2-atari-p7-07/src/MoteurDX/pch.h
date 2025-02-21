@@ -1,13 +1,25 @@
 #pragma once
 
-//#include <windows.h>
+// Mettre include generaux en premier
+#include <iostream>
+#include <string>
+#include <memory>
+#include <windows.h>
+#include <d3d12.h>
+#include <dxgi1_4.h>
+#include <wrl.h>
+#include <string>
+#include <d3dcompiler.h>
+#include <vector>
+#include <DirectXMath.h>
+
+// Debug
+#include <cassert> 
+#include <timeapi.h>
 
 #include "resource.h"
 #include "EntityManager.h"
 #include "MeshFactory.h"
-
-// Mettre include generaux en premier
-
 
 #ifdef _DEBUG
 #include <crtdbg.h>

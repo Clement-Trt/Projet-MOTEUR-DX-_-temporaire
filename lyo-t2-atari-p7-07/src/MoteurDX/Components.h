@@ -1,13 +1,8 @@
 #pragma once
 
-//#include <DirectXMath.h>
 #include "Transform.h"
 
-#include <d3d12.h>
-#include <dxgi1_4.h>
-#include <wrl.h>
 #include "d3dx12.h"
-#include <d3dcompiler.h>
 
 using namespace Microsoft::WRL;
 

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <DirectXMath.h>
-#include <iostream>
-
 class Transform
 {
 public:
