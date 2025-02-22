@@ -86,6 +86,7 @@ struct MeshComponent : public Component
 {
 	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
 	CubeMesh* m_cubeMesh;
+	std::wstring textureID = L""; // identifiant de texture
 };
 
 struct TransformComponent : public Component

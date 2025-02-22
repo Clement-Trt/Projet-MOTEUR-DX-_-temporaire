@@ -23,6 +23,7 @@ void SceneTest::OnInitialize()
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(component);
 			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube(1.0f, 1.0f, 1.0f, 0.0f, 2.0f, 0.0f);
+			mesh->textureID = L"PlayerTexture"; // On assigne la texture
 		}
 		if (component->ID == Transform_ID)
 		{
@@ -43,6 +44,7 @@ void SceneTest::OnInitialize()
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(component);
 			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube(1.0f, 1.0f, 1.0f, 3.0f, 3.0f, 3.0f);
+			mesh->textureID = L"WallTexture"; // On assigne la texture
 		}
 		if (component->ID == Transform_ID)
 		{

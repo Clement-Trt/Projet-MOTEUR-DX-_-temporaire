@@ -7,6 +7,7 @@
 //class GameManager;
 class MeshFactory;
 //class Camera;
+class TextureManager;
 
 class InitDirect3DApp : public WindowDX
 {
@@ -40,14 +41,12 @@ private:
 
     MeshFactory* m_meshFactory;
     EntityManager* m_entityManager;
+    TextureManager* m_textureManager;
 
     Scene* mScene;
 
     float mDeltaTime; //    /!\/!\/!\/!\    A UTILISER DANS LA BOUCLE DE JEU    /!\/!\/!\/!\/
 
     // Textures:
-    ComPtr<ID3D12Resource> m_Texture;
-    ComPtr<ID3D12Resource> m_TextureUploadHeap;
-    ComPtr<ID3D12DescriptorHeap> m_SrvHeap;
-
+    ComPtr<ID3D12Resource> m_texture;
 };
