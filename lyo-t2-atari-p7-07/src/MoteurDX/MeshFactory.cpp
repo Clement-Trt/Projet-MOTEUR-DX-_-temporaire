@@ -6,34 +6,33 @@ MeshFactory::MeshFactory()
 {
 }
 
-void MeshFactory::InitMeshFactory(ID3D12Device* device, EntityManager* entityManager)
+void MeshFactory::InitMeshFactory(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx)
 {
 	m_Device = device;
 	m_entityManager = entityManager;
-
-	// Cree la global geometrie des cube
-	CreateSharedCubeGeometry();
-
-	if (m_indexBufferView.SizeInBytes < 72)
-	{
-		MessageBox(0, L"ERREUR: Le buffer d'indices est trop petit!", L"Erreur", MB_OK);
-	}
 }
 
-CubeMesh* MeshFactory::CreateCube()
+Mesh* MeshFactory::CreateCube()
 {
-	CubeMesh* newMesh = new CubeMesh;
+	Mesh* newMesh = new Mesh;
 
-	newMesh->m_meshIndex = 36;
+	// Nombre d'indice de la forme (36 points pour un cube)
+	newMesh->m_geometryMesh.m_meshIndex = 36;
+
+	// Creer la geometry du cube
+	CreateCubeModel(newMesh);
 
 	// Creer le constant buffer pour ce cube
 	CreateCubeConstantBuffer(newMesh);
-	newMesh->InitConstantBuffer();
+
+	// InitMap
+	CD3DX12_RANGE readRange(0, 0);
+	newMesh->m_constantBuffer->Map(0, &readRange, &newMesh->m_mappedData);
 
 	return newMesh;
 }
 
-void MeshFactory::CreateSharedCubeGeometry()
+void MeshFactory::CreateCubeModel(Mesh* cube)
 {
 	// On cree ici la geometrie d'un cube unitaire (de taille 1) ; pour obtenir des cubes de tailles differentes,
 	// on utilisera la transformation (scaling) dans le constant buffer.
@@ -78,46 +77,54 @@ void MeshFactory::CreateSharedCubeGeometry()
 	CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(iSize);
 
 	// Creer le vertex buffer
+	ComPtr<ID3D12Resource>& cubeVertexBuffer = cube->m_geometryMesh.m_vertexBuffer;
+
 	HRESULT hr = m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
-		&vbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_vertexBuffer));
+		&vbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&cubeVertexBuffer));
 	if (FAILED(hr)) { /* Gerer l'erreur */ }
 
 	// Creer l'index buffer
+	ComPtr<ID3D12Resource>& cubeIndexBuffer = cube->m_geometryMesh.m_indexBuffer;
+
 	hr = m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
-		&ibDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&m_indexBuffer));
+		&ibDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&cubeIndexBuffer));
 	if (FAILED(hr)) { /* Gerer l'erreur */ }
 
 	// Copier les donnees dans le vertex buffer
 	void* pVertexData = nullptr;
 	CD3DX12_RANGE readRange(0, 0);
-	hr = m_vertexBuffer->Map(0, &readRange, &pVertexData);
+	hr = cubeVertexBuffer->Map(0, &readRange, &pVertexData);
 	memcpy(pVertexData, vertices, vSize);
-	m_vertexBuffer->Unmap(0, nullptr);
+	cubeVertexBuffer->Unmap(0, nullptr);
 
 	// Copier les donnees dans l'index buffer
 	void* pIndexData = nullptr;
-	hr = m_indexBuffer->Map(0, &readRange, &pIndexData);
+	hr = cubeIndexBuffer->Map(0, &readRange, &pIndexData);
 	memcpy(pIndexData, indices, iSize);
-	m_indexBuffer->Unmap(0, nullptr);
+	cubeIndexBuffer->Unmap(0, nullptr);
 
 	// Creer les vues
-	m_vertexBufferView.BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-	m_vertexBufferView.StrideInBytes = sizeof(VertexMesh);
-	m_vertexBufferView.SizeInBytes = vSize;
+	D3D12_VERTEX_BUFFER_VIEW& cubeBufferView = cube->m_geometryMesh.m_vertexBufferView;
 
-	m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
-	m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
-	m_indexBufferView.SizeInBytes = iSize;
+	cubeBufferView.BufferLocation = cubeVertexBuffer->GetGPUVirtualAddress();
+	cubeBufferView.StrideInBytes = sizeof(VertexMesh);
+	cubeBufferView.SizeInBytes = vSize;
+
+	D3D12_INDEX_BUFFER_VIEW& cubeIndexView = cube->m_geometryMesh.m_indexBufferView;
+
+	cubeIndexView.BufferLocation = cubeIndexBuffer->GetGPUVirtualAddress();
+	cubeIndexView.Format = DXGI_FORMAT_R16_UINT;
+	cubeIndexView.SizeInBytes = iSize;
 }
 
-void MeshFactory::CreateCubeConstantBuffer(CubeMesh* cube)
+void MeshFactory::CreateCubeConstantBuffer(Mesh* cube)
 {
 	// Taille alignee du constant buffer
 	const UINT alignedSize = (sizeof(TransformConstants) + 255) & ~255;
 	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
 	CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(alignedSize);
 
-	HRESULT hr = m_Device->CreateCommittedResource(&heapProps,D3D12_HEAP_FLAG_NONE,&bufferDesc,D3D12_RESOURCE_STATE_GENERIC_READ,nullptr,IID_PPV_ARGS(&cube->m_constantBuffer));
+	HRESULT hr = m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &bufferDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&cube->m_constantBuffer));
 
 	if (FAILED(hr))
 	{

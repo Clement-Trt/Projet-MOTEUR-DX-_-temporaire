@@ -46,7 +46,7 @@ bool InitDirect3DApp::Initialize()
 
 	// MeshFactory
 	m_meshFactory = new MeshFactory;
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager());
+	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(),this);
 	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
 	// Scene
@@ -122,8 +122,8 @@ void InitDirect3DApp::Render()
 		mCommandList->SetPipelineState(mPipelineState.Get());
 
 		// Definit les vertex et index buffers communs
-		mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
-		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());
+		/*mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
+		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
@@ -173,9 +173,11 @@ void InitDirect3DApp::Render()
 
 			// Attacher le constant buffer a la racine (slot 0)
 			mCommandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer->GetGPUVirtualAddress());
+			mCommandList->IASetVertexBuffers(0, 1, &entityMesh->m_cubeMesh->m_geometryMesh.m_vertexBufferView);
+			mCommandList->IASetIndexBuffer(&entityMesh->m_cubeMesh->m_geometryMesh.m_indexBufferView);
 
 			// Dessiner le cube (36 indices)
-			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_meshIndex, 1, 0, 0, 0);
+			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_geometryMesh.m_meshIndex, 1, 0, 0, 0);
 		}
 	}
 }

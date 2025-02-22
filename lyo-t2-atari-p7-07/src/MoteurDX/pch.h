@@ -18,8 +18,8 @@
 #include <timeapi.h>
 
 #include "resource.h"
-#include "EntityManager.h"
 #include "MeshFactory.h"
+#include "EntityManager.h"
 
 #ifdef _DEBUG
 #include <crtdbg.h>

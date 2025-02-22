@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Transform.h"
-
+#include "MeshFactory.h"
 #include "d3dx12.h"
 
 using namespace Microsoft::WRL;
@@ -32,23 +32,30 @@ enum ComponentIndex
 	Heal_index		// Exemple
 };
 
-struct CubeMesh
+struct GeometryMesh
 {
+	// Vertex Buffer
+	ComPtr<ID3D12Resource> m_vertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+
+	// Index Buffer
+	ComPtr<ID3D12Resource> m_indexBuffer;
+	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
+
+	// Nombre d'indices pour le rendu
+	UINT m_meshIndex;
+};
+
+struct Mesh
+{
+	// typeOf Geometry
+	GeometryMesh m_geometryMesh;
+
 	// Buffer de constantes (matrices, couleurs, etc.)
 	ComPtr<ID3D12Resource> m_constantBuffer;
 
 	// Map
 	void* m_mappedData = nullptr;
-
-	// Nombre d'indices pour le rendu
-	UINT m_meshIndex;
-
-	// InitMap
-	void InitConstantBuffer()
-	{
-		CD3DX12_RANGE readRange(0, 0);
-		m_constantBuffer->Map(0, &readRange, &m_mappedData);
-	}
 };
 
 enum ComponentID
@@ -77,7 +84,7 @@ struct CameraComponent : public Component
 struct MeshComponent : public Component
 {
 	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
-	CubeMesh* m_cubeMesh;
+	Mesh* m_cubeMesh;
 };
 
 struct TransformComponent : public Component
