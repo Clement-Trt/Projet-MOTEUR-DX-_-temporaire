@@ -7,6 +7,9 @@
 #include "EntityManager.h"
 #include "Movement.h"
 #include "InitDirect3DApp.h"
+#include "Camera.h"
+#include "InputManager.h"
+#include "CameraSystem.h"
 
 void SceneTest::OnInitialize()
 {
@@ -16,6 +19,7 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<TransformComponent>(entity1);
 	mpEntityManager->AddComponent<MeshComponent>(entity1);
 	mpEntityManager->AddComponent<VelocityComponent>(entity1);
+	mpEntityManager->AddComponent<CameraComponent>(entity1);
 
 	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
 	{
@@ -28,7 +32,12 @@ void SceneTest::OnInitialize()
 		{
 			TransformComponent* transform = static_cast<TransformComponent*>(component);
 			transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
-		}
+		}/*
+		if (component->ID == Camera_ID)
+		{
+			CameraComponent* cam = static_cast<CameraComponent*>(component);
+			mpGameManager->SetCamera(&cam->m_camera);
+		}*/
 	}
 
 	// 2
@@ -66,12 +75,12 @@ void SceneTest::OnUpdate()
 			continue;
 		}
 
-		// Update de positions
-		if (mpEntityManager->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY))
+		// Update de position player
+		if (mpEntityManager->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_CAMERA))
 		{
 			TransformComponent* transform = nullptr;
-			VelocityComponent* velComponent = nullptr;
-			
+			CameraComponent* camComponent = nullptr;
+
 
 			for (auto* component : mpEntityManager->GetComponentsTab()[entity->tab_index]->vec_components)
 			{
@@ -79,68 +88,50 @@ void SceneTest::OnUpdate()
 				{
 					transform = static_cast<TransformComponent*>(component);
 				}
-				if (component->ID == Velocity_ID)
+				if (component->ID == Camera_ID)
 				{
-					velComponent = static_cast<VelocityComponent*>(component);
+					camComponent = static_cast<CameraComponent*>(component);
 				}
 			}
-			
-			compteur--;
-			if (compteur <= 0)
+
+
+			// Mettez a jour la souris en passant le handle de la fenetre
+			InputManager::UpdateMouse(GetActiveWindow());
+
+			// Recuperer le deplacement de la souris
+			int deltaX = InputManager::GetMouseDeltaX();
+			int deltaY = InputManager::GetMouseDeltaY();
+
+			// Sensibilite de la souris
+			const float sensitivity = 0.005f;
+			if (InputManager::GetKeyIsPressed(MK_LBUTTON))
 			{
-				compteur = 50;
-				mMvmt->SetVelocity(velComponent, -velComponent->vz, velComponent->vx, velComponent->vy);
+				// Mettre a jour la rotation de la camera en fonction du delta
+				transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
 			}
 
-			if (transform && velComponent)
+			if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -0.1f, 0.0f);
+			if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 0.1f, 0.0f);
+
+			if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(0.1f, 0.0f, 0.0f);
+			if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-0.1f, 0.0f, 0.0f);
+
+			if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.1f);
+			if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.1f);
+
+			/*DWORD t = timeGetTime();
+			DWORD dt = timeGetTime() - t;*/
+			/*wchar_t title[256];
+			swprintf_s(title, 256, L"lFrontDir = ", transform->m_transform.GetPositionZ());
+			SetWindowText(GetActiveWindow(), title);*/
+
+			if (transform != nullptr && camComponent != nullptr)
 			{
-				transform->m_transform.Move(velComponent->vz, velComponent->vx, velComponent->vy);
-				transform->m_transform.UpdateMatrix();
+				CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), transform);
 			}
 		}
-
-		//// Update finale
-		//for (auto* component : mpGameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
-		//{
-		//	if (component->ID == Transform_ID)
-		//	{
-		//		TransformComponent* transform = static_cast<TransformComponent*>(component);
-		//		transform->m_transform.UpdateMatrix();
-		//	}
-		//}
 	}
 
-
-	/*compteur2--;
-	if (compteur2 <= 0)
-	{*/
-		/*compteur2 = 150;
-
-		Entity* newEntity = mpEntityManager->CreateEntity();
-
-		mpEntityManager->AddComponent<TransformComponent>(newEntity);
-		mpEntityManager->AddComponent<MeshComponent>(newEntity);
-		mpEntityManager->AddComponent<VelocityComponent>(newEntity);
-
-		for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newEntity->tab_index]->vec_components)
-		{
-			if (component->ID == Mesh_ID)
-			{
-				MeshComponent* mesh = static_cast<MeshComponent*>(component);
-				mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
-			}
-			if (component->ID == Transform_ID)
-			{
-				TransformComponent* transform = static_cast<TransformComponent*>(component);
-				transform->m_transform.Scale(0.1f, 0.1f, 0.1f);
-			}
-			if (component->ID == Velocity_ID)
-			{
-				VelocityComponent* velComponent = static_cast<VelocityComponent*>(component);
-				mMvmt->SetVelocity(velComponent, 0.5f, 0.0f, 0.0f);
-			}
-		}*/
-	//}
 }
 
 void SceneTest::OnClose()

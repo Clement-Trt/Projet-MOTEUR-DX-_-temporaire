@@ -8,6 +8,7 @@
 #include "Scene.h"
 #include "EntityManager.h"
 #include "SceneTest.h"
+#include "CameraSystem.h"
 
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
@@ -62,7 +63,8 @@ bool InitDirect3DApp::Initialize()
 	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Positionner la camera a une position initiale
-	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
+	m_mainView = new CameraComponent;
+	m_mainView->cameraView = CameraSystem::DefaultView();
 
 	// Initialisation du DepthStencil
 	m_depthStencilDesc = {};
@@ -81,31 +83,31 @@ void InitDirect3DApp::Update()
 
 	// GESTION DES INPUTS
 	{
-		// Mettez a jour la souris en passant le handle de la fenetre
-		InputManager::UpdateMouse(GetActiveWindow());
+		//// Mettez a jour la souris en passant le handle de la fenetre
+		//InputManager::UpdateMouse(GetActiveWindow());
 
-		// Recuperer le deplacement de la souris
-		int deltaX = InputManager::GetMouseDeltaX();
-		int deltaY = InputManager::GetMouseDeltaY();
+		//// Recuperer le deplacement de la souris
+		//int deltaX = InputManager::GetMouseDeltaX();
+		//int deltaY = InputManager::GetMouseDeltaY();
 
-		// Sensibilite de la souris
-		const float sensitivity = 0.005f;
-		if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-		{
-			// Mettre a jour la rotation de la camera en fonction du delta
-			m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
-		}
+		//// Sensibilite de la souris
+		//const float sensitivity = 0.005f;
+		//if (InputManager::GetKeyIsPressed(MK_LBUTTON))
+		//{
+		//	// Mettre a jour la rotation de la camera en fonction du delta
+		//	m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
+		//}
 
-		/*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
-		if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
-		if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
+		///*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
+		//if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
+		//if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
 	}
 
 	// UPDATE DU JEU
@@ -126,7 +128,7 @@ void InitDirect3DApp::Render()
 		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
+		DirectX::XMMATRIX view = m_mainView->cameraView;
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube
@@ -374,8 +376,10 @@ void InitDirect3DApp::Draw()
 
 	DWORD dt = timeGetTime() - t;
 
+
 	// Affichage du lag meter
-	wchar_t title[256];
+
+	/*wchar_t title[256];
 	swprintf_s(title, 256, L"lag meters: %d", (int)dt);
-	SetWindowText(GetActiveWindow(), title);
+	SetWindowText(GetActiveWindow(), title);*/
 }

@@ -1,12 +1,17 @@
 #pragma once
 
 #include "Transform.h"
+
 #include "MeshFactory.h"
+
+#include "Camera.h"
+
 #include "d3dx12.h"
 
 using namespace Microsoft::WRL;
 
 using ComponentMask = uint32_t;
+
 
 enum ComponentType {
 	COMPONENT_NONE = 0,
@@ -79,6 +84,9 @@ struct Component
 struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
+	Camera m_camera;
+
+	DirectX::XMMATRIX cameraView;
 };
 
 struct MeshComponent : public Component
@@ -105,5 +113,4 @@ struct VelocityComponent : public Component
 
 //class PositionComponent : public Component
 //{
-	// /!\/!\/!\/!\/!\/!\/!\/!\/!\/!\  ---   Pourrait etre utilise pour optimiser l'utilisation : pas besoin du Transform entier tout le temps je pense ?   ---   /!\/!\/!\/!\/!\/!\/!\/!\/!\/!\
-};
+//};
