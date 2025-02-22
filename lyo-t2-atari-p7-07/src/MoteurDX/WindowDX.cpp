@@ -87,6 +87,7 @@ int WindowDX::Run()
 {
     MSG msg = { 0 };
 
+    //SetDeltaTime(mDeltaTime); // AJOUTER SYSTEME DE TIMER
     while (msg.message != WM_QUIT)
     {
         // If there are Window messages then process them.
@@ -96,20 +97,27 @@ int WindowDX::Run()
             DispatchMessage(&msg);
         }
         // Otherwise, do animation/game stuff.
+
         Update();
+        /*DWORD t = timeGetTime();*/
+
         Draw();
+        //DWORD dt = timeGetTime() - t;
+        //wchar_t title[256];
+        //swprintf_s(title, 256, L"lag meters: %d", (int)dt);
+        //SetWindowText(GetActiveWindow(), title);
     }
 
     return (int)msg.wParam;
 }
 
-void WindowDX::Update()
-{
-}
-
-void WindowDX::Draw()
-{
-}
+//void WindowDX::Update()
+//{
+//}
+//
+//void WindowDX::Draw()
+//{
+//}
 
 LRESULT WindowDX::MsgProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -403,7 +411,9 @@ void WindowDX::FlushCommandQueue()
     // Wait until the GPU has completed commands up to this fence point.
     if (mFence->GetCompletedValue() < mFenceValue)
     {
+        // HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
         HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
         hr = mFence->SetEventOnCompletion(mFenceValue, eventHandle);
         if (FAILED(hr))
         {

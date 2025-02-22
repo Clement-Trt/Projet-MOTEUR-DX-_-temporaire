@@ -113,3 +113,4 @@ void Transform::Scale(float scaleX, float scaleY, float scaleZ)
 
     UpdateMatrix();
 }
+
