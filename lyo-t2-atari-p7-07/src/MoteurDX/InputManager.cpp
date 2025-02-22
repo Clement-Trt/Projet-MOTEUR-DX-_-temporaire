@@ -21,7 +21,7 @@ bool InputManager::GetKeyDown(char key) {
 	return false;
 }
 
-// Cette fonction doit être appelée chaque frame (avant de récupérer le delta)
+// Cette fonction doit etre appelee chaque frame (avant de recuperer le delta)
 void InputManager::UpdateMouse(HWND hWnd)
 {
 	POINT currentPos;

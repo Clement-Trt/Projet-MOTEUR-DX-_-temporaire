@@ -21,7 +21,7 @@ LRESULT CALLBACK WindowDX::MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
     // Verifie si l'application existe avant d'appeler MsgProc
     if (WindowDX::GetApp() == nullptr)
     {
-        return DefWindowProc(hwnd, msg, wParam, lParam); // Si l'application n'existe pas, appelle la procedure par défaut
+        return DefWindowProc(hwnd, msg, wParam, lParam); // Si l'application n'existe pas, appelle la procedure par defaut
     }
 
     // Appeler la methode MsgProc sur l'instance active de WindowDX
