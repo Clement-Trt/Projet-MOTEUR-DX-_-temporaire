@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include "MeshFactory.h"
+// #include "TextureLoader.h"
+#include "TextureLoaderDuLivre.h"
 
 MeshFactory::MeshFactory()
 {

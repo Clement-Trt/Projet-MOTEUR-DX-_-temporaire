@@ -43,6 +43,7 @@ public:
 
 	D3D12_VERTEX_BUFFER_VIEW* GetVertexBufferView() { return &m_vertexBufferView; };
 	D3D12_INDEX_BUFFER_VIEW* GetIndexBufferView() { return &m_indexBufferView; };
+
 private:
 	// Cree un vertex et l'index buffer commun
 	void CreateVertexBuffer(CubeMesh* cubeMesh, float cubeSizeX);
