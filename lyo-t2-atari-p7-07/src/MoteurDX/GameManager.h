@@ -1,7 +1,5 @@
 #pragma once
 
-//#include "EntityManager.h"
-
 class EntityManager;
 //class Movement;
 

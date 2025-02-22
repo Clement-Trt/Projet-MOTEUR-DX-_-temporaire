@@ -10,6 +10,7 @@
 #include "SceneTest.h"
 #include "TextureLoaderDuLivre.h"
 #include "TextureManager.h"
+#include "CameraSystem.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
@@ -47,7 +48,7 @@ bool InitDirect3DApp::Initialize()
 
 	// MeshFactory
 	m_meshFactory = new MeshFactory;
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager());
+	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(),this);
 	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
 	// Scene
@@ -65,7 +66,7 @@ bool InitDirect3DApp::Initialize()
 	// Cree le pipeline(root signature & PSO)
 	CreatePipelineState();
 
-	// Réinitialiser le command allocator et la command list
+	// Reinitialiser le command allocator et la command list
 	mCurrFrameResource->CmdListAlloc->Reset();
 	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
 
@@ -88,9 +89,9 @@ bool InitDirect3DApp::Initialize()
 
 bool InitDirect3DApp::InitTexture()
 {
-	// Création du TextureManager
+	// Creation du TextureManager
 	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
-	// On crée un heap pour le nombre total de textures (ici 3)
+	// On cree un heap pour le nombre total de textures (ici 3)
 	m_textureManager->CreateDescriptorHeap(3);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
@@ -121,31 +122,31 @@ void InitDirect3DApp::Update()
 
 	// GESTION DES INPUTS
 	{
-		// Mettez a jour la souris en passant le handle de la fenetre
-		InputManager::UpdateMouse(GetActiveWindow());
+		//// Mettez a jour la souris en passant le handle de la fenetre
+		//InputManager::UpdateMouse(GetActiveWindow());
 
-		// Recuperer le deplacement de la souris
-		int deltaX = InputManager::GetMouseDeltaX();
-		int deltaY = InputManager::GetMouseDeltaY();
+		//// Recuperer le deplacement de la souris
+		//int deltaX = InputManager::GetMouseDeltaX();
+		//int deltaY = InputManager::GetMouseDeltaY();
 
-		// Sensibilite de la souris
-		const float sensitivity = 0.005f;
-		if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-		{
-			// Mettre a jour la rotation de la camera en fonction du delta
-			m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
-		}
+		//// Sensibilite de la souris
+		//const float sensitivity = 0.005f;
+		//if (InputManager::GetKeyIsPressed(MK_LBUTTON))
+		//{
+		//	// Mettre a jour la rotation de la camera en fonction du delta
+		//	m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
+		//}
 
-		/*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
-		if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
-		if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
+		///*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
+		//if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
+		//if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
 	}
 
 	// UPDATE DU JEU
@@ -166,16 +167,17 @@ void InitDirect3DApp::Render()
 		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
 		// Definit les vertex et index buffers communs
-		mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
-		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());
+		/*mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
+		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
+		DirectX::XMMATRIX view = m_mainView->cameraView;
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : m_entityManager->GetEntityTab())
 		{
+			// Check si l'entity dans la table est null
 			if (entity == nullptr) 
 			{
 				continue;
@@ -201,12 +203,10 @@ void InitDirect3DApp::Render()
 			}
 			if (!entityMesh || !entityTransform)
 			{
-				// Gérer l'erreur (afficher un message, ignorer le rendu, etc.)
+				// Gerer l'erreur (afficher un message, ignorer le rendu, etc.)
 				continue;
 				// return;
 			}
-			/*entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
-			entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);*/
 
 			// Calculer la matrice World-View-Projection
 			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());
@@ -219,19 +219,21 @@ void InitDirect3DApp::Render()
 
 			// Attacher le constant buffer a la racine (slot 0)
 			mCommandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer->GetGPUVirtualAddress());
+			mCommandList->IASetVertexBuffers(0, 1, &entityMesh->m_cubeMesh->m_geometryMesh.m_vertexBufferView);
+			mCommandList->IASetIndexBuffer(&entityMesh->m_cubeMesh->m_geometryMesh.m_indexBufferView);
 
 			if (entityMesh->textureID.empty())
 			{
-				// Si aucun ID n'est défini, utilisez par défaut "PlayerTexture"
+				// Si aucun ID n'est defini, utilisez par defaut "PlayerTexture"
 				entityMesh->textureID = L"PlayerTexture";
 			}
-			// Récupération du handle de la texture à utiliser selon l'identifiant contenu dans le MeshComponent
+			// Recuperation du handle de la texture a utiliser selon l'identifiant contenu dans le MeshComponent
 			D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = m_textureManager->GetTextureHandle(entityMesh->textureID);
-			// Mise à jour du slot 1 de la root signature (table de descripteurs) pour pointer sur la texture
+			// Mise a jour du slot 1 de la root signature (table de descripteurs) pour pointer sur la texture
 			mCommandList->SetGraphicsRootDescriptorTable(1, textureHandle);
 
 			// Dessiner le cube (36 indices)
-			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_meshIndex, 1, 0, 0, 0);
+			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_geometryMesh.m_meshIndex, 1, 0, 0, 0);
 		}
 	}
 }
@@ -370,13 +372,15 @@ void InitDirect3DApp::UpdatePhysics()
 
 void InitDirect3DApp::Draw()
 {
-	// Reinitialise le command allocator et la command list
 
+	// Start des frames
 	mCurrFrameIndex = (mCurrFrameIndex + 1) % gNumFrameResources;
 	mCurrFrameResource = mFrameResources[mCurrFrameIndex].get();
 
+	// Start du lag meter
 	DWORD t = timeGetTime();
 
+	// Reinitialise le command allocator et la command list
 	mCurrFrameResource->CmdListAlloc->Reset();
 	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
 
@@ -417,12 +421,6 @@ void InitDirect3DApp::Draw()
 	mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
 	// Soumettre les commandes au GPU
-	//mCommandList->Close();
-	//ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-	//mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-	// FlushCommandQueue();
-
 	mSwapChain->Present(0, 0);
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 
@@ -444,7 +442,11 @@ void InitDirect3DApp::Draw()
 	}
 
 	DWORD dt = timeGetTime() - t;
-	wchar_t title[256];
+
+
+	// Affichage du lag meter
+
+	/*wchar_t title[256];
 	swprintf_s(title, 256, L"lag meters: %d", (int)dt);
-	SetWindowText(GetActiveWindow(), title);
+	SetWindowText(GetActiveWindow(), title);*/
 }

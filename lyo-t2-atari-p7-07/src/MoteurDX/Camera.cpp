@@ -1,66 +1,83 @@
 #include "pch.h"
 #include "Camera.h"
-using namespace DirectX;
+//using namespace DirectX;
 
 Camera::Camera()
-    : m_Position(0.0f, 0.0f, -5.0f), m_Pitch(0.0f), m_Yaw(0.0f) {
+	: m_Position(0.0f, 0.0f, -5.0f), m_Pitch(0.0f), m_Yaw(0.0f) {
 }
 
 void Camera::SetPosition(float x, float y, float z)
 {
-    m_Position = { x, y, z };
+	m_Position = { x, y, z };
 }
 
 void Camera::Move(float frontDir, float rightDir, float upDir)
 {
-    m_Position.x += rightDir;
-    m_Position.y += upDir;
-    m_Position.z += frontDir;
+	if (rightDir != 0.0f)
+		m_Position.x = rightDir;
+
+	if (upDir != 0.0f)
+		m_Position.y = upDir;
+
+	if (frontDir != 0.0f)
+		m_Position.z = frontDir;
 }
 
 void Camera::MoveRelative(float frontDir, float rightDir, float upDir)
 {
-    // Calculer le forward comme dans GetViewMatrix
-    float cosPitch = cosf(m_Pitch);
-    float sinPitch = sinf(m_Pitch);
-    float cosYaw = cosf(m_Yaw);
-    float sinYaw = sinf(m_Yaw);
-    XMVECTOR forward = XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
-    // Calculer le right (vecteur perpendiculaire au forward et up)
-    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    XMVECTOR right = XMVector3Cross(up, forward);
+	// Calculer le forward comme dans GetViewMatrix
+	float cosPitch = cosf(m_Pitch);
+	float sinPitch = sinf(m_Pitch);
+	float cosYaw = cosf(m_Yaw);
+	float sinYaw = sinf(m_Yaw);
+	// Calculer le right (vecteur perpendiculaire au forward et up)
+	DirectX::XMVECTOR forward = DirectX::XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
+	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	DirectX::XMVECTOR right = DirectX::XMVector3Cross(up, forward);
 
-    // Convertir la position en XMVECTOR, ajouter les offsets, puis stocker dans m_Position.
-    XMVECTOR pos = XMLoadFloat3(&m_Position);
-    pos = XMVectorAdd(pos, XMVectorScale(right, rightDir));
-    pos = XMVectorAdd(pos, XMVectorScale(up, upDir));
-    pos = XMVectorAdd(pos, XMVectorScale(forward, frontDir));
+	// Convertir la position en XMVECTOR, ajouter les offsets, puis stocker dans m_Position.
+	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_Position);
+	pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorScale(right, rightDir));
+	pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorScale(up, upDir));
+	pos = DirectX::XMVectorAdd(pos, DirectX::XMVectorScale(forward, frontDir));
 
-    XMStoreFloat3(&m_Position, pos);
+	DirectX::XMStoreFloat3(&m_Position, pos);
 }
 
 
 void Camera::Rotate(float pitch, float yaw)
 {
-    m_Pitch += pitch;
-    m_Yaw += yaw;
+	m_Pitch += pitch;
+	m_Yaw += yaw;
 }
 
-XMMATRIX Camera::GetViewMatrix() const
+DirectX::XMMATRIX Camera::GetViewMatrix() const
 {
-    // Charger la position de la camera dans un XMVECTOR
-    XMVECTOR pos = XMLoadFloat3(&m_Position);
+	if (transform == nullptr)
+	{
+		// Charger la position de la camera dans un XMVECTOR
+		DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_Position);
 
-    // Calcul du vecteur direction a partir des angles (m_Pitch et m_Yaw)
-    float cosPitch = cosf(m_Pitch);
-    float sinPitch = sinf(m_Pitch);
-    float cosYaw = cosf(m_Yaw);
-    float sinYaw = sinf(m_Yaw);
-        
-    // Le vecteur forward est calcule en utilisant des coordonnees spheriques.
-    XMVECTOR forward = XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
+		// Calcul du vecteur direction a partir des angles (m_Pitch et m_Yaw)
+		float cosPitch = cosf(m_Pitch);
+		float sinPitch = sinf(m_Pitch);
+		float cosYaw = cosf(m_Yaw);
+		float sinYaw = sinf(m_Yaw);
 
-    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-    
-    return XMMatrixLookToLH(pos, forward, up);
+		// Le vecteur forward est calcul en utilisant des coordonnees spheriques.
+		DirectX::XMVECTOR forward = DirectX::XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
+
+		DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
+		return DirectX::XMMatrixLookToLH(pos, forward, up);
+	}
+
+	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->matrix);
+	return DirectX::XMMatrixInverse(nullptr, worldMatrix);
+}
+
+DirectX::XMMATRIX Camera::GetViewMatrixT() const
+{
+	//XMMatrixLookToLH()
+	return DirectX::XMMatrixInverse(nullptr, DirectX::XMLoadFloat4x4(&matrix));
 }
