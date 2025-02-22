@@ -63,6 +63,28 @@ void SceneTest::OnInitialize()
 		}
 	}
 
+	// 3
+	Entity* entityBox = mpEntityManager->CreateEntity();
+
+	mpEntityManager->AddComponent<TransformComponent>(entityBox);
+	mpEntityManager->AddComponent<MeshComponent>(entityBox);
+
+	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityBox->tab_index]->vec_components)
+	{
+		if (component->ID == Mesh_ID)
+		{
+			MeshComponent* mesh = static_cast<MeshComponent*>(component);
+			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->textureID = L"BoxTexture"; // On assigne la texture
+		}
+		if (component->ID == Transform_ID)
+		{
+			TransformComponent* transform = static_cast<TransformComponent*>(component);
+			transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
+			transform->m_transform.Move(-3.0f, -3.0f, -3.0f);
+		}
+	}
+
 	compteur = 50;
 	compteur2 = 150;
 

@@ -77,7 +77,8 @@ bool InitDirect3DApp::Initialize()
 	}
 
 	// Positionner la camera a une position initiale
-	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
+	m_mainView = new CameraComponent;
+	m_mainView->cameraView = CameraSystem::DefaultView();
 
 	mCommandList->Close();
 	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
