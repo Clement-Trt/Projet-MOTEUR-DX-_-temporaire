@@ -13,7 +13,7 @@
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
-	mLastTime = timeGetTime();
+	m_lastTime = timeGetTime();
 }
 
 bool InitDirect3DApp::Initialize()
@@ -54,8 +54,8 @@ bool InitDirect3DApp::Initialize()
 	// Scene
 	SceneTest* scene = new SceneTest;
 	SetScene(scene);
-	mScene->Initialize(this);
-	mScene->OnInitialize();
+	m_scene->Initialize(this);
+	m_scene->OnInitialize();
 
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
@@ -117,7 +117,7 @@ bool InitDirect3DApp::InitTexture()
 
 void InitDirect3DApp::Update()
 {
-	//SetDeltaTime(mDeltaTime); // AJOUTER SYSTEME DE TIMER
+	//SetDeltaTime(m_deltaTime); // AJOUTER SYSTEME DE TIMER
 
 	//HandleInput(); // AJOUTER SYSTEME DE GESTION D'INPUT
 
@@ -154,8 +154,8 @@ void InitDirect3DApp::Update()
 	UpdateTimer();
 	UpdatePhysics();
 
-	m_healthSystem.Update(m_entityManager, mDeltaTime);
-	m_attackSystem.Update(m_entityManager, mDeltaTime);
+	m_healthSystem.Update(m_entityManager, m_deltaTime);
+	m_attackSystem.Update(m_entityManager, m_deltaTime);
 }
 
 void InitDirect3DApp::Render()
@@ -348,7 +348,7 @@ void InitDirect3DApp::UpdatePhysics()
 	if (m_entityManager->GetNbEntity() > 0 && m_entityManager->GetEntityTab()[0] != nullptr)
 	{
 		// Update
-		mScene->OnUpdate();
+		m_scene->OnUpdate();
 
 		// update transform of entites
 
@@ -378,8 +378,8 @@ void InitDirect3DApp::UpdatePhysics()
 void InitDirect3DApp::UpdateTimer()
 {
 	DWORD currentTime = timeGetTime();
-	mDeltaTime = (currentTime - mLastTime) / 1000.0f; // conversion en secondes
-	mLastTime = currentTime;
+	m_deltaTime = (currentTime - m_lastTime) / 1000.0f; // conversion en secondes
+	m_lastTime = currentTime;
 }
 
 

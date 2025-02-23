@@ -32,8 +32,8 @@ public:
     void Render();
     void CreatePipelineState();
 
-    void SetDeltaTime(float deltaTime) { mDeltaTime = deltaTime; }
-    void SetScene(Scene* scene) { mScene = scene; }
+    void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
+    void SetScene(Scene* scene) { m_scene = scene; }
     //void SetCamera(Camera* camView) { m_Camera = camView; }
     
 
@@ -55,10 +55,10 @@ private:
     EntityManager* m_entityManager;
     TextureManager* m_textureManager;
 
-    Scene* mScene;
+    Scene* m_scene;
 
-    float mDeltaTime = 0.0f; //    /!\/!\/!\/!\    A UTILISER DANS LA BOUCLE DE JEU    /!\/!\/!\/!\/
-    DWORD mLastTime = 0;
+    float m_deltaTime = 0.0f; //    /!\/!\/!\/!\    A UTILISER DANS LA BOUCLE DE JEU    /!\/!\/!\/!\/
+    DWORD m_lastTime = 0;
 
     // Textures:
     ComPtr<ID3D12Resource> m_texture;

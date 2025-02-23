@@ -12,9 +12,9 @@ protected:
 	//Movement* mMvmt;
 	EntityManager* mEM;
 
-	Scene* mScene;
+	Scene* m_scene;
 
-	float mDeltaTime;
+	float m_deltaTime;
 
 public:
 
@@ -28,8 +28,8 @@ public:
 	void Update();
 	void Draw();
 
-	void SetDeltaTime(float deltaTime) { mDeltaTime = deltaTime; }
-	void SetScene(Scene* scene) { mScene = scene; }
+	void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
+	void SetScene(Scene* scene) { m_scene = scene; }
 
 	EntityManager* GetEntityManager() { return mEM; }
 
