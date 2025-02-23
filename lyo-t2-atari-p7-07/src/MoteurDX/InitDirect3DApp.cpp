@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include "InitDirect3DApp.h"
-#include <d3dcompiler.h>
 
 #include "MeshFactory.h"
 #include "InputManager.h"

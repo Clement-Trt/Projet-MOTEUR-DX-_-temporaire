@@ -1,7 +1,6 @@
 ﻿#include "pch.h"
 
 #include "TriangleRenderer.h"
-#include <d3dcompiler.h>
 #include "InputManager.h"
 
 TriangleRenderer::TriangleRenderer()
