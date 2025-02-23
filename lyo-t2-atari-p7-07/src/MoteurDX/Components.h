@@ -8,6 +8,8 @@
 
 #include "d3dx12.h"
 
+class Entity;
+
 using namespace Microsoft::WRL;
 
 using ComponentMask = uint32_t;
@@ -19,8 +21,7 @@ enum ComponentType {
 	COMPONENT_TRANSFORM = 1 << 2,
 	COMPONENT_VELOCITY = 1 << 3,
 	COMPONENT_HEALTH = 1 << 4,
-
-	COMPONENT_HEAL = 1 << 5,		// Exemple
+	COMPONENT_ATTACK = 1 << 5,
 
 	TOTALCOMPONENT
 };
@@ -32,8 +33,7 @@ enum ComponentIndex
 	Transform_index,
 	Velocity_index,
 	Health_index,
-
-	Heal_index		// Exemple
+	Attack_index,
 };
 
 struct GeometryMesh
@@ -69,8 +69,7 @@ enum ComponentID
 	Transform_ID,
 	Velocity_ID,
 	Health_ID,
-
-	Heal_ID		// Exemple
+	Attack_ID,
 };
 
 struct Component
@@ -108,6 +107,23 @@ struct VelocityComponent : public Component
 	float vz = 0.0f;
 	float vx = 0.0f;
 	float vy = 0.0f;
+};
+
+struct HealthComponent : public Component
+{
+	HealthComponent() : Component(Health_ID, COMPONENT_HEALTH) {}
+	int maxHealth = 100;
+	int currentHealth = maxHealth;
+};
+
+struct AttackComponent : public Component
+{
+	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
+	int damage = 10;
+	float attackCooldown = 1.0f;
+	float timeSinceLastAttack = 0.0f; // Temps accumulé depuis la dernière attaque
+	bool attackRequested = false;     // Indique qu'une attaque a été demandée
+	Entity* targetEntity = nullptr;   // Pointeur vers la cible de l'attaque
 };
 
 

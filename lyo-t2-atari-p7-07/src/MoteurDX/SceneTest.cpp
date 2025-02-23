@@ -20,6 +20,7 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<MeshComponent>(entity1);
 	mpEntityManager->AddComponent<VelocityComponent>(entity1);
 	mpEntityManager->AddComponent<CameraComponent>(entity1);
+	mpEntityManager->AddComponent<AttackComponent>(entity1);
 
 	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
 	{
@@ -40,6 +41,7 @@ void SceneTest::OnInitialize()
 			mpGameManager->SetCamera(&cam->m_camera);
 		}*/
 	}
+	playerEntity = entity1;
 
 	// 2
 	Entity* entity2 = mpEntityManager->CreateEntity();
@@ -85,9 +87,36 @@ void SceneTest::OnInitialize()
 		}
 	}
 
+	Entity* entityIceBlock = mpEntityManager->CreateEntity();
+	mpEntityManager->AddComponent<TransformComponent>(entityIceBlock);
+	mpEntityManager->AddComponent<MeshComponent>(entityIceBlock);
+	mpEntityManager->AddComponent<HealthComponent>(entityIceBlock);
+
+	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityIceBlock->tab_index]->vec_components)
+	{
+		if (comp->ID == Mesh_ID)
+		{
+			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->textureID = L"PlayerTexture";
+		}
+		if (comp->ID == Transform_ID)
+		{
+			TransformComponent* transform = static_cast<TransformComponent*>(comp);
+			transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
+			transform->m_transform.Move(5.0f, 0.0f, 0.0f);
+		}
+		if (comp->ID == Health_ID)
+		{
+			HealthComponent* health = static_cast<HealthComponent*>(comp);
+			health->currentHealth = 100;
+			health->maxHealth = 100;
+		}
+	}
+	iceBlockEntity = entityIceBlock;
+
 	compteur = 50;
 	compteur2 = 150;
-
 }
 
 void SceneTest::OnUpdate()
@@ -153,6 +182,27 @@ void SceneTest::OnUpdate()
 			{
 				CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), transform);
 			}
+		}
+	}
+
+	// Si la touche 'P' est pressée, on demande une attaque du joueur sur l'IceBlock
+	if (InputManager::GetKeyIsPressed('P'))
+	{
+		AttackComponent* attack = nullptr;
+		auto& playerComponents = mpGameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+		for (auto* component : playerComponents)
+		{
+			if (component->ID == Attack_ID)
+			{
+				attack = static_cast<AttackComponent*>(component);
+				break;
+			}
+		}
+		if (attack)
+		{
+			// Déclencher l'attaque en définissant le flag et en indiquant la cible
+			attack->attackRequested = true;
+			attack->targetEntity = iceBlockEntity;
 		}
 	}
 

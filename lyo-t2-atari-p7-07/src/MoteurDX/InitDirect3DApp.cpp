@@ -13,6 +13,7 @@
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
+	mLastTime = timeGetTime();
 }
 
 bool InitDirect3DApp::Initialize()
@@ -150,7 +151,11 @@ void InitDirect3DApp::Update()
 	}
 
 	// UPDATE DU JEU
+	UpdateTimer();
 	UpdatePhysics();
+
+	m_healthSystem.Update(m_entityManager, mDeltaTime);
+	m_attackSystem.Update(m_entityManager, mDeltaTime);
 }
 
 void InitDirect3DApp::Render()
@@ -369,6 +374,14 @@ void InitDirect3DApp::UpdatePhysics()
 	m_entityManager->GetComponentToAddTab().clear();
 	m_entityManager->ResetEntitiesToAdd();
 }
+
+void InitDirect3DApp::UpdateTimer()
+{
+	DWORD currentTime = timeGetTime();
+	mDeltaTime = (currentTime - mLastTime) / 1000.0f; // conversion en secondes
+	mLastTime = currentTime;
+}
+
 
 void InitDirect3DApp::Draw()
 {
