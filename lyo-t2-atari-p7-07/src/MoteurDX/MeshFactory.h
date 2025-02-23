@@ -1,17 +1,12 @@
 #pragma once
 
-#include <d3d12.h>
-#include <dxgi1_4.h>
-#include <wrl.h>
 #include "d3dx12.h"
-#include <d3dcompiler.h>
-
-#include <vector>
 
 #include "Transform.h"
 
 #include "EntityManager.h"
 #include "Components.h"
+#include "WindowDX.h"
 
 using namespace Microsoft::WRL;
 
@@ -34,34 +29,24 @@ public:
 	MeshFactory();
 
 	// Init meshFactory
-	void InitMeshFactory(ID3D12Device* device, EntityManager* entityManager);
+	void InitMeshFactory(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx);
 
-	// Create a mesh inside
-	CubeMesh* CreateCube(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
-
-	void CreateSharedCubeGeometry();
-
-	D3D12_VERTEX_BUFFER_VIEW* GetVertexBufferView() { return &m_vertexBufferView; };
-	D3D12_INDEX_BUFFER_VIEW* GetIndexBufferView() { return &m_indexBufferView; };
+	// Create mesh
+	Mesh* CreateCube();
 
 private:
-	// Cree un vertex et l'index buffer commun
-	void CreateVertexBuffer(CubeMesh* cubeMesh, float cubeSizeX);
+	// Type of mesh geometry
+	void CreateCubeModel(Mesh* cube);
 
 	// Alloue et configure le constant buffer pour un cube
-	void CreateCubeConstantBuffer(CubeMesh* cube);
+	void CreateCubeConstantBuffer(Mesh* cube);
+
+	// Window
+	WindowDX* m_windowDx;
 
 	// App
 	ComPtr<ID3D12Device> m_Device;
 
 	// Entity manager
 	EntityManager* m_entityManager;
-
-	// Vertex Buffer
-	ComPtr<ID3D12Resource> m_vertexBuffer;
-	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
-
-	// Index Buffer
-	ComPtr<ID3D12Resource> m_indexBuffer;
-	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 };

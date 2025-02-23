@@ -9,6 +9,8 @@
 #include "EntityManager.h"
 #include "SceneTest.h"
 #include "TextureLoaderDuLivre.h"
+#include "TextureManager.h"
+#include "CameraSystem.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
@@ -46,7 +48,7 @@ bool InitDirect3DApp::Initialize()
 
 	// MeshFactory
 	m_meshFactory = new MeshFactory;
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager());
+	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(),this);
 	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
 	// Scene
@@ -55,27 +57,28 @@ bool InitDirect3DApp::Initialize()
 	mScene->Initialize(this);
 	mScene->OnInitialize();
 
-	// Cree le pipeline(root signature & PSO)
-	CreatePipelineState();
-
-	// Réinitialiser le command allocator et la command list
-	mCurrFrameResource->CmdListAlloc->Reset();
-	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
-
-	if (!InitTexture())
-	{
-		MessageBox(0, L"Échec du chargement de la texture !", L"Erreur", MB_OK);
-		return false;
-	}
-
-	// Positionner la camera a une position initiale
-	m_Camera.SetPosition(0.0f, 0.0f, -5.0f); // Place la camera en arriere pour voir la scene
-
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
 	m_depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	m_depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 	m_depthStencilDesc.StencilEnable = FALSE;
+
+	// Cree le pipeline(root signature & PSO)
+	CreatePipelineState();
+
+	// Reinitialiser le command allocator et la command list
+	mCurrFrameResource->CmdListAlloc->Reset();
+	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
+
+	if (!InitTexture())
+	{
+		MessageBox(0, L"echec du chargement de la texture !", L"Erreur", MB_OK);
+		return false;
+	}
+
+	// Positionner la camera a une position initiale
+	m_mainView = new CameraComponent;
+	m_mainView->cameraView = CameraSystem::DefaultView();
 
 	mCommandList->Close();
 	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
@@ -87,45 +90,27 @@ bool InitDirect3DApp::Initialize()
 
 bool InitDirect3DApp::InitTexture()
 {
-	// Charger la texture depuis un fichier DDS
-	HRESULT hr = DirectX::CreateDDSTextureFromFile12(
-		mD3DDevice.Get(),
-		mCommandList.Get(),
-		L"../../../src/MoteurDX/tile.dds",
-		m_Texture,
-		m_TextureUploadHeap);
-	if (FAILED(hr))
+	// Creation du TextureManager
+	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
+	// On cree un heap pour le nombre total de textures (ici 3)
+	m_textureManager->CreateDescriptorHeap(3);
+
+	// Chargement des textures en appelant LoadTexture pour chaque ressource
+	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
 	{
-		MessageBox(0, L"echec du chargement de la texture !", L"Error", MB_OK);
+		MessageBox(0, L"echec du chargement de la texture Player.", L"Erreur", MB_OK);
 		return false;
 	}
-
-	// Creer un descriptor heap pour le SRV (1 descripteur suffira) 
-	// Le descriptor heap est une zone mémoire réservée sur la carte graphique qui stocke plusieurs descripteurs. Dans le cas du SRV, il contient les 
-	// descriptions de ressources (comme les textures) afin que le GPU puisse y accéder directement lors du rendu. Une fois créé et rempli, le heap permet 
-	// de regrouper et de gérer ces descripteurs de façon efficace et de les rendre visibles aux shaders.
-	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-	srvHeapDesc.NumDescriptors = 1;
-	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	hr = mD3DDevice->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&m_SrvHeap));
-	if (FAILED(hr))
+	if (!m_textureManager->LoadTexture(L"WallTexture", L"../../../src/MoteurDX/stone.dds"))
 	{
-		MessageBox(0, L"Failed to create SRV Heap!", L"Error", MB_OK);
+		MessageBox(0, L"echec du chargement de la texture Wall.", L"Erreur", MB_OK);
 		return false;
 	}
-
-	// Creer le SRV pour la texture
-	// Le Shader Resource View (SRV) est un descripteur qui définit comment une ressource (ici une texture) est vue par les shaders. Il précise notamment 
-	// le format de la texture, le nombre de mipmaps et la dimension de la ressource. Grâce au SRV, le shader (souvent le pixel shader) peut échantillonner 
-	// la texture pour en extraire les données de couleur lors du rendu.
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDesc.Format = m_Texture->GetDesc().Format;
-	srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = m_Texture->GetDesc().MipLevels;
-	mD3DDevice->CreateShaderResourceView(m_Texture.Get(), &srvDesc, m_SrvHeap->GetCPUDescriptorHandleForHeapStart());
+	if (!m_textureManager->LoadTexture(L"BoxTexture", L"../../../src/MoteurDX/WoodCrate.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Box.", L"Erreur", MB_OK);
+		return false;
+	}
 
 	return true;
 }
@@ -138,31 +123,31 @@ void InitDirect3DApp::Update()
 
 	// GESTION DES INPUTS
 	{
-		// Mettez a jour la souris en passant le handle de la fenetre
-		InputManager::UpdateMouse(GetActiveWindow());
+		//// Mettez a jour la souris en passant le handle de la fenetre
+		//InputManager::UpdateMouse(GetActiveWindow());
 
-		// Recuperer le deplacement de la souris
-		int deltaX = InputManager::GetMouseDeltaX();
-		int deltaY = InputManager::GetMouseDeltaY();
+		//// Recuperer le deplacement de la souris
+		//int deltaX = InputManager::GetMouseDeltaX();
+		//int deltaY = InputManager::GetMouseDeltaY();
 
-		// Sensibilite de la souris
-		const float sensitivity = 0.005f;
-		if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-		{
-			// Mettre a jour la rotation de la camera en fonction du delta
-			m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
-		}
+		//// Sensibilite de la souris
+		//const float sensitivity = 0.005f;
+		//if (InputManager::GetKeyIsPressed(MK_LBUTTON))
+		//{
+		//	// Mettre a jour la rotation de la camera en fonction du delta
+		//	m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
+		//}
 
-		/*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
-		if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
-		if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
-		if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
+		///*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
+		//if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
+		//if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
+		//if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
 	}
 
 	// UPDATE DU JEU
@@ -178,23 +163,22 @@ void InitDirect3DApp::Render()
 		mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 		mCommandList->SetPipelineState(mPipelineState.Get());
 
-		// Lier le descriptor heap contenant le SRV de la texture
-		ID3D12DescriptorHeap* descriptorHeaps[] = { m_SrvHeap.Get() };
+		// On doit lier le heap de textures (celui du TextureManager)
+		ID3D12DescriptorHeap* descriptorHeaps[] = { m_textureManager->GetSrvHeap() };
 		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
-		// Le slot 1 de la root signature (table de descripteurs) pointe sur notre texture
-		mCommandList->SetGraphicsRootDescriptorTable(1, m_SrvHeap->GetGPUDescriptorHandleForHeapStart());
 
 		// Definit les vertex et index buffers communs
-		mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
-		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());
+		/*mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
+		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		DirectX::XMMATRIX view = m_Camera.GetViewMatrix();
+		DirectX::XMMATRIX view = m_mainView->cameraView;
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : m_entityManager->GetEntityTab())
 		{
+			// Check si l'entity dans la table est null
 			if (entity == nullptr) 
 			{
 				continue;
@@ -220,11 +204,10 @@ void InitDirect3DApp::Render()
 			}
 			if (!entityMesh || !entityTransform)
 			{
-				// Gérer l'erreur (afficher un message, ignorer le rendu, etc.)
-				return;
+				// Gerer l'erreur (afficher un message, ignorer le rendu, etc.)
+				continue;
+				// return;
 			}
-			/*entityMesh = static_cast<MeshComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Mesh_index]);
-			entityTransform = static_cast<TransformComponent*>(m_entityManager->GetComponentsTab()[entity->tab_index]->tab_components[Transform_index]);*/
 
 			// Calculer la matrice World-View-Projection
 			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());
@@ -237,20 +220,27 @@ void InitDirect3DApp::Render()
 
 			// Attacher le constant buffer a la racine (slot 0)
 			mCommandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer->GetGPUVirtualAddress());
+			mCommandList->IASetVertexBuffers(0, 1, &entityMesh->m_cubeMesh->m_geometryMesh.m_vertexBufferView);
+			mCommandList->IASetIndexBuffer(&entityMesh->m_cubeMesh->m_geometryMesh.m_indexBufferView);
+
+			if (entityMesh->textureID.empty())
+			{
+				// Si aucun ID n'est defini, utilisez par defaut "PlayerTexture"
+				entityMesh->textureID = L"PlayerTexture";
+			}
+			// Recuperation du handle de la texture a utiliser selon l'identifiant contenu dans le MeshComponent
+			D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = m_textureManager->GetTextureHandle(entityMesh->textureID);
+			// Mise a jour du slot 1 de la root signature (table de descripteurs) pour pointer sur la texture
+			mCommandList->SetGraphicsRootDescriptorTable(1, textureHandle);
 
 			// Dessiner le cube (36 indices)
-			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_meshIndex, 1, 0, 0, 0);
-
+			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_geometryMesh.m_meshIndex, 1, 0, 0, 0);
 		}
 	}
 }
 
 void InitDirect3DApp::CreatePipelineState()
 {
-	// Definition d'un parametre root pour un Constant Buffer (CBV)
-	/*CD3DX12_ROOT_PARAMETER slotRootParameter[1];
-	slotRootParameter[0].InitAsConstantBufferView(0);*/
-
 	// Definition d'un parametre root pour un Constant Buffer (CBV)
 	CD3DX12_ROOT_PARAMETER slotRootParameter[2]; // 2 parametres au lieu de 1 pour la texture
 	// Parametre 0 : constant buffer (transformation)
@@ -269,9 +259,6 @@ void InitDirect3DApp::CreatePipelineState()
 
 	// Creation de la Root Signature
 	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
-
-	// Creation de la Root Signature
-	// CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, slotRootParameter, 0, nullptr,D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	ComPtr<ID3DBlob> error = nullptr;
@@ -386,13 +373,15 @@ void InitDirect3DApp::UpdatePhysics()
 
 void InitDirect3DApp::Draw()
 {
-	// Reinitialise le command allocator et la command list
 
+	// Start des frames
 	mCurrFrameIndex = (mCurrFrameIndex + 1) % gNumFrameResources;
 	mCurrFrameResource = mFrameResources[mCurrFrameIndex].get();
 
+	// Start du lag meter
 	DWORD t = timeGetTime();
 
+	// Reinitialise le command allocator et la command list
 	mCurrFrameResource->CmdListAlloc->Reset();
 	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
 
@@ -433,12 +422,6 @@ void InitDirect3DApp::Draw()
 	mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
 	// Soumettre les commandes au GPU
-	//mCommandList->Close();
-	//ID3D12CommandList* cmdsLists[] = { mCommandList.Get() };
-	//mCommandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-	// FlushCommandQueue();
-
 	mSwapChain->Present(0, 0);
 	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
 
@@ -460,7 +443,11 @@ void InitDirect3DApp::Draw()
 	}
 
 	DWORD dt = timeGetTime() - t;
-	wchar_t title[256];
+
+
+	// Affichage du lag meter
+
+	/*wchar_t title[256];
 	swprintf_s(title, 256, L"lag meters: %d", (int)dt);
-	SetWindowText(GetActiveWindow(), title);
+	SetWindowText(GetActiveWindow(), title);*/
 }

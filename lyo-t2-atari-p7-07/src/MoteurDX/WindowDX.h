@@ -1,26 +1,13 @@
 #pragma once
 
-// Fenetre
-#include <windows.h>
-#include <d3d12.h>
-#include <wrl.h>
-#include <dxgi1_4.h>
-#include <string>
-
-// Debug
-#include <cassert> 
-
 // DirectX12
 #include "d3dx12.h"
-//#include "d3dUtil.h"
 
 // Link necessary d3d12 libraries.
 #pragma comment(lib,"d3dcompiler.lib")
 #pragma comment(lib, "D3D12.lib")
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
-
-#include <timeapi.h>
 #pragma comment(lib, "winmm.lib")
 
 using Microsoft::WRL::ComPtr;
@@ -51,6 +38,9 @@ public:
 	virtual void Draw() = 0;
 
 	HWND GetMainWindow() { return m_mainWindow; };
+
+	void FlushCommandQueue();
+
 private:
 	static WindowDX* m_Application; // ref instance de la classe
 
@@ -66,7 +56,7 @@ protected:
 	// Nouvelle methode pour initialiser DirectX12
 	bool InitDirect3D();
 	void OnResize();
-	void FlushCommandQueue();
+	
 	ID3D12Resource* CurrentBackBuffer()const;
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView()const;
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const;

@@ -1,19 +1,16 @@
 #pragma once
 
-//#include <DirectXMath.h>
 #include "Transform.h"
 
-#include <d3d12.h>
-#include <dxgi1_4.h>
-#include <wrl.h>
+#include "MeshFactory.h"
+
+#include "Camera.h"
+
 #include "d3dx12.h"
-#include <d3dcompiler.h>
 
 using namespace Microsoft::WRL;
 
 using ComponentMask = uint32_t;
-
-class Camera;
 
 enum ComponentType {
 	COMPONENT_NONE = 0,
@@ -39,23 +36,30 @@ enum ComponentIndex
 	Heal_index		// Exemple
 };
 
-struct CubeMesh
+struct GeometryMesh
 {
+	// Vertex Buffer
+	ComPtr<ID3D12Resource> m_vertexBuffer;
+	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
+
+	// Index Buffer
+	ComPtr<ID3D12Resource> m_indexBuffer;
+	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
+
+	// Nombre d'indices pour le rendu
+	UINT m_meshIndex;
+};
+
+struct Mesh
+{
+	// typeOf Geometry
+	GeometryMesh m_geometryMesh;
+
 	// Buffer de constantes (matrices, couleurs, etc.)
 	ComPtr<ID3D12Resource> m_constantBuffer;
 
 	// Map
 	void* m_mappedData = nullptr;
-
-	// Nombre d'indices pour le rendu
-	UINT m_meshIndex;
-
-	// InitMap
-	void InitConstantBuffer()
-	{
-		CD3DX12_RANGE readRange(0, 0);
-		m_constantBuffer->Map(0, &readRange, &m_mappedData);
-	}
 };
 
 enum ComponentID
@@ -79,13 +83,16 @@ struct Component
 struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
-	Camera* m_camera;
+	Camera m_camera;
+
+	DirectX::XMMATRIX cameraView;
 };
 
 struct MeshComponent : public Component
 {
 	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
-	CubeMesh* m_cubeMesh;
+	Mesh* m_cubeMesh;
+	std::wstring textureID = L""; // identifiant de texture
 };
 
 struct TransformComponent : public Component
@@ -106,5 +113,4 @@ struct VelocityComponent : public Component
 
 //class PositionComponent : public Component
 //{
-	// /!\/!\/!\/!\/!\/!\/!\/!\/!\/!\  ---   Pourrait etre utilise pour optimiser l'utilisation : pas besoin du Transform entier tout le temps je pense ?   ---   /!\/!\/!\/!\/!\/!\/!\/!\/!\/!\
-};
+//};
