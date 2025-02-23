@@ -98,7 +98,7 @@ void SceneTest::OnInitialize()
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
 			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
-			mesh->textureID = L"PlayerTexture";
+			mesh->textureID = L"IceTexture";
 		}
 		if (comp->ID == Transform_ID)
 		{

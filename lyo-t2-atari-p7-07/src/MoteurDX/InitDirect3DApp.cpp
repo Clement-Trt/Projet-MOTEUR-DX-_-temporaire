@@ -93,7 +93,7 @@ bool InitDirect3DApp::InitTexture()
 	// Creation du TextureManager
 	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
 	// On cree un heap pour le nombre total de textures (ici 3)
-	m_textureManager->CreateDescriptorHeap(3);
+	m_textureManager->CreateDescriptorHeap(4);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
 	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
@@ -109,6 +109,11 @@ bool InitDirect3DApp::InitTexture()
 	if (!m_textureManager->LoadTexture(L"BoxTexture", L"../../../src/MoteurDX/WoodCrate.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Box.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"IceTexture", L"../../../src/MoteurDX/ice.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
 		return false;
 	}
 
