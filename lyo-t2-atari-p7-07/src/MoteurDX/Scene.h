@@ -3,6 +3,7 @@
 class GameManager;
 class EntityManager;
 class Movement;
+class AttackSystem;
 class InitDirect3DApp;
 
 class Scene
@@ -15,6 +16,7 @@ protected:
 
 	// Pointeur vers chaque System
 	Movement* mMvmt;
+	AttackSystem* mAttack;
 public:
 
 	//Scene();

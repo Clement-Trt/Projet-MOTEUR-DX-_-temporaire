@@ -120,7 +120,7 @@ struct AttackComponent : public Component
 {
 	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
 	int damage = 10;
-	float attackCooldown = 1.0f;
+	float attackCooldown = 0.5;
 	float timeSinceLastAttack = 0.0f; // Temps accumulé depuis la dernière attaque
 	bool attackRequested = false;     // Indique qu'une attaque a été demandée
 	Entity* targetEntity = nullptr;   // Pointeur vers la cible de l'attaque

@@ -1,6 +1,12 @@
 #include "pch.h"
 #include "AttackSystem.h"
+#include "InitDirect3DApp.h"
 #include "Components.h" // Pour AttackComponent
+
+void AttackSystem::Initialize(InitDirect3DApp* gameManager)
+{
+    mGM = gameManager;
+}
 
 void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
 {
@@ -12,28 +18,64 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
         if (entityManager->HasComponent(entity, COMPONENT_ATTACK))
         {
             AttackComponent* attack = nullptr;
+            TransformComponent* entityTransform = nullptr;
             auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
             for (auto* comp : compTab)
             {
                 if (comp->ID == Attack_ID)
                 {
                     attack = static_cast<AttackComponent*>(comp);
-                    break;
+                }
+                if (comp->ID == Transform_ID)
+                {
+                    entityTransform = static_cast<TransformComponent*>(comp);
                 }
             }
             if (attack)
             {
                 // Toujours incrémenter le temps écoulé
-                attack->timeSinceLastAttack += deltaTime;
+                attack->timeSinceLastAttack += deltaTime;  // a mettre en dehors de la boucle, non ?? /!\/!\/!\/!\/!\/!\/
 
                 // Si une attaque est demandée et que le cooldown est respecté
                 if (attack->attackRequested && attack->timeSinceLastAttack >= attack->attackCooldown)
                 {
                     if (attack->targetEntity != nullptr)
                     {
-                        MessageBox(0, L"Attaque du joueur !", 0, 0);
+                        //MessageBox(0, L"Attaque du joueur !", 0, 0);
 
-                        HealthComponent* health = nullptr;
+                        Entity* newBullet = entityManager->CreateEntity();
+                        
+                        entityManager->AddComponent<TransformComponent>(newBullet);
+                        entityManager->AddComponent<MeshComponent>(newBullet);
+                        entityManager->AddComponent<VelocityComponent>(newBullet);
+
+
+                        for (auto& component : entityManager->GetComponentToAddTab()[newBullet->tab_index]->vec_components)
+                        {
+                            if (component->ID == Mesh_ID)
+                            {
+                                MeshComponent* mesh = static_cast<MeshComponent*>(component);
+                                mesh->m_cubeMesh = mGM->GetFactory()->CreateCube();
+                                mesh->textureID = L"PlayerTexture"; // On assigne la texture
+                            }
+                            if (component->ID == Transform_ID)
+                            {
+                                TransformComponent* transform = static_cast<TransformComponent*>(component);
+                                transform->m_transform = entityTransform->m_transform;
+                                transform->m_transform.Move(1, 0, 0);
+                            }
+                            if (component->ID == Velocity_ID)
+                            {
+                                VelocityComponent* vel = static_cast<VelocityComponent*>(component);
+                                vel->vx = 0.0f;
+                                vel->vy = 0.0f;
+                                vel->vz = 1.0f;
+                                //vel->m_transform.Scale(1.0f, 1.0f, 1.0f);
+                            }
+                        }
+
+
+                       /* HealthComponent* health = nullptr;
                         auto& targetCompTab = entityManager->GetComponentsTab()[attack->targetEntity->tab_index]->vec_components;
                         for (auto* comp : targetCompTab)
                         {
@@ -46,7 +88,7 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                         if (health)
                         {
                             health->currentHealth -= attack->damage;
-                        }
+                        }*/
                     }
                     // Réinitialiser le cooldown et le flag d'attaque
                     attack->timeSinceLastAttack = 0.0f;

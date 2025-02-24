@@ -48,14 +48,10 @@ bool InitDirect3DApp::Initialize()
 
 	// MeshFactory
 	m_meshFactory = new MeshFactory;
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(),this);
+	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(), this);
 	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
-	// Scene
-	SceneTest* scene = new SceneTest;
-	SetScene(scene);
-	m_scene->Initialize(this);
-	m_scene->OnInitialize();
+
 
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
@@ -84,6 +80,15 @@ bool InitDirect3DApp::Initialize()
 	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 	FlushCommandQueue();
+
+	// Scene
+	SceneTest* scene = new SceneTest;
+	SetScene(scene);
+	m_scene->Initialize(this);
+	m_scene->OnInitialize();
+
+	m_attackSystem = new AttackSystem;
+	m_attackSystem->Initialize(this);
 
 	return true;
 }
@@ -160,7 +165,61 @@ void InitDirect3DApp::Update()
 	UpdatePhysics();
 
 	m_healthSystem.Update(m_entityManager, m_deltaTime);
-	m_attackSystem.Update(m_entityManager, m_deltaTime);
+	m_attackSystem->Update(m_entityManager, m_deltaTime);
+}
+
+//AABB InitDirect3DApp::GetAABB(const Transform& transform)
+//{
+//	AABB box;
+//	box.min.x = transform.vPosition.x - transform.vScale.x;
+//	box.min.y = transform.vPosition.y - transform.vScale.y;
+//	box.min.z = transform.vPosition.z - transform.vScale.z;
+//
+//	box.max.x = transform.vPosition.x + transform.vScale.x;
+//	box.max.y = transform.vPosition.y + transform.vScale.y;
+//	box.max.z = transform.vPosition.z + transform.vScale.z;
+//
+//	return box;
+//}
+//
+//bool InitDirect3DApp::CheckCollision(const AABB& a, const AABB& b)
+//{
+//	if (a.max.x < b.min.x || a.min.x > b.max.x)
+//		return false;
+//	if (a.max.y < b.min.y || a.min.y > b.max.y)
+//		return false;
+//	if (a.max.z < b.min.z || a.min.z > b.max.z)
+//		return false;
+//	return true;
+//
+//}
+bool InitDirect3DApp::AABBIntersect(const TransformComponent& a, const TransformComponent& b)
+{
+	// Calcul des bornes pour l'objet A
+	float aMinX = a.m_transform.vPosition.x - a.m_transform.vScale.x;
+	float aMaxX = a.m_transform.vPosition.x + a.m_transform.vScale.x;
+	float aMinY = a.m_transform.vPosition.y - a.m_transform.vScale.y;
+	float aMaxY = a.m_transform.vPosition.y + a.m_transform.vScale.y;
+	float aMinZ = a.m_transform.vPosition.z - a.m_transform.vScale.z;
+	float aMaxZ = a.m_transform.vPosition.z + a.m_transform.vScale.z;
+
+	// Calcul des bornes pour l'objet B
+	float bMinX = b.m_transform.vPosition.x - b.m_transform.vScale.x;
+	float bMaxX = b.m_transform.vPosition.x + b.m_transform.vScale.x;
+	float bMinY = b.m_transform.vPosition.y - b.m_transform.vScale.y;
+	float bMaxY = b.m_transform.vPosition.y + b.m_transform.vScale.y;
+	float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z;
+	float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z;
+
+	// Vérification du chevauchement sur chaque axe
+	if (aMaxX < bMinX || aMinX > bMaxX)
+		return false;
+	if (aMaxY < bMinY || aMinY > bMaxY)
+		return false;
+	if (aMaxZ < bMinZ || aMinZ > bMaxZ)
+		return false;
+
+	return true;
 }
 
 void InitDirect3DApp::Render()
@@ -188,7 +247,7 @@ void InitDirect3DApp::Render()
 		for (auto* entity : m_entityManager->GetEntityTab())
 		{
 			// Check si l'entity dans la table est null
-			if (entity == nullptr) 
+			if (entity == nullptr)
 			{
 				continue;
 			}
@@ -271,14 +330,14 @@ void InitDirect3DApp::CreatePipelineState()
 
 	ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	ComPtr<ID3DBlob> error = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,&serializedRootSig, &error);
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &error);
 	if (FAILED(hr))
 	{
 		if (error) MessageBoxA(0, (char*)error->GetBufferPointer(), "RootSignature Error", MB_OK);
 		return;
 	}
 
-	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(),serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
+	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"CreateRootSignature failed!", L"Error", MB_OK);
@@ -359,6 +418,47 @@ void InitDirect3DApp::UpdatePhysics()
 
 
 		// COLLISIONS a ajouter
+
+	}
+
+	// Collisions
+	for (auto& entity1 : m_entityManager->GetEntityTab())
+	{
+		if (entity1 == nullptr)
+			continue;
+		
+		TransformComponent* transform1 = nullptr;
+		for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
+		{
+			if (component->ID == Transform_ID)
+			{
+				transform1 = static_cast<TransformComponent*>(component);
+			}
+		}
+		if (!transform1)
+			continue;
+		for (uint32_t entity2 = entity1->tab_index + 1; entity2 < 64000; entity2++)
+		{
+			if (!m_entityManager->GetEntityTab()[entity2])
+				continue;
+
+			TransformComponent* transform2 = nullptr;
+			for (auto* component : m_entityManager->GetComponentsTab()[entity2]->vec_components)
+			{
+				if (component->ID == Transform_ID)
+				{
+					transform2 = static_cast<TransformComponent*>(component);
+				}
+			}
+			if (!transform2)
+				continue;
+
+			// Test de collision
+			if (AABBIntersect(*transform1, *transform2))
+			{
+				// Ici, vous pouvez ajouter le traitement nécessaire en cas de collision
+			}
+		}
 
 	}
 
