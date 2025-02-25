@@ -1,18 +1,19 @@
 #include "pch.h"
 
 #include "InitDirect3DApp.h"
-#include <d3dcompiler.h>
 
 #include "MeshFactory.h"
 #include "InputManager.h"
 #include "Scene.h"
 #include "EntityManager.h"
 #include "SceneTest.h"
+#include "TextureLoaderDuLivre.h"
+#include "TextureManager.h"
 #include "CameraSystem.h"
-
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
+	m_lastTime = timeGetTime();
 }
 
 bool InitDirect3DApp::Initialize()
@@ -47,37 +48,86 @@ bool InitDirect3DApp::Initialize()
 
 	// MeshFactory
 	m_meshFactory = new MeshFactory;
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(),this);
+	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(), this);
 	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
-	// Scene
-	SceneTest* scene = new SceneTest;
-	SetScene(scene);
-	mScene->Initialize(this);
-	mScene->OnInitialize();
 
-	// Cree le pipeline(root signature & PSO)
-	CreatePipelineState();
 
-	// Set primitive topology (invariant pour tous les cubes)
-	mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	// Positionner la camera a une position initiale
-	m_mainView = new CameraComponent;
-	m_mainView->cameraView = CameraSystem::DefaultView();
-
-	// Initialisation du DepthStencil
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
 	m_depthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	m_depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 	m_depthStencilDesc.StencilEnable = FALSE;
 
+	// Cree le pipeline(root signature & PSO)
+	CreatePipelineState();
+
+	// Reinitialiser le command allocator et la command list
+	mCurrFrameResource->CmdListAlloc->Reset();
+	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
+
+	if (!InitTexture())
+	{
+		MessageBox(0, L"echec du chargement de la texture !", L"Erreur", MB_OK);
+		return false;
+	}
+
+	// Positionner la camera a une position initiale
+	m_mainView = new CameraComponent;
+	m_mainView->cameraView = CameraSystem::DefaultView();
+
+	mCommandList->Close();
+	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
+	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+	FlushCommandQueue();
+
+	// Scene
+	SceneTest* scene = new SceneTest;
+	SetScene(scene);
+	m_scene->Initialize(this);
+	m_scene->OnInitialize();
+
+	m_attackSystem = new AttackSystem;
+	m_attackSystem->Initialize(this);
+
 	return true;
 }
+
+bool InitDirect3DApp::InitTexture()
+{
+	// Creation du TextureManager
+	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
+	// On cree un heap pour le nombre total de textures (ici 3)
+	m_textureManager->CreateDescriptorHeap(4);
+
+	// Chargement des textures en appelant LoadTexture pour chaque ressource
+	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Player.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"WallTexture", L"../../../src/MoteurDX/stone.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Wall.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"BoxTexture", L"../../../src/MoteurDX/WoodCrate.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Box.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"IceTexture", L"../../../src/MoteurDX/ice.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+
+	return true;
+}
+
 void InitDirect3DApp::Update()
 {
-	//SetDeltaTime(mDeltaTime); // AJOUTER SYSTEME DE TIMER
+	//SetDeltaTime(m_deltaTime); // AJOUTER SYSTEME DE TIMER
 
 	//HandleInput(); // AJOUTER SYSTEME DE GESTION D'INPUT
 
@@ -111,7 +161,65 @@ void InitDirect3DApp::Update()
 	}
 
 	// UPDATE DU JEU
+	UpdateTimer();
 	UpdatePhysics();
+
+	m_healthSystem.Update(m_entityManager, m_deltaTime);
+	m_attackSystem->Update(m_entityManager, m_deltaTime);
+}
+
+//AABB InitDirect3DApp::GetAABB(const Transform& transform)
+//{
+//	AABB box;
+//	box.min.x = transform.vPosition.x - transform.vScale.x;
+//	box.min.y = transform.vPosition.y - transform.vScale.y;
+//	box.min.z = transform.vPosition.z - transform.vScale.z;
+//
+//	box.max.x = transform.vPosition.x + transform.vScale.x;
+//	box.max.y = transform.vPosition.y + transform.vScale.y;
+//	box.max.z = transform.vPosition.z + transform.vScale.z;
+//
+//	return box;
+//}
+//
+//bool InitDirect3DApp::CheckCollision(const AABB& a, const AABB& b)
+//{
+//	if (a.max.x < b.min.x || a.min.x > b.max.x)
+//		return false;
+//	if (a.max.y < b.min.y || a.min.y > b.max.y)
+//		return false;
+//	if (a.max.z < b.min.z || a.min.z > b.max.z)
+//		return false;
+//	return true;
+//
+//}
+bool InitDirect3DApp::AABBIntersect(const TransformComponent& a, const TransformComponent& b)
+{
+	// Calcul des bornes pour l'objet A
+	float aMinX = a.m_transform.vPosition.x - a.m_transform.vScale.x;
+	float aMaxX = a.m_transform.vPosition.x + a.m_transform.vScale.x;
+	float aMinY = a.m_transform.vPosition.y - a.m_transform.vScale.y;
+	float aMaxY = a.m_transform.vPosition.y + a.m_transform.vScale.y;
+	float aMinZ = a.m_transform.vPosition.z - a.m_transform.vScale.z;
+	float aMaxZ = a.m_transform.vPosition.z + a.m_transform.vScale.z;
+
+	// Calcul des bornes pour l'objet B
+	float bMinX = b.m_transform.vPosition.x - b.m_transform.vScale.x;
+	float bMaxX = b.m_transform.vPosition.x + b.m_transform.vScale.x;
+	float bMinY = b.m_transform.vPosition.y - b.m_transform.vScale.y;
+	float bMaxY = b.m_transform.vPosition.y + b.m_transform.vScale.y;
+	float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z;
+	float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z;
+
+	// Vérification du chevauchement sur chaque axe
+	if (aMaxX < bMinX || aMinX > bMaxX)
+		return false;
+	if (aMaxY < bMinY || aMinY > bMaxY)
+		return false;
+	if (aMaxZ < bMinZ || aMinZ > bMaxZ)
+		return false;
+
+	return true;
 }
 
 void InitDirect3DApp::Render()
@@ -122,6 +230,10 @@ void InitDirect3DApp::Render()
 		// Configure le root signature et le pipeline
 		mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
 		mCommandList->SetPipelineState(mPipelineState.Get());
+
+		// On doit lier le heap de textures (celui du TextureManager)
+		ID3D12DescriptorHeap* descriptorHeaps[] = { m_textureManager->GetSrvHeap() };
+		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
 		// Definit les vertex et index buffers communs
 		/*mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
@@ -135,7 +247,7 @@ void InitDirect3DApp::Render()
 		for (auto* entity : m_entityManager->GetEntityTab())
 		{
 			// Check si l'entity dans la table est null
-			if (entity == nullptr) 
+			if (entity == nullptr)
 			{
 				continue;
 			}
@@ -161,7 +273,8 @@ void InitDirect3DApp::Render()
 			if (!entityMesh || !entityTransform)
 			{
 				// Gerer l'erreur (afficher un message, ignorer le rendu, etc.)
-				return;
+				continue;
+				// return;
 			}
 
 			// Calculer la matrice World-View-Projection
@@ -178,6 +291,16 @@ void InitDirect3DApp::Render()
 			mCommandList->IASetVertexBuffers(0, 1, &entityMesh->m_cubeMesh->m_geometryMesh.m_vertexBufferView);
 			mCommandList->IASetIndexBuffer(&entityMesh->m_cubeMesh->m_geometryMesh.m_indexBufferView);
 
+			if (entityMesh->textureID.empty())
+			{
+				// Si aucun ID n'est defini, utilisez par defaut "PlayerTexture"
+				entityMesh->textureID = L"PlayerTexture";
+			}
+			// Recuperation du handle de la texture a utiliser selon l'identifiant contenu dans le MeshComponent
+			D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = m_textureManager->GetTextureHandle(entityMesh->textureID);
+			// Mise a jour du slot 1 de la root signature (table de descripteurs) pour pointer sur la texture
+			mCommandList->SetGraphicsRootDescriptorTable(1, textureHandle);
+
 			// Dessiner le cube (36 indices)
 			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_geometryMesh.m_meshIndex, 1, 0, 0, 0);
 		}
@@ -187,22 +310,34 @@ void InitDirect3DApp::Render()
 void InitDirect3DApp::CreatePipelineState()
 {
 	// Definition d'un parametre root pour un Constant Buffer (CBV)
-	CD3DX12_ROOT_PARAMETER slotRootParameter[1];
+	CD3DX12_ROOT_PARAMETER slotRootParameter[2]; // 2 parametres au lieu de 1 pour la texture
+	// Parametre 0 : constant buffer (transformation)
 	slotRootParameter[0].InitAsConstantBufferView(0);
+	// Parametre 1 : table de descripteurs pour la texture (register t0)
+	CD3DX12_DESCRIPTOR_RANGE texTable;
+	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+	slotRootParameter[1].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
+
+	// Declarez le static sampler pour register(s0) 
+	CD3DX12_STATIC_SAMPLER_DESC samplerDesc(0); // register s0
+	samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
+	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	// Creation de la Root Signature
-	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, slotRootParameter, 0, nullptr,D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	ComPtr<ID3DBlob> error = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,&serializedRootSig, &error);
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &error);
 	if (FAILED(hr))
 	{
 		if (error) MessageBoxA(0, (char*)error->GetBufferPointer(), "RootSignature Error", MB_OK);
 		return;
 	}
 
-	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(),serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
+	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"CreateRootSignature failed!", L"Error", MB_OK);
@@ -237,7 +372,8 @@ void InitDirect3DApp::CreatePipelineState()
 	// Define the input layout
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 
 	// Create the pipeline state object
@@ -276,12 +412,53 @@ void InitDirect3DApp::UpdatePhysics()
 	if (m_entityManager->GetNbEntity() > 0 && m_entityManager->GetEntityTab()[0] != nullptr)
 	{
 		// Update
-		mScene->OnUpdate();
+		m_scene->OnUpdate();
 
 		// update transform of entites
 
 
 		// COLLISIONS a ajouter
+
+	}
+
+	// Collisions
+	for (auto& entity1 : m_entityManager->GetEntityTab())
+	{
+		if (entity1 == nullptr)
+			continue;
+		
+		TransformComponent* transform1 = nullptr;
+		for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
+		{
+			if (component->ID == Transform_ID)
+			{
+				transform1 = static_cast<TransformComponent*>(component);
+			}
+		}
+		if (!transform1)
+			continue;
+		for (uint32_t entity2 = entity1->tab_index + 1; entity2 < 64000; entity2++)
+		{
+			if (!m_entityManager->GetEntityTab()[entity2])
+				continue;
+
+			TransformComponent* transform2 = nullptr;
+			for (auto* component : m_entityManager->GetComponentsTab()[entity2]->vec_components)
+			{
+				if (component->ID == Transform_ID)
+				{
+					transform2 = static_cast<TransformComponent*>(component);
+				}
+			}
+			if (!transform2)
+				continue;
+
+			// Test de collision
+			if (AABBIntersect(*transform1, *transform2))
+			{
+				// Ici, vous pouvez ajouter le traitement nécessaire en cas de collision
+			}
+		}
 
 	}
 
@@ -302,6 +479,14 @@ void InitDirect3DApp::UpdatePhysics()
 	m_entityManager->GetComponentToAddTab().clear();
 	m_entityManager->ResetEntitiesToAdd();
 }
+
+void InitDirect3DApp::UpdateTimer()
+{
+	DWORD currentTime = timeGetTime();
+	m_deltaTime = (currentTime - m_lastTime) / 1000.0f; // conversion en secondes
+	m_lastTime = currentTime;
+}
+
 
 void InitDirect3DApp::Draw()
 {

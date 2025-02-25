@@ -3,48 +3,72 @@
 #include "WindowDX.h";
 //#include "Camera.h";
 #include "Scene.h";
+#include "HealthSystem.h"
+#include "AttackSystem.h"
 
 //class GameManager;
 class MeshFactory;
 class Camera;
+//class HealthSystem;
+//class AttackSystem;
+
+class TextureManager;
+
+struct AABB {
+	DirectX::XMFLOAT3 min;
+	DirectX::XMFLOAT3 max;
+};
 
 class InitDirect3DApp : public WindowDX
 {
 public:
-    InitDirect3DApp(HINSTANCE hInstance);
-    bool Initialize();
-    void Update() override;
-    void UpdatePhysics();
-    void Draw() override;
+	InitDirect3DApp(HINSTANCE hInstance);
+	bool Initialize();
+	bool InitTexture();
+	void Update() override;
+	void UpdatePhysics();
+	void UpdateTimer();
+	void Draw() override;
 
-    // __ Game loop __ 
-    
-    //void HandleInput();
+	// __ Game loop __ 
 
-    void Render();
-    void CreatePipelineState();
+	//void HandleInput();
+	AABB GetAABB(const Transform& transform);
+	bool CheckCollision(const AABB& a, const AABB& b);
+	bool AABBIntersect(const TransformComponent& a, const TransformComponent& b);
 
-    void SetDeltaTime(float deltaTime) { mDeltaTime = deltaTime; }
-    void SetScene(Scene* scene) { mScene = scene; }
-    //void SetCamera(Camera* camView) { m_Camera = camView; }
+	void Render();
+	void CreatePipelineState();
 
-    EntityManager* GetEntityManager() { return m_entityManager; }
-    MeshFactory* GetFactory() { return m_meshFactory; }
+	void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
+	void SetScene(Scene* scene) { m_scene = scene; }
+	//void SetCamera(Camera* camView) { m_Camera = camView; }
 
-    CameraComponent* GetMainView() { return m_mainView; }
 
-    friend class Scene;
+	EntityManager* GetEntityManager() { return m_entityManager; }
+	MeshFactory* GetFactory() { return m_meshFactory; }
+
+	CameraComponent* GetMainView() { return m_mainView; }
+
+	friend class Scene;
 
 private:
-    D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
+	D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
 
-    CameraComponent* m_mainView;
+	CameraComponent* m_mainView;
+	HealthSystem m_healthSystem;
+	AttackSystem* m_attackSystem;
 
-    MeshFactory* m_meshFactory;
-    EntityManager* m_entityManager;
+	MeshFactory* m_meshFactory;
+	EntityManager* m_entityManager;
+	TextureManager* m_textureManager;
 
-    Scene* mScene;
+	Scene* m_scene;
 
-    float mDeltaTime; //    /!\/!\/!\/!\    A UTILISER DANS LA BOUCLE DE JEU    /!\/!\/!\/!\/
+	float m_deltaTime = 0.0f; //    /!\/!\/!\/!\    A UTILISER DANS LA BOUCLE DE JEU    /!\/!\/!\/!\/
+	DWORD m_lastTime = 0;
 
+	// Textures:
+	ComPtr<ID3D12Resource> m_texture;
 };
+

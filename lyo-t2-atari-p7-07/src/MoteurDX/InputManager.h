@@ -10,7 +10,7 @@ public:
 	static bool GetKeyDown(char key);
 
 	// Ajout de la gestion de la souris :
-	static void UpdateMouse(HWND hWnd); // Met ÅEjour le delta de la souris (ÅEappeler chaque frame)
+	static void UpdateMouse(HWND hWnd); // Met a jour le delta de la souris (a appeler chaque frame)
 	static int GetMouseDeltaX();
 	static int GetMouseDeltaY();
 

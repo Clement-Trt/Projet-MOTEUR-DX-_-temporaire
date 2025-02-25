@@ -55,16 +55,16 @@ DirectX::XMMATRIX Camera::GetViewMatrix() const
 {
 	if (transform == nullptr)
 	{
-		// Charger la position de la caméra dans un XMVECTOR
+		// Charger la position de la camera dans un XMVECTOR
 		DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_Position);
 
-		// Calcul du vecteur direction à partir des angles (m_Pitch et m_Yaw)
+		// Calcul du vecteur direction a partir des angles (m_Pitch et m_Yaw)
 		float cosPitch = cosf(m_Pitch);
 		float sinPitch = sinf(m_Pitch);
 		float cosYaw = cosf(m_Yaw);
 		float sinYaw = sinf(m_Yaw);
 
-		// Le vecteur forward est calculé en utilisant des coordonnées sphériques.
+		// Le vecteur forward est calcul en utilisant des coordonnees spheriques.
 		DirectX::XMVECTOR forward = DirectX::XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
 
 		DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);

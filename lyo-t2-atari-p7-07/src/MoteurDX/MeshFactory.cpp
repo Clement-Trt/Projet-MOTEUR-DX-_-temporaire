@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include "MeshFactory.h"
+// #include "TextureLoader.h"
+#include "TextureLoaderDuLivre.h"
 
 MeshFactory::MeshFactory()
 {
@@ -37,35 +39,62 @@ void MeshFactory::CreateCubeModel(Mesh* cube)
 	// On cree ici la geometrie d'un cube unitaire (de taille 1) ; pour obtenir des cubes de tailles differentes,
 	// on utilisera la transformation (scaling) dans le constant buffer.
 	float halfSize = 0.5f;
-	VertexMesh vertices[] =
+	
+	// 6 faces * 4 sommets chacune = 24 sommets
+	VertexMesh vertices[24] =
 	{
-		// Face avant
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, halfSize),  { 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, halfSize),  { 1.0f, 0.0f, 0.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, halfSize),  { 0.0f, 1.0f, 0.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, halfSize),  { 1.0f, 0.0f, 0.0f, 1.0f } },
+		// Front face (z = +halfSize)
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
 
-		// Face arriere
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), { 0.0f, 0.0f, 1.0f, 1.0f } },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), { 0.0f, 1.0f, 0.0f, 1.0f } }
+		// Back face (z = -halfSize)
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Left face (x = -halfSize)
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Right face (x = +halfSize)
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Top face (y = +halfSize)
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Bottom face (y = -halfSize)
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
 	};
 
-	uint16_t indices[] =
+	// Indices : 6 faces * 2 triangles par face * 3 indices par triangle = 36 indices
+	uint16_t indices[36] =
 	{
-		// Face avant
-		0, 1, 2,  0, 2, 3,
-		// Face arriere
-		4, 6, 5,  4, 7, 6,
-		// Face gauche
-		4, 5, 1,  4, 1, 0,
-		// Face droite
-		3, 2, 6,  3, 6, 7,
-		// Face haut
-		1, 5, 6,  1, 6, 2,
-		// Face bas
-		4, 0, 3,  4, 3, 7
+		// Front face
+		0,  1,  2,  0,  2,  3,
+		// Back face
+		4,  5,  6,  4,  6,  7,
+		// Left face
+		8,  9, 10,  8, 10, 11,
+		// Right face
+		12, 13, 14, 12, 14, 15,
+		// Top face
+		16, 17, 18, 16, 18, 19,
+		// Bottom face
+		20, 21, 22, 20, 22, 23
 	};
 
 	const UINT vSize = sizeof(vertices);

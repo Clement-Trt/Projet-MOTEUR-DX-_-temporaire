@@ -21,7 +21,7 @@ LRESULT CALLBACK WindowDX::MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARA
     // Verifie si l'application existe avant d'appeler MsgProc
     if (WindowDX::GetApp() == nullptr)
     {
-        return DefWindowProc(hwnd, msg, wParam, lParam); // Si l'application n'existe pas, appelle la procedure par défaut
+        return DefWindowProc(hwnd, msg, wParam, lParam); // Si l'application n'existe pas, appelle la procedure par defaut
     }
 
     // Appeler la methode MsgProc sur l'instance active de WindowDX
@@ -87,7 +87,7 @@ int WindowDX::Run()
 {
     MSG msg = { 0 };
 
-    //SetDeltaTime(mDeltaTime); // AJOUTER SYSTEME DE TIMER
+    //SetDeltaTime(m_deltaTime); // AJOUTER SYSTEME DE TIMER
     while (msg.message != WM_QUIT)
     {
         // If there are Window messages then process them.
@@ -411,7 +411,9 @@ void WindowDX::FlushCommandQueue()
     // Wait until the GPU has completed commands up to this fence point.
     if (mFence->GetCompletedValue() < mFenceValue)
     {
+        // HANDLE eventHandle = CreateEventEx(nullptr, false, false, EVENT_ALL_ACCESS);
         HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+
         hr = mFence->SetEventOnCompletion(mFenceValue, eventHandle);
         if (FAILED(hr))
         {
