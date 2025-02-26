@@ -83,23 +83,23 @@ void ColliderManager::UpdateCollider()
 	}
 }
 
-bool ColliderManager::AABBIntersect(const TransformComponent& a, const TransformComponent& b)
+bool ColliderManager::AABBIntersect(TransformComponent& a, TransformComponent& b)
 {
 	// Calcul des bornes pour l'objet A
-	float aMinX = a.m_transform.vPosition.x - a.m_transform.vScale.x;
-	float aMaxX = a.m_transform.vPosition.x + a.m_transform.vScale.x;
-	float aMinY = a.m_transform.vPosition.y - a.m_transform.vScale.y;
-	float aMaxY = a.m_transform.vPosition.y + a.m_transform.vScale.y;
-	float aMinZ = a.m_transform.vPosition.z - a.m_transform.vScale.z;
-	float aMaxZ = a.m_transform.vPosition.z + a.m_transform.vScale.z;
+	float aMinX = a.m_transform.GetPositionX() - a.m_transform.GetScale().x;
+	float aMaxX = a.m_transform.GetPositionX() + a.m_transform.GetScale().x;
+	float aMinY = a.m_transform.GetPositionY() - a.m_transform.GetScale().y;
+	float aMaxY = a.m_transform.GetPositionY() + a.m_transform.GetScale().y;
+	float aMinZ = a.m_transform.GetPositionZ() - a.m_transform.GetScale().z;
+	float aMaxZ = a.m_transform.GetPositionZ() + a.m_transform.GetScale().z;
 
 	// Calcul des bornes pour l'objet B
-	float bMinX = b.m_transform.vPosition.x - b.m_transform.vScale.x;
-	float bMaxX = b.m_transform.vPosition.x + b.m_transform.vScale.x;
-	float bMinY = b.m_transform.vPosition.y - b.m_transform.vScale.y;
-	float bMaxY = b.m_transform.vPosition.y + b.m_transform.vScale.y;
-	float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z;
-	float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z;
+	float bMinX = b.m_transform.GetPositionX() - b.m_transform.GetScale().x;
+	float bMaxX = b.m_transform.GetPositionX() + b.m_transform.GetScale().x;
+	float bMinY = b.m_transform.GetPositionY() - b.m_transform.GetScale().y;
+	float bMaxY = b.m_transform.GetPositionY() + b.m_transform.GetScale().y;
+	float bMinZ = b.m_transform.GetPositionZ() - b.m_transform.GetScale().z;
+	float bMaxZ = b.m_transform.GetPositionZ() + b.m_transform.GetScale().z;
 
 	// Vérification du chevauchement sur chaque axe
 	if (aMaxX < bMinX || aMinX > bMaxX)
