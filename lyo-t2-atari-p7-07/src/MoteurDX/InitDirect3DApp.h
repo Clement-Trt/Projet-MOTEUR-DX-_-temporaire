@@ -9,15 +9,16 @@
 //class GameManager;
 class MeshFactory;
 class Camera;
+class ColliderManager;
 //class HealthSystem;
 //class AttackSystem;
 
 class TextureManager;
 
-struct AABB {
-	DirectX::XMFLOAT3 min;
-	DirectX::XMFLOAT3 max;
-};
+//struct AABB {
+//	DirectX::XMFLOAT3 min;
+//	DirectX::XMFLOAT3 max;
+//};
 
 class InitDirect3DApp : public WindowDX
 {
@@ -33,9 +34,9 @@ public:
 	// __ Game loop __ 
 
 	//void HandleInput();
-	AABB GetAABB(const Transform& transform);
-	bool CheckCollision(const AABB& a, const AABB& b);
-	bool AABBIntersect(TransformComponent& a, TransformComponent& b);
+	//AABB GetAABB(const Transform& transform);
+	//bool CheckCollision(const AABB& a, const AABB& b);
+	//bool AABBIntersect(const TransformComponent& a, const TransformComponent& b);
 
 	void Render();
 	void CreatePipelineState();
@@ -62,6 +63,7 @@ private:
 	MeshFactory* m_meshFactory;
 	EntityManager* m_entityManager;
 	TextureManager* m_textureManager;
+	ColliderManager* m_colliderManager;
 
 	Scene* m_scene;
 

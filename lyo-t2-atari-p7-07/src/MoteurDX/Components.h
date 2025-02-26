@@ -22,7 +22,7 @@ enum ComponentType {
 	COMPONENT_VELOCITY = 1 << 3,
 	COMPONENT_HEALTH = 1 << 4,
 	COMPONENT_ATTACK = 1 << 5,
-	COMPONENT_COLLISION = 1 << 5,
+	COMPONENT_COLLIDER = 1 << 6,
 
 	TOTALCOMPONENT
 };
@@ -35,7 +35,7 @@ enum ComponentIndex
 	Velocity_index,
 	Health_index,
 	Attack_index,
-	Collision_index,
+	Collider_index,
 };
 
 enum ComponentID
@@ -46,7 +46,7 @@ enum ComponentID
 	Velocity_ID,
 	Health_ID,
 	Attack_ID,
-	Collision_ID,
+	Collider_ID,
 };
 
 struct GeometryMesh
@@ -98,6 +98,12 @@ struct MeshComponent : public Component
 	std::wstring textureID = L""; // identifiant de texture
 };
 
+struct ColliderComponent : public Component
+{
+	ColliderComponent() : Component(Collider_ID, COMPONENT_COLLIDER) {}
+	bool m_isColliding = false;
+};
+
 struct TransformComponent : public Component
 {
 	TransformComponent() : Component(Transform_ID, COMPONENT_TRANSFORM) {}
@@ -125,9 +131,9 @@ struct AttackComponent : public Component
 	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
 	int damage = 10;
 	float attackCooldown = 0.1;
-	float timeSinceLastAttack = 0.0f; // Temps accumulé depuis la dernière attaque
-	bool attackRequested = false;     // Indique qu'une attaque a été demandée
-	Entity* targetEntity = nullptr;   // Pointeur vers la cible de l'attaque
+	float timeSinceLastAttack = 0.0f; 
+	bool attackRequested = false;     
+	Entity* targetEntity = nullptr;   
 };
 
 
