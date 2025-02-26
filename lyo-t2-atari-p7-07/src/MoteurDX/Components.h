@@ -23,8 +23,6 @@ enum ComponentType {
 	COMPONENT_HEALTH = 1 << 4,
 	COMPONENT_ATTACK = 1 << 5,
 	COMPONENT_COLLIDER = 1 << 6,
-
-	TOTALCOMPONENT
 };
 
 enum ComponentIndex
@@ -47,6 +45,8 @@ enum ComponentID
 	Health_ID,
 	Attack_ID,
 	Collider_ID,
+
+	TotalComponentsNumber
 };
 
 struct GeometryMesh
@@ -102,6 +102,7 @@ struct ColliderComponent : public Component
 {
 	ColliderComponent() : Component(Collider_ID, COMPONENT_COLLIDER) {}
 	bool m_isColliding = false;
+	bool m_destructable = false;
 };
 
 struct TransformComponent : public Component
@@ -135,8 +136,3 @@ struct AttackComponent : public Component
 	bool attackRequested = false;     
 	Entity* targetEntity = nullptr;   
 };
-
-
-//class PositionComponent : public Component
-//{
-//};

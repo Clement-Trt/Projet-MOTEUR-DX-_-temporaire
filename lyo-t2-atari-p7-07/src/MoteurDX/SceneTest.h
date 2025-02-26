@@ -6,6 +6,7 @@ class SceneTest : public Scene
 {
 public:
 
+	void CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
 
 	void OnInitialize() override;
 

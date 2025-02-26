@@ -35,9 +35,9 @@ public:
     float GetPositionY() { return vPosition.y; }
     float GetPositionZ() { return vPosition.z; }
 
-    void AddToGlobalPosX(float deltaX) { vPosition.x += deltaX; }
-    void AddToGlobalPosY(float deltaY) { vPosition.y += deltaY; }
-    void AddToGlobalPosZ(float deltaZ) { vPosition.z += deltaZ; }
+    void AddToGlobalPosX(float deltaX);
+    void AddToGlobalPosY(float deltaY);
+    void AddToGlobalPosZ(float deltaZ);
 
 private:
 
