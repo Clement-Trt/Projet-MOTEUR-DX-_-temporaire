@@ -70,8 +70,8 @@ void ColliderManager::UpdateCollider()
 			if (AABBIntersect(*transform1, *transform2))
 			{
 				// Ici, vous pouvez ajouter le traitement neessaire en cas de collision
-				//collider1->m_isColliding = true;
-				//collider2->m_isColliding = true;
+				collider1->m_isColliding = true;
+				collider2->m_isColliding = true;
 				OutputDebugString(L"Collision !\n");
 			}
 			else
