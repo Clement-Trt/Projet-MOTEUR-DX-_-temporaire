@@ -51,6 +51,30 @@ void Transform::Identity()
         0,0,0,1
     };
 }
+void Transform::ResetRotation()
+{
+    DirectX::XMVECTOR defaultForward = DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f);
+    DirectX::XMVECTOR currentForward = DirectX::XMVector3Rotate(defaultForward, XMLoadFloat4(&qRotation));
+
+    // 2. Projetter cette direction sur le plan horizontal (en annulant Y)
+    DirectX::XMVECTOR forwardProj = DirectX::XMVectorSet(DirectX::XMVectorGetX(currentForward), 0.f, DirectX::XMVectorGetZ(currentForward), 0.f);
+    forwardProj = DirectX::XMVector3Normalize(forwardProj);
+
+    // 3. Calculer le yaw à partir de forwardProj
+    // Note : atan2 prend (y, x) mais ici on utilise (x, z) pour obtenir l'angle par rapport à l'axe Z.
+    float yaw = atan2f(DirectX::XMVectorGetX(forwardProj), DirectX::XMVectorGetZ(forwardProj));
+
+    // 4. Recréer un quaternion avec yaw, et avec pitch = roll = 0
+    DirectX::XMVECTOR newQuat = DirectX::XMQuaternionRotationRollPitchYaw(0.f, yaw, 0.f);
+
+    // Maintenant, newQuat représente une rotation "droite" (up aligné sur Y) tout en gardant la direction horizontale d'avant.
+    DirectX::XMStoreFloat4(&qRotation, newQuat);
+
+    // Pour mettre à jour la matrice de rotation si nécessaire:
+    DirectX::XMMATRIX mRotation = DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&qRotation));
+
+    UpdateMatrix();
+}
 
 void Transform::Rotation(float roll, float pitch, float yaw)
 {

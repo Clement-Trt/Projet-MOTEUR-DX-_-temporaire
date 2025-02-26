@@ -188,16 +188,16 @@ void SceneTest::OnUpdate()
 					transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
 				}
 
-				if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -0.1f, 0.0f);
-				if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 0.1f, 0.0f);
+				if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -0.4f, 0.0f);
+				if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 0.4, 0.0f);
 
-				if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(0.1f, 0.0f, 0.0f);
-				if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-0.1f, 0.0f, 0.0f);
+				if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(0.4, 0.0f, 0.0f);
+				if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-0.4f, 0.0f, 0.0f);
 
-				if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.1f);
-				if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.1f);
+				if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.4);
+				if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.4f);
 
-				float posY = transform->m_transform.vPosition.y;
+				float posY = transform->m_transform.GetPositionY();
 				/*wchar_t title[256];
 				swprintf_s(title, 256, L"lFrontDir = %f", posY);
 				SetWindowText(GetActiveWindow(), title);*/
@@ -211,13 +211,13 @@ void SceneTest::OnUpdate()
 
 				if (transform != nullptr && camComponent != nullptr)
 				{
-					if (posY < 0.5)
+					if (posY < 2)
 					{
-						transform->m_transform.vPosition.y = 0.5;
+						transform->m_transform.GetPositionF3().y = 2;
 					}
-					if (posY > 2)
+					if (posY > 5)
 					{
-						transform->m_transform.vPosition.y -= 0.01;
+						transform->m_transform.Move(0.0f, 0.0f, -0.1f);
 					}
 					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), transform);
 				}
@@ -271,7 +271,23 @@ void SceneTest::OnUpdate()
 			attack->targetEntity = iceBlockEntity;
 		}
 	}
-
+	if (InputManager::GetKeyIsPressed('W'))
+	{
+		TransformComponent* transform = nullptr;
+		auto& playerComponents = mpGameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+		for (auto* component : playerComponents)
+		{
+			if (component->ID == Transform_ID)
+			{
+				transform = static_cast<TransformComponent*>(component);
+				break;
+			}
+		}
+		if (transform)
+		{
+			transform->m_transform.ResetRotation();
+		}
+	}
 }
 
 void SceneTest::OnClose()

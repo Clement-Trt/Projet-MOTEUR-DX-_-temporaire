@@ -35,7 +35,7 @@ public:
 	//void HandleInput();
 	AABB GetAABB(const Transform& transform);
 	bool CheckCollision(const AABB& a, const AABB& b);
-	bool AABBIntersect(const TransformComponent& a, const TransformComponent& b);
+	bool AABBIntersect(TransformComponent& a, TransformComponent& b);
 
 	void Render();
 	void CreatePipelineState();

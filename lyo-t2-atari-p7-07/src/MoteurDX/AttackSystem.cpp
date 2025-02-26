@@ -63,6 +63,7 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                                 TransformComponent* transform = static_cast<TransformComponent*>(component);
                                 transform->m_transform = entityTransform->m_transform;
                                 transform->m_transform.Move(1, 0, 0);
+                                transform->m_transform.Scale(0.5f, 0.5f, 0.5f);
                             }
                             if (component->ID == Velocity_ID)
                             {
@@ -70,7 +71,6 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                                 vel->vx = 0.0f;
                                 vel->vy = 0.0f;
                                 vel->vz = 1.0f;
-                                //vel->m_transform.Scale(1.0f, 1.0f, 1.0f);
                             }
                         }
 
