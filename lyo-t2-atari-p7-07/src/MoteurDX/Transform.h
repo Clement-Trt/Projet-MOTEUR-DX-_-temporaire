@@ -45,5 +45,7 @@ public:
     DirectX::XMFLOAT3 vUp;
 
     DirectX::XMFLOAT4X4 matrix; // matrice contenant les coordonees et rotation
+
+    DirectX::XMFLOAT3 m_oldPosition;
 };
 

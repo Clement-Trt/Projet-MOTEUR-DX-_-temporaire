@@ -41,6 +41,12 @@ void SceneTest::OnInitialize()
 			CameraComponent* cam = static_cast<CameraComponent*>(component);
 			mpGameManager->SetCamera(&cam->m_camera);
 		}*/
+		if (component->ID == Collider_ID)
+		{
+			ColliderComponent* collider = static_cast<ColliderComponent*>(component);
+			collider->m_isSolide = true;
+			collider->m_isDynamic = true;
+		}
 	}
 	playerEntity = entity1;
 
@@ -114,6 +120,11 @@ void SceneTest::OnInitialize()
 			health->currentHealth = 100;
 			health->maxHealth = 100;
 		}
+		if (comp->ID == Collider_ID)
+		{
+			ColliderComponent* collider = static_cast<ColliderComponent*>(comp);
+			collider->m_isSolide = true;
+		}
 	}
 	iceBlockEntity = entityIceBlock;
 
@@ -160,7 +171,7 @@ void SceneTest::OnUpdate()
 			{
 				TransformComponent* transform = nullptr;
 				CameraComponent* camComponent = nullptr;
-
+				ColliderComponent* collider = nullptr;
 
 				for (auto* component : mpEntityManager->GetComponentsTab()[entity->tab_index]->vec_components)
 				{
@@ -171,6 +182,10 @@ void SceneTest::OnUpdate()
 					if (component->ID == Camera_ID)
 					{
 						camComponent = static_cast<CameraComponent*>(component);
+					}
+					if (component->ID == Collider_ID)
+					{
+						collider = static_cast<ColliderComponent*>(component);
 					}
 				}
 

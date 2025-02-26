@@ -90,6 +90,9 @@ void Transform::Rotation(float roll, float pitch, float yaw)
 
 void Transform::Move(float dirFront, float dirRight, float dirUp)
 {
+    // sauvegarde notre ancienne position
+    m_oldPosition = vPosition;
+
     vPosition.z += dirFront * vFront.z;
     vPosition.x += dirFront * vFront.x;
     vPosition.y += dirFront * vFront.y;

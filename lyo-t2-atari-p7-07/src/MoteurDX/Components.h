@@ -101,6 +101,8 @@ struct ColliderComponent : public Component
 {
 	ColliderComponent() : Component(Collider_ID, COMPONENT_COLLIDER) {}
 	bool m_isColliding = false;
+	bool m_isSolide = false;
+	bool m_isDynamic = false;
 };
 
 struct TransformComponent : public Component
