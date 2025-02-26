@@ -10,6 +10,7 @@
 #include "TextureLoaderDuLivre.h"
 #include "TextureManager.h"
 #include "CameraSystem.h"
+#include "ColliderManager.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
@@ -51,7 +52,9 @@ bool InitDirect3DApp::Initialize()
 	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(), this);
 	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
-
+	// Collider
+	m_colliderManager = new ColliderManager;
+	m_colliderManager->InitCollider(GetEntityManager());
 
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
@@ -132,7 +135,7 @@ void InitDirect3DApp::Update()
 	//HandleInput(); // AJOUTER SYSTEME DE GESTION D'INPUT
 
 	// GESTION DES INPUTS
-	{
+	//{
 		//// Mettez a jour la souris en passant le handle de la fenetre
 		//InputManager::UpdateMouse(GetActiveWindow());
 
@@ -158,7 +161,7 @@ void InitDirect3DApp::Update()
 		//if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
 		//if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
 		//if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
-	}
+	//}
 
 	// UPDATE DU JEU
 	UpdateTimer();
@@ -193,34 +196,34 @@ void InitDirect3DApp::Update()
 //	return true;
 //
 //}
-bool InitDirect3DApp::AABBIntersect(const TransformComponent& a, const TransformComponent& b)
-{
-	// Calcul des bornes pour l'objet A
-	float aMinX = a.m_transform.vPosition.x - a.m_transform.vScale.x;
-	float aMaxX = a.m_transform.vPosition.x + a.m_transform.vScale.x;
-	float aMinY = a.m_transform.vPosition.y - a.m_transform.vScale.y;
-	float aMaxY = a.m_transform.vPosition.y + a.m_transform.vScale.y;
-	float aMinZ = a.m_transform.vPosition.z - a.m_transform.vScale.z;
-	float aMaxZ = a.m_transform.vPosition.z + a.m_transform.vScale.z;
-
-	// Calcul des bornes pour l'objet B
-	float bMinX = b.m_transform.vPosition.x - b.m_transform.vScale.x;
-	float bMaxX = b.m_transform.vPosition.x + b.m_transform.vScale.x;
-	float bMinY = b.m_transform.vPosition.y - b.m_transform.vScale.y;
-	float bMaxY = b.m_transform.vPosition.y + b.m_transform.vScale.y;
-	float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z;
-	float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z;
-
-	// Vérification du chevauchement sur chaque axe
-	if (aMaxX < bMinX || aMinX > bMaxX)
-		return false;
-	if (aMaxY < bMinY || aMinY > bMaxY)
-		return false;
-	if (aMaxZ < bMinZ || aMinZ > bMaxZ)
-		return false;
-
-	return true;
-}
+//bool InitDirect3DApp::AABBIntersect(const TransformComponent& a, const TransformComponent& b)
+//{
+//	// Calcul des bornes pour l'objet A
+//	float aMinX = a.m_transform.vPosition.x - a.m_transform.vScale.x;
+//	float aMaxX = a.m_transform.vPosition.x + a.m_transform.vScale.x;
+//	float aMinY = a.m_transform.vPosition.y - a.m_transform.vScale.y;
+//	float aMaxY = a.m_transform.vPosition.y + a.m_transform.vScale.y;
+//	float aMinZ = a.m_transform.vPosition.z - a.m_transform.vScale.z;
+//	float aMaxZ = a.m_transform.vPosition.z + a.m_transform.vScale.z;
+//
+//	// Calcul des bornes pour l'objet B
+//	float bMinX = b.m_transform.vPosition.x - b.m_transform.vScale.x;
+//	float bMaxX = b.m_transform.vPosition.x + b.m_transform.vScale.x;
+//	float bMinY = b.m_transform.vPosition.y - b.m_transform.vScale.y;
+//	float bMaxY = b.m_transform.vPosition.y + b.m_transform.vScale.y;
+//	float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z;
+//	float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z;
+//
+//	// Vérification du chevauchement sur chaque axe
+//	if (aMaxX < bMinX || aMinX > bMaxX)
+//		return false;
+//	if (aMaxY < bMinY || aMinY > bMaxY)
+//		return false;
+//	if (aMaxZ < bMinZ || aMinZ > bMaxZ)
+//		return false;
+//
+//	return true;
+//}
 
 void InitDirect3DApp::Render()
 {
@@ -422,45 +425,47 @@ void InitDirect3DApp::UpdatePhysics()
 	}
 
 	// Collisions
-	for (auto& entity1 : m_entityManager->GetEntityTab())
-	{
-		if (entity1 == nullptr)
-			continue;
-		
-		TransformComponent* transform1 = nullptr;
-		for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
-		{
-			if (component->ID == Transform_ID)
-			{
-				transform1 = static_cast<TransformComponent*>(component);
-			}
-		}
-		if (!transform1)
-			continue;
-		for (uint32_t entity2 = entity1->tab_index + 1; entity2 < 64000; entity2++)
-		{
-			if (!m_entityManager->GetEntityTab()[entity2])
-				continue;
+	m_colliderManager->UpdateCollider();
 
-			TransformComponent* transform2 = nullptr;
-			for (auto* component : m_entityManager->GetComponentsTab()[entity2]->vec_components)
-			{
-				if (component->ID == Transform_ID)
-				{
-					transform2 = static_cast<TransformComponent*>(component);
-				}
-			}
-			if (!transform2)
-				continue;
+	//for (auto& entity1 : m_entityManager->GetEntityTab())
+	//{
+	//	if (entity1 == nullptr)
+	//		continue;
+	//	
+	//	TransformComponent* transform1 = nullptr;
+	//	for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
+	//	{
+	//		if (component->ID == Transform_ID)
+	//		{
+	//			transform1 = static_cast<TransformComponent*>(component);
+	//		}
+	//	}
+	//	if (!transform1)
+	//		continue;
+	//	for (uint32_t entity2 = entity1->tab_index + 1; entity2 < 64000; entity2++)
+	//	{
+	//		if (!m_entityManager->GetEntityTab()[entity2])
+	//			continue;
 
-			// Test de collision
-			if (AABBIntersect(*transform1, *transform2))
-			{
-				// Ici, vous pouvez ajouter le traitement nécessaire en cas de collision
-			}
-		}
+	//		TransformComponent* transform2 = nullptr;
+	//		for (auto* component : m_entityManager->GetComponentsTab()[entity2]->vec_components)
+	//		{
+	//			if (component->ID == Transform_ID)
+	//			{
+	//				transform2 = static_cast<TransformComponent*>(component);
+	//			}
+	//		}
+	//		if (!transform2)
+	//			continue;
 
-	}
+	//		// Test de collision
+	//		if (AABBIntersect(*transform1, *transform2))
+	//		{
+	//			// Ici, vous pouvez ajouter le traitement nécessaire en cas de collision
+	//		}
+	//	}
+
+	//}
 
 
 	// DESTROY ENTITIES

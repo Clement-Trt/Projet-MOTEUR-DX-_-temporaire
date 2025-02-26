@@ -21,6 +21,7 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<VelocityComponent>(entity1);
 	mpEntityManager->AddComponent<CameraComponent>(entity1);
 	mpEntityManager->AddComponent<AttackComponent>(entity1);
+	mpEntityManager->AddComponent<ColliderComponent>(entity1);
 
 	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
 	{
@@ -91,6 +92,7 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<TransformComponent>(entityIceBlock);
 	mpEntityManager->AddComponent<MeshComponent>(entityIceBlock);
 	mpEntityManager->AddComponent<HealthComponent>(entityIceBlock);
+	mpEntityManager->AddComponent<ColliderComponent>(entityIceBlock);
 
 	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityIceBlock->tab_index]->vec_components)
 	{
@@ -251,7 +253,7 @@ void SceneTest::OnUpdate()
 		}
 	}
 
-	// Si la touche 'P' est pressée, on demande une attaque du joueur sur l'IceBlock
+	// Si la touche 'P' est presse, on demande une attaque du joueur sur l'IceBlock
 	if (InputManager::GetKeyIsPressed('P'))
 	{
 		AttackComponent* attack = nullptr;
@@ -266,7 +268,7 @@ void SceneTest::OnUpdate()
 		}
 		if (attack)
 		{
-			// Déclencher l'attaque en définissant le flag et en indiquant la cible
+			// Declencher l'attaque en definissant le flag et en indiquant la cible
 			attack->attackRequested = true;
 			attack->targetEntity = iceBlockEntity;
 		}
