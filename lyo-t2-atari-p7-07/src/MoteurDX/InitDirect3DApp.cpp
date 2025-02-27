@@ -214,7 +214,7 @@ void InitDirect3DApp::Update()
 //	float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z;
 //	float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z;
 //
-//	// Vérification du chevauchement sur chaque axe
+//	// Verification du chevauchement sur chaque axe
 //	if (aMaxX < bMinX || aMinX > bMaxX)
 //		return false;
 //	if (aMaxY < bMinY || aMinY > bMaxY)
@@ -461,7 +461,7 @@ void InitDirect3DApp::UpdatePhysics()
 	//		// Test de collision
 	//		if (AABBIntersect(*transform1, *transform2))
 	//		{
-	//			// Ici, vous pouvez ajouter le traitement nécessaire en cas de collision
+	//			// Ici, vous pouvez ajouter le traitement nï¿½cessaire en cas de collision
 	//		}
 	//	}
 

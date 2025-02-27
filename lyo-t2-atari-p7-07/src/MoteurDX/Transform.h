@@ -9,6 +9,8 @@ public:
     // Initialisation par defaut
     void Identity();
 
+    void ResetRotation();
+
     // Mes a jour la matrice
     void UpdateMatrix();
 
@@ -22,16 +24,22 @@ public:
     void Scale(float scaleX, float scaleY, float scaleZ);
 
     // Recup la matrice
-    DirectX::XMFLOAT4X4& GetMatrix() { return matrix; };
+    DirectX::XMFLOAT4X4& GetMatrix() { return matrix; }
+
+    DirectX::XMFLOAT3& GetScale() { return vScale; }
 
     //DirectX::XMMATRIX& GetXMMatrix();
 
-    DirectX::XMFLOAT3 GetPositionF3() { return vPosition; };
-    float GetPositionX() { return vPosition.x; };
-    float GetPositionY() { return vPosition.y; };
-    float GetPositionZ() { return vPosition.z; };
+    DirectX::XMFLOAT3& GetPositionF3() { return vPosition; }
+    float GetPositionX() { return vPosition.x; }
+    float GetPositionY() { return vPosition.y; }
+    float GetPositionZ() { return vPosition.z; }
 
-//private:
+    void AddToGlobalPosX(float deltaX);
+    void AddToGlobalPosY(float deltaY);
+    void AddToGlobalPosZ(float deltaZ);
+
+private:
 
     // m : matrice, v : vector, q : quaternion
     DirectX::XMFLOAT3 vPosition; // vector pos

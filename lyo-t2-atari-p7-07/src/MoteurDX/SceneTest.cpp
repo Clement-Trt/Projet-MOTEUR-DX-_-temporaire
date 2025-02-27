@@ -11,6 +11,45 @@
 #include "InputManager.h"
 #include "CameraSystem.h"
 
+
+void SceneTest::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ)
+{
+	Entity* newIceBlock = mpEntityManager->CreateEntity();
+	mpEntityManager->AddComponent<TransformComponent>(newIceBlock);
+	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
+	mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
+	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
+
+	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
+	{
+		if (comp->ID == Mesh_ID)
+		{
+			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->textureID = L"IceTexture";
+		}
+		if (comp->ID == Transform_ID)
+		{
+			TransformComponent* transform = static_cast<TransformComponent*>(comp);
+			transform->m_transform.Scale(sizeX, sizeY, sizeZ);
+			transform->m_transform.Move(posZ, posX, posY);
+		}
+		if (comp->ID == Health_ID)
+		{
+			HealthComponent* health = static_cast<HealthComponent*>(comp);
+			health->currentHealth = 20;
+			health->maxHealth = 20;
+		}
+	}
+}
+
+
+
+
+
+
+
+
 void SceneTest::OnInitialize()
 {
 	// 1
@@ -50,33 +89,35 @@ void SceneTest::OnInitialize()
 	}
 	playerEntity = entity1;
 
-	// 2
-	Entity* entity2 = mpEntityManager->CreateEntity();
+	//// 2
+	//Entity* entity2 = mpEntityManager->CreateEntity();
 
-	mpEntityManager->AddComponent<TransformComponent>(entity2);
-	mpEntityManager->AddComponent<MeshComponent>(entity2);
+	//mpEntityManager->AddComponent<TransformComponent>(entity2);
+	//mpEntityManager->AddComponent<MeshComponent>(entity2);
+	//mpEntityManager->AddComponent<ColliderComponent>(entity2);
 
-	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity2->tab_index]->vec_components)
-	{
-		if (component->ID == Mesh_ID)
-		{
-			MeshComponent* mesh = static_cast<MeshComponent*>(component);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
-			mesh->textureID = L"WallTexture"; // On assigne la texture
-		}
-		if (component->ID == Transform_ID)
-		{
-			TransformComponent* transform = static_cast<TransformComponent*>(component);
-			transform->m_transform.Scale(3.0f, 1.0f, 1.0f);
-			transform->m_transform.Move(3.0f, 3.0f, 3.0f);
-		}
-	}
+	//for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity2->tab_index]->vec_components)
+	//{
+	//	if (component->ID == Mesh_ID)
+	//	{
+	//		MeshComponent* mesh = static_cast<MeshComponent*>(component);
+	//		mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+	//		mesh->textureID = L"WallTexture"; // On assigne la texture
+	//	}
+	//	if (component->ID == Transform_ID)
+	//	{
+	//		TransformComponent* transform = static_cast<TransformComponent*>(component);
+	//		transform->m_transform.Scale(3.0f, 1.0f, 1.0f);
+	//		transform->m_transform.Move(3.0f, 3.0f, 3.0f);
+	//	}
+	//}
 
-	// 3
-	Entity* entityBox = mpEntityManager->CreateEntity();
 
-	mpEntityManager->AddComponent<TransformComponent>(entityBox);
-	mpEntityManager->AddComponent<MeshComponent>(entityBox);
+	//Entity* entityIceBlock = mpEntityManager->CreateEntity();
+	//mpEntityManager->AddComponent<TransformComponent>(entityIceBlock);
+	//mpEntityManager->AddComponent<MeshComponent>(entityIceBlock);
+	//mpEntityManager->AddComponent<HealthComponent>(entityIceBlock);
+	//mpEntityManager->AddComponent<ColliderComponent>(entityIceBlock);
 
 	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityBox->tab_index]->vec_components)
 	{
@@ -127,6 +168,28 @@ void SceneTest::OnInitialize()
 		}
 	}
 	iceBlockEntity = entityIceBlock;
+	//for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityIceBlock->tab_index]->vec_components)
+	//{
+	//	if (comp->ID == Mesh_ID)
+	//	{
+	//		MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+	//		mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+	//		mesh->textureID = L"IceTexture";
+	//	}
+	//	if (comp->ID == Transform_ID)
+	//	{
+	//		TransformComponent* transform = static_cast<TransformComponent*>(comp);
+	//		transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
+	//		transform->m_transform.Move(5.0f, 0.0f, 0.0f);
+	//	}
+	//	if (comp->ID == Health_ID)
+	//	{
+	//		HealthComponent* health = static_cast<HealthComponent*>(comp);
+	//		health->currentHealth = 100;
+	//		health->maxHealth = 100;
+	//	}
+	//}
+	//iceBlockEntity = entityIceBlock;
 
 
 	// 2
@@ -151,7 +214,19 @@ void SceneTest::OnInitialize()
 		}
 	}
 
-
+	for (int i = 1; i < 10; i++)
+	{
+		for (int j = 1; j < 10; j++)
+		{
+			float posX = 10 * i - 50;
+			float posY = 10 * j;
+			//float posZ = ;
+			CreateDefaultBlock(8,8,8, posX, posY, 0);
+		}
+	}
+	/*CreateDefaultBlock(1, 0.1, 0.1, 0, 0, 0);
+	CreateDefaultBlock(0.1, 1, 0.1, 0, 0, 0);
+	CreateDefaultBlock(0.1, 0.1, 1, 0, 0, 0);*/
 	compteur = 50;
 	compteur2 = 150;
 }
@@ -205,16 +280,16 @@ void SceneTest::OnUpdate()
 					transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
 				}
 
-				if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -0.1f, 0.0f);
-				if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 0.1f, 0.0f);
+				if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -0.4f, 0.0f);
+				if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 0.4, 0.0f);
 
-				if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(0.1f, 0.0f, 0.0f);
-				if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-0.1f, 0.0f, 0.0f);
+				if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(0.4, 0.0f, 0.0f);
+				if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-0.4f, 0.0f, 0.0f);
 
-				if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.1f);
-				if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.1f);
+				if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.4);
+				if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.4f);
 
-				float posY = transform->m_transform.vPosition.y;
+				float posY = transform->m_transform.GetPositionY();
 				/*wchar_t title[256];
 				swprintf_s(title, 256, L"lFrontDir = %f", posY);
 				SetWindowText(GetActiveWindow(), title);*/
@@ -228,14 +303,14 @@ void SceneTest::OnUpdate()
 
 				if (transform != nullptr && camComponent != nullptr)
 				{
-					if (posY < 0.5)
+					/*if (posY < 2)
 					{
-						transform->m_transform.vPosition.y = 0.5;
+						transform->m_transform.GetPositionF3().y = 2;
 					}
-					if (posY > 2)
+					if (posY > 5)
 					{
-						transform->m_transform.vPosition.y -= 0.01;
-					}
+						transform->m_transform.AddToGlobalPosY(-0.1f);
+					}*/
 					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), transform);
 				}
 			}
@@ -288,7 +363,23 @@ void SceneTest::OnUpdate()
 			attack->targetEntity = iceBlockEntity;
 		}
 	}
-
+	if (InputManager::GetKeyIsPressed('W'))
+	{
+		TransformComponent* transform = nullptr;
+		auto& playerComponents = mpGameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+		for (auto* component : playerComponents)
+		{
+			if (component->ID == Transform_ID)
+			{
+				transform = static_cast<TransformComponent*>(component);
+				break;
+			}
+		}
+		if (transform)
+		{
+			transform->m_transform.ResetRotation();
+		}
+	}
 }
 
 void SceneTest::OnClose()

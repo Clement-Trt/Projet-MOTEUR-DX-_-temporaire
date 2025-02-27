@@ -38,3 +38,8 @@ void HealthSystem::Update(EntityManager* entityManager, float deltaTime)
         }
     }
 }
+
+//void HealthSystem::TakeDamage(HealthComponent* healthComponent, float damage)
+//{
+//    healthComponent->currentHealth -= damage;
+//}

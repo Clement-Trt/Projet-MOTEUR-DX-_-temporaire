@@ -72,7 +72,7 @@ DirectX::XMMATRIX Camera::GetViewMatrix() const
 		return DirectX::XMMatrixLookToLH(pos, forward, up);
 	}
 
-	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->matrix);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->GetMatrix());
 	return DirectX::XMMatrixInverse(nullptr, worldMatrix);
 }
 

@@ -18,6 +18,7 @@ public:
 
 	bool AABBIntersect(const TransformComponent& a, const TransformComponent& b);
 	XMVECTOR ResolveAABBCollision(const TransformComponent& a, const TransformComponent& b);
+	bool AABBIntersect(TransformComponent& a, TransformComponent& b);
 
 private:
 

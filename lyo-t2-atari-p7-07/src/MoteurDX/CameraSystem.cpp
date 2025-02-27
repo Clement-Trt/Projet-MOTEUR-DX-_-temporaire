@@ -43,13 +43,13 @@ DirectX::XMMATRIX CameraSystem::GetViewMatrix(CameraComponent* camView, Transfor
 	//	return DirectX::XMMatrixLookToLH(pos, forward, up);
 	//}
 
-	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->m_transform.matrix);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->m_transform.GetMatrix());
 	return DirectX::XMMatrixInverse(nullptr, worldMatrix);
 }
 
 void CameraSystem::SetViewMatrix(CameraComponent* camView, TransformComponent* transform)
 {
-	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->m_transform.matrix);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->m_transform.GetMatrix());
 	camView->cameraView = DirectX::XMMatrixInverse(nullptr, worldMatrix);
 }
 

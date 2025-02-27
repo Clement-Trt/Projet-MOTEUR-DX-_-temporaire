@@ -23,8 +23,6 @@ enum ComponentType {
 	COMPONENT_HEALTH = 1 << 4,
 	COMPONENT_ATTACK = 1 << 5,
 	COMPONENT_COLLIDER = 1 << 6,
-
-	TOTALCOMPONENT
 };
 
 enum ComponentIndex
@@ -36,6 +34,19 @@ enum ComponentIndex
 	Health_index,
 	Attack_index,
 	Collider_index,
+};
+
+enum ComponentID
+{
+	Camera_ID,
+	Mesh_ID,
+	Transform_ID,
+	Velocity_ID,
+	Health_ID,
+	Attack_ID,
+	Collider_ID,
+
+	TotalComponentsNumber
 };
 
 struct GeometryMesh
@@ -64,16 +75,6 @@ struct Mesh
 	void* m_mappedData = nullptr;
 };
 
-enum ComponentID
-{
-	Camera_ID,
-	Mesh_ID,
-	Transform_ID,
-	Velocity_ID,
-	Health_ID,
-	Attack_ID,
-	Collider_ID,
-};
 
 struct Component
 {
@@ -85,7 +86,7 @@ struct Component
 struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
-	Camera m_camera;
+	//Camera m_camera;
 
 	DirectX::XMMATRIX cameraView;
 };
@@ -103,6 +104,7 @@ struct ColliderComponent : public Component
 	bool m_isColliding = false;
 	bool m_isSolide = false;
 	bool m_isDynamic = false;
+	bool m_destructable = false;
 };
 
 struct TransformComponent : public Component
@@ -131,13 +133,8 @@ struct AttackComponent : public Component
 {
 	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
 	int damage = 10;
-	float attackCooldown = 0.5;
-	float timeSinceLastAttack = 0.0f; // Temps accumule depuis la derniere attaque
-	bool attackRequested = false;     // Indique qu'une attaque a ete demande
-	Entity* targetEntity = nullptr;   // Pointeur vers la cible de l'attaque
+	float attackCooldown = 0.1;
+	float timeSinceLastAttack = 0.0f; 
+	bool attackRequested = false;     
+	Entity* targetEntity = nullptr;   
 };
-
-
-//class PositionComponent : public Component
-//{
-//};

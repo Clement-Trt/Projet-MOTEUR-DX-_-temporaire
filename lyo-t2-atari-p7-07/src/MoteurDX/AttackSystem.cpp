@@ -39,8 +39,8 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                 // Si une attaque est demandée et que le cooldown est respecté
                 if (attack->attackRequested && attack->timeSinceLastAttack >= attack->attackCooldown)
                 {
-                    if (attack->targetEntity != nullptr)
-                    {
+                    /*if (attack->targetEntity != nullptr)
+                    {*/
                         //MessageBox(0, L"Attaque du joueur !", 0, 0);
 
                         Entity* newBullet = entityManager->CreateEntity();
@@ -48,6 +48,8 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                         entityManager->AddComponent<TransformComponent>(newBullet);
                         entityManager->AddComponent<MeshComponent>(newBullet);
                         entityManager->AddComponent<VelocityComponent>(newBullet);
+                        entityManager->AddComponent<ColliderComponent>(newBullet);
+                        entityManager->AddComponent<AttackComponent>(newBullet);
 
 
                         for (auto& component : entityManager->GetComponentToAddTab()[newBullet->tab_index]->vec_components)
@@ -63,14 +65,23 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                                 TransformComponent* transform = static_cast<TransformComponent*>(component);
                                 transform->m_transform = entityTransform->m_transform;
                                 transform->m_transform.Move(1, 0, 0);
+                                transform->m_transform.Scale(0.5f, 0.5f, 0.5f);
                             }
                             if (component->ID == Velocity_ID)
                             {
                                 VelocityComponent* vel = static_cast<VelocityComponent*>(component);
                                 vel->vx = 0.0f;
                                 vel->vy = 0.0f;
-                                vel->vz = 1.0f;
-                                //vel->m_transform.Scale(1.0f, 1.0f, 1.0f);
+                                vel->vz = 2.0f;
+                            }
+                            if (component->ID == Collider_ID)
+                            {
+                                ColliderComponent* collider = static_cast<ColliderComponent*>(component);
+                                collider->m_destructable = true;
+                            }
+                            if (component->ID == Attack_ID)
+                            {
+                                AttackComponent* attack = static_cast<AttackComponent*>(component);
                             }
                         }
 
@@ -89,7 +100,7 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                         {
                             health->currentHealth -= attack->damage;
                         }*/
-                    }
+                    //}
                     // Réinitialiser le cooldown et le flag d'attaque
                     attack->timeSinceLastAttack = 0.0f;
                     attack->attackRequested = false;
