@@ -91,10 +91,10 @@ void ColliderManager::UpdateCollider()
 					health2->currentHealth -= attack1->damage;
 				}
 
-				if (collider1->m_destructable)
+				if (collider1->m_isDestructable)
 					m_entityManager->DestroyEntity(entity1);
 
-				if (collider2->m_destructable)
+				if (collider2->m_isDestructable)
 					m_entityManager->DestroyEntity(entity2);
 
 				wchar_t buffer[256];

@@ -77,7 +77,7 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                             if (component->ID == Collider_ID)
                             {
                                 ColliderComponent* collider = static_cast<ColliderComponent*>(component);
-                                collider->m_destructable = true;
+                                collider->m_isDestructable = true;
                             }
                             if (component->ID == Attack_ID)
                             {
