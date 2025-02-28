@@ -18,7 +18,7 @@ void Transform::UpdateMatrix()
 	// ordre important ! (Scale * Rotation * Position)
 	DirectX::XMMATRIX newMatrice;
 
-	newMatrice = matriceScale; // ne pas *= directement il faut initialis_Eune valeur de base !
+	newMatrice = matriceScale; // ne pas *= directement il faut initialisEune valeur de base !
 	newMatrice *= matriceRotation;
 	newMatrice *= matricePosition;
 
@@ -60,11 +60,11 @@ void Transform::ResetRotation()
 	DirectX::XMVECTOR forwardProj = DirectX::XMVectorSet(DirectX::XMVectorGetX(currentForward), DirectX::XMVectorGetY(currentForward), DirectX::XMVectorGetZ(currentForward), 0.f);
 	forwardProj = DirectX::XMVector3Normalize(forwardProj);
 
-	// 3. Calculer le yaw _ partir de forwardProj
-	// Note : atan2 prend (y, x) mais ici on utilise (x, z) pour obtenir l'angle par rapport _ l'axe Z.
+	// 3. Calculer le yaw à partir de forwardProj
+	// Note : atan2 prend (y, x) mais ici on utilise (x, z) pour obtenir l'angle par rapport à l'axe Z.
 	float yaw = atan2f(DirectX::XMVectorGetX(forwardProj), DirectX::XMVectorGetZ(forwardProj));
 
-	// 4. Recr_er un quaternion avec yaw, et avec pitch = roll = 0
+	// 4. Recréer un quaternion avec yaw, et avec pitch = roll = 0
 	DirectX::XMVECTOR newQuat = DirectX::XMQuaternionRotationRollPitchYaw(0.f, yaw, 0.f);
 
 	float deltaTime = 1; // Utiliser DeltaTime du jeu ?
@@ -81,36 +81,36 @@ void Transform::ResetRotation()
 
 
 
-	// Pour mettre _ jour la matrice de rotation si n_cessaire:
+	// Pour mettre à jour la matrice de rotation si nécessaire:
 	DirectX::XMMATRIX mRotation = DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&qRotation));
 
 	UpdateMatrix();
 }
 void Transform::ResetRoll()
 {
-	// 1. Calculer le vecteur forward actuel normalis_
+	// 1. Calculer le vecteur forward actuel normalisé
 	DirectX::XMVECTOR forward = DirectX::XMVector3Normalize(
 		DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), XMLoadFloat4(&qRotation))
 	);
 
-	// 2. D_finir le vecteur up du monde (celui qu'on souhaite obtenir, par exemple (0,1,0))
+	// 2. Définir le vecteur up du monde (celui qu'on souhaite obtenir, par exemple (0,1,0))
 	DirectX::XMVECTOR worldUp = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
-	// 3. Calculer le vecteur right (perpendiculaire _ worldUp et forward)
+	// 3. Calculer le vecteur right (perpendiculaire à worldUp et forward)
 	DirectX::XMVECTOR right = DirectX::XMVector3Normalize(DirectX::XMVector3Cross(worldUp, forward));
 
-	// 4. Recalculer le vecteur up _ partir de forward et right
+	// 4. Recalculer le vecteur up à partir de forward et right
 	DirectX::XMVECTOR up = DirectX::XMVector3Cross(forward, right);
 
-	// 5. Construire une matrice de rotation _ partir de ces axes
+	// 5. Construire une matrice de rotation à partir de ces axes
 	DirectX::XMMATRIX rotationMat = DirectX::XMMATRIX(right, up, forward, DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f));
 
-	// 6. Convertir cette matrice en quaternion : ce quaternion a le m_me forward (donc le m_me yaw et pitch)
-	//    mais son roll est forc_ _ 0 car l'axe up est align_ sur worldUp.
+	// 6. Convertir cette matrice en quaternion : ce quaternion a le même forward (donc le même yaw et pitch)
+	//    mais son roll est forcé à 0 car l'axe up est aligné sur worldUp.
 	DirectX::XMVECTOR newQuat = DirectX::XMQuaternionRotationMatrix(rotationMat);
 
 	// Optionnel : si tu souhaites une transition en douceur, interpole avec le quaternion actuel
-	float deltaTime = 1.0f; // Remplacer par le delta time reel
+	float deltaTime = 1.0f; // Remplacer par le delta time réel
 	const float rotationSpeed = 0.04f;
 	float t = rotationSpeed * deltaTime;
 	if (t > 1.0f) t = 1.0f;
@@ -118,55 +118,8 @@ void Transform::ResetRoll()
 
 	DirectX::XMStoreFloat4(&qRotation, newQuat);
 
-	// Mettre a jour la matrice de transformation
+	// Mettre à jour la matrice de transformation
 	UpdateMatrix();
-}
-
-void Transform::FollowTarget(const DirectX::XMFLOAT3& target, float speed)
-{
-	// Calcul de la direction vers la cible
-	DirectX::XMVECTOR pos = XMLoadFloat3(&vPosition);
-	DirectX::XMVECTOR targetPos = XMLoadFloat3(&target);
-	DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(targetPos, pos);
-
-	// Normalisation de la direction
-	direction = DirectX::XMVector3Normalize(direction);
-
-	// Appliquer le mouvement en fonction de la vitesse
-	direction = DirectX::XMVectorScale(direction, speed);
-
-	// Mettre a jour la position
-	pos = DirectX::XMVectorAdd(pos, direction);
-	XMStoreFloat3(&vPosition, pos);
-
-	UpdateMatrix();
-}
-
-void Transform::LookAt(const DirectX::XMFLOAT3& target)
-{
-	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&vPosition);
-	DirectX::XMVECTOR targetPos = DirectX::XMLoadFloat3(&target);
-
-	// Calculer la direction vers la cible et la normaliser
-	DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(targetPos, pos);
-	direction = DirectX::XMVector3Normalize(direction);
-
-	// Calculer le yaw desire a partir de la direction (atan2(x, z))
-	float desiredYaw = atan2f(DirectX::XMVectorGetX(direction), DirectX::XMVectorGetZ(direction));
-	// Calculer le yaw courant a partir de vFront
-	float currentYaw = atan2f(vFront.x, vFront.z);
-	// Calculer la difference de yaw
-	float deltaYaw = desiredYaw - currentYaw;
-
-	// Calculer desired pitch de maniere robuste:
-	float desiredPitch = atan2f(-DirectX::XMVectorGetY(direction),sqrt(DirectX::XMVectorGetX(direction) * DirectX::XMVectorGetX(direction) +DirectX::XMVectorGetZ(direction) * DirectX::XMVectorGetZ(direction)));
-	// Calculer le pitch : angle d'inclinaison (par rapport a l'horizontale)
-	float currentPitch = atan2f(-vFront.y, sqrt(vFront.x * vFront.x + vFront.z * vFront.z));
-	// Calculer le deltaPitch
-	float deltaPitch = desiredPitch - currentPitch;
-	
-	// Appeler la fonction Rotation existante (deltapitch need a fix)
-	Rotation(0.0f, deltaPitch, deltaYaw);
 }
 
 
@@ -252,6 +205,6 @@ void Transform::AddToGlobalPosZ(float deltaZ)
 //{
 //    DirectX::XMMATRIX m = DirectX::XMLoadFloat4x4(&matrix);
 //    return m;
-//    // TODO: ins_rer une instruction return ici
+//    // TODO: insérer une instruction return ici
 //}
 
