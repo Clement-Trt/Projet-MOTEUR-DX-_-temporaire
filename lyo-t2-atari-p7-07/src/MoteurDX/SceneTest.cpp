@@ -17,7 +17,7 @@ void SceneTest::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 	Entity* newIceBlock = mpEntityManager->CreateEntity();
 	mpEntityManager->AddComponent<TransformComponent>(newIceBlock);
 	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
-	//mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
+	mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
 
 	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
@@ -126,6 +126,38 @@ void SceneTest::OnInitialize()
 			transform->m_transform.Move(0, 0, 0);
 		}
 	}
+
+
+	// Ennemy
+	Entity* ennemy = mpEntityManager->CreateEntity();
+	mpEntityManager->AddComponent<TransformComponent>(ennemy);
+	mpEntityManager->AddComponent<MeshComponent>(ennemy);
+	mpEntityManager->AddComponent<ColliderComponent>(ennemy);
+	mpEntityManager->AddComponent<EnnemyComponent>(ennemy);
+	mpEntityManager->AddComponent<AttackComponent>(ennemy);
+	mpEntityManager->AddComponent<HealthComponent>(ennemy);
+
+	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
+	{
+		if (comp->ID == Mesh_ID)
+		{
+			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->textureID = L"DroneTexture";
+		}
+		if (comp->ID == Transform_ID)
+		{
+			TransformComponent* transform = static_cast<TransformComponent*>(comp);
+			transform->m_transform.Scale(2.f, 2.f, 2.f);
+			transform->m_transform.Move(5, 5, 5);
+		}
+		if (comp->ID == Health_ID)
+		{
+			HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
+			healthComp->maxHealth = healthComp->currentHealth = 10;
+		}
+	}
+	ennemyEntity = ennemy;
 
 	// 2
 	Entity* floor = mpEntityManager->CreateEntity();
@@ -291,7 +323,7 @@ void SceneTest::OnUpdate()
 		{
 			// Declencher l'attaque en definissant le flag et en indiquant la cible
 			attack->attackRequested = true;
-			attack->targetEntity = iceBlockEntity;
+			attack->targetEntity = ennemyEntity;
 		}
 	}
 	if (InputManager::GetKeyIsPressed('W'))
