@@ -32,7 +32,7 @@ void EnnemyManager::Update()
                     if (pcomp->ID == Transform_ID)
                     {
                         m_playerTransform = static_cast<TransformComponent*>(pcomp);
-                        OutputDebugString(L"PlayerTransformFound !\n");
+                        //OutputDebugString(L"PlayerTransformFound !\n");
                         break;
                     }
                 }

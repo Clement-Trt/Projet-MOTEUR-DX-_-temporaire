@@ -153,10 +153,12 @@ void ColliderManager::UpdateCollider()
 				if (health1 && attack2)
 				{
 					health1->currentHealth -= attack2->damage;
+					OutputDebugString(L"Ouch1\n");
 				}
 				if (health2 && attack1)
 				{
 					health2->currentHealth -= attack1->damage;
+					OutputDebugString(L"Ouch2\n");
 				}
 
 				if (collider1->m_isDestructable && entity1)
