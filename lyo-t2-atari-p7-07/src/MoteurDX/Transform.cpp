@@ -144,29 +144,29 @@ void Transform::FollowTarget(const DirectX::XMFLOAT3& target, float speed)
 
 void Transform::LookAt(const DirectX::XMFLOAT3& target)
 {
-	using namespace DirectX;
-	// Calculer le vecteur direction depuis la position actuelle vers la cible
-	XMVECTOR pos = XMLoadFloat3(&vPosition);
-	XMVECTOR tgt = XMLoadFloat3(&target);
-	XMVECTOR direction = XMVectorSubtract(tgt, pos);
-	direction = XMVector3Normalize(direction);
+	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&vPosition);
+	DirectX::XMVECTOR targetPos = DirectX::XMLoadFloat3(&target);
 
-	// Supposons que le vecteur up est (0, 1, 0)
-	XMVECTOR up = XMVectorSet(0.f, 1.f, 0.f, 0.f);
+	// Calculer la direction vers la cible et la normaliser
+	DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(targetPos, pos);
+	direction = DirectX::XMVector3Normalize(direction);
 
-	// Calculer l'angle de yaw en utilisant atan2 (attention a l'ordre des parametres)
-	float yaw = atan2f(XMVectorGetX(direction), XMVectorGetZ(direction));
+	// Calculer le yaw desire a partir de la direction (atan2(x, z))
+	float desiredYaw = atan2f(DirectX::XMVectorGetX(direction), DirectX::XMVectorGetZ(direction));
+	// Calculer le yaw courant a partir de vFront
+	float currentYaw = atan2f(vFront.x, vFront.z);
+	// Calculer la difference de yaw
+	float deltaYaw = desiredYaw - currentYaw;
 
-	// Creer un quaternion avec roll et pitch egaux a 0
-	XMVECTOR newQuat = XMQuaternionRotationRollPitchYaw(0.f, yaw, 0.f);
-	XMStoreFloat4(&qRotation, newQuat);
-
-	// Mettre a jour la matrice de rotation a partir du quaternion
-	XMMATRIX mMatriceRot = XMMatrixRotationQuaternion(newQuat);
-	XMStoreFloat4x4(&mRotation, mMatriceRot);
-
-	// Mettre a jour la matrice globale
-	UpdateMatrix();
+	// Calculer desired pitch de maniere robuste:
+	float desiredPitch = atan2f(-DirectX::XMVectorGetY(direction),sqrt(DirectX::XMVectorGetX(direction) * DirectX::XMVectorGetX(direction) +DirectX::XMVectorGetZ(direction) * DirectX::XMVectorGetZ(direction)));
+	// Calculer le pitch : angle d'inclinaison (par rapport a l'horizontale)
+	float currentPitch = atan2f(-vFront.y, sqrt(vFront.x * vFront.x + vFront.z * vFront.z));
+	// Calculer le deltaPitch
+	float deltaPitch = desiredPitch - currentPitch;
+	
+	// Appeler la fonction Rotation existante (deltapitch need a fix)
+	Rotation(0.0f, deltaPitch, deltaYaw);
 }
 
 
