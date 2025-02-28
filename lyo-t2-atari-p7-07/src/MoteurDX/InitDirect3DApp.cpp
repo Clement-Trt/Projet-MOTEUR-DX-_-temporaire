@@ -11,6 +11,7 @@
 #include "TextureManager.h"
 #include "CameraSystem.h"
 #include "ColliderManager.h"
+#include "ParticleManager.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
@@ -52,9 +53,15 @@ bool InitDirect3DApp::Initialize()
 	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(), this);
 	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
+	// Particles
+	m_particleManager = new ParticleManager;
+	m_particleManager->InitParticleManager(GetEntityManager(), this);
+
 	// Collider
 	m_colliderManager = new ColliderManager;
-	m_colliderManager->InitCollider(GetEntityManager());
+	m_colliderManager->InitCollider(GetEntityManager(), GetParticleManager());
+
+
 
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
@@ -101,7 +108,7 @@ bool InitDirect3DApp::InitTexture()
 	// Creation du TextureManager
 	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
 	// On cree un heap pour le nombre total de textures (ici 3)
-	m_textureManager->CreateDescriptorHeap(4);
+	m_textureManager->CreateDescriptorHeap(5);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
 	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
@@ -122,6 +129,11 @@ bool InitDirect3DApp::InitTexture()
 	if (!m_textureManager->LoadTexture(L"IceTexture", L"../../../src/MoteurDX/ice.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"FireTexture", L"../../../src/MoteurDX/fire.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Fire.", L"Erreur", MB_OK);
 		return false;
 	}
 

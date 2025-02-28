@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EntityManager.h"
+#include "ParticleManager.h"
 
 using namespace DirectX;
 
@@ -12,7 +13,7 @@ struct AABB {
 class ColliderManager
 {
 public:
-	void InitCollider(EntityManager* entityManager);
+	void InitCollider(EntityManager* entityManager, ParticleManager* particleManager);
 
 	void UpdateCollider();
 
@@ -23,6 +24,7 @@ public:
 private:
 
 	EntityManager* m_entityManager;
+	ParticleManager* m_particleManager;
 };
 
 

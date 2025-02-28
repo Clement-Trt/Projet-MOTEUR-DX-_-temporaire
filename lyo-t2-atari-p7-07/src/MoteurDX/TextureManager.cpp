@@ -13,7 +13,7 @@ bool TextureManager::LoadTexture(const std::wstring& id, const std::wstring& fil
     if (FAILED(hr))
         return false;
 
-    // Stocker la texture pour éviter qu'elle ne soit détruite
+    // Stocker la texture pour éviter qu'elle ne soit détrsuite
     m_textures[id] = texture;
     
     // Conserver l'upload heap dans le vector pour qu'il reste valide

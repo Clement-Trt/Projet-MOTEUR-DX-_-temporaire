@@ -119,21 +119,21 @@ void SceneTest::OnInitialize()
 	//mpEntityManager->AddComponent<HealthComponent>(entityIceBlock);
 	//mpEntityManager->AddComponent<ColliderComponent>(entityIceBlock);
 
-	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityBox->tab_index]->vec_components)
-	{
-		if (component->ID == Mesh_ID)
-		{
-			MeshComponent* mesh = static_cast<MeshComponent*>(component);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
-			mesh->textureID = L"BoxTexture"; // On assigne la texture
-		}
-		if (component->ID == Transform_ID)
-		{
-			TransformComponent* transform = static_cast<TransformComponent*>(component);
-			transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
-			transform->m_transform.Move(-3.0f, -3.0f, -3.0f);
-		}
-	}
+	//for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityBox->tab_index]->vec_components)
+	//{
+	//	if (component->ID == Mesh_ID)
+	//	{
+	//		MeshComponent* mesh = static_cast<MeshComponent*>(component);
+	//		mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+	//		mesh->textureID = L"BoxTexture"; // On assigne la texture
+	//	}
+	//	if (component->ID == Transform_ID)
+	//	{
+	//		TransformComponent* transform = static_cast<TransformComponent*>(component);
+	//		transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
+	//		transform->m_transform.Move(-3.0f, -3.0f, -3.0f);
+	//	}
+	//}
 
 	Entity* entityIceBlock = mpEntityManager->CreateEntity();
 	mpEntityManager->AddComponent<TransformComponent>(entityIceBlock);
