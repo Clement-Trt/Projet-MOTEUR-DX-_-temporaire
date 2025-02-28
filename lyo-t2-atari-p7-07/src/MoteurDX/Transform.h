@@ -13,6 +13,10 @@ public:
 
     void ResetRoll();
 
+    void FollowTarget(const DirectX::XMFLOAT3& target, float speed);
+
+    void LookAt(const DirectX::XMFLOAT3& target);
+
     // Mes a jour la matrice
     void UpdateMatrix();
 

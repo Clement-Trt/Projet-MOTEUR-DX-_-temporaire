@@ -11,6 +11,7 @@ class MeshFactory;
 class Camera;
 class ColliderManager;
 class ParticleManager;
+class EnnemyManager;
 //class HealthSystem;
 //class AttackSystem;
 
@@ -67,6 +68,7 @@ private:
 	TextureManager* m_textureManager;
 	ColliderManager* m_colliderManager;
 	ParticleManager* m_particleManager;
+	EnnemyManager* m_ennemyManager;
 
 	Scene* m_scene;
 

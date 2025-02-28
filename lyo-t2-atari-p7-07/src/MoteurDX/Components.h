@@ -24,6 +24,8 @@ enum ComponentType {
 	COMPONENT_ATTACK = 1 << 5,
 	COMPONENT_COLLIDER = 1 << 6,
 	COMPONENT_PARTICLE = 1 << 7,
+	COMPONENT_ENNEMY = 1 << 8,
+	COMPONENT_PLAYER = 1 << 9,
 };
 
 enum ComponentIndex
@@ -36,6 +38,8 @@ enum ComponentIndex
 	Attack_index,
 	Collider_index,
 	Particle_index,
+	Ennemy_index,
+	Player_index,
 };
 
 enum ComponentID
@@ -48,6 +52,8 @@ enum ComponentID
 	Attack_ID,
 	Collider_ID,
 	Particle_ID,
+	Ennemy_ID,
+	Player_ID,
 
 	TotalComponentsNumber
 };
@@ -116,6 +122,16 @@ struct particleComponent : public Component
 {
 	particleComponent() : Component(Particle_ID, COMPONENT_PARTICLE) {}
 	float m_lifeTime = 0.0f;
+};
+
+struct EnnemyComponent : public Component
+{
+	EnnemyComponent() : Component(Ennemy_ID, COMPONENT_ENNEMY) {}
+};
+
+struct PlayerComponent : public Component
+{
+	PlayerComponent() : Component(Player_ID, COMPONENT_PLAYER) {}
 };
 
 struct TransformComponent : public Component

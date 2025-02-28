@@ -61,6 +61,7 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<CameraComponent>(entity1);
 	mpEntityManager->AddComponent<AttackComponent>(entity1);
 	mpEntityManager->AddComponent<ColliderComponent>(entity1);
+	mpEntityManager->AddComponent<PlayerComponent>(entity1);
 
 	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
 	{
@@ -85,6 +86,10 @@ void SceneTest::OnInitialize()
 			ColliderComponent* collider = static_cast<ColliderComponent*>(component);
 			collider->m_isSolide = true;
 			collider->m_isDynamic = true;
+		}
+		if (component->ID == Player_ID)
+		{
+			OutputDebugString(L"PlayerCreated !\n");
 		}
 	}
 	playerEntity = entity1;
@@ -190,6 +195,7 @@ void SceneTest::OnInitialize()
 	//	}
 	//}
 	//iceBlockEntity = entityIceBlock;
+
 	Entity* skyBox = mpEntityManager->CreateEntity();
 	mpEntityManager->AddComponent<TransformComponent>(skyBox);
 	mpEntityManager->AddComponent<MeshComponent>(skyBox);
@@ -209,6 +215,31 @@ void SceneTest::OnInitialize()
 			transform->m_transform.Move(0, 0, 0);
 		}
 	}
+
+
+	// Ennemy
+	Entity* ennemy = mpEntityManager->CreateEntity();
+	mpEntityManager->AddComponent<TransformComponent>(ennemy);
+	mpEntityManager->AddComponent<MeshComponent>(ennemy);
+	mpEntityManager->AddComponent<EnnemyComponent>(ennemy);
+	mpEntityManager->AddComponent<AttackComponent>(ennemy);
+
+	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
+	{
+		if (comp->ID == Mesh_ID)
+		{
+			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->textureID = L"DroneTexture";
+		}
+		if (comp->ID == Transform_ID)
+		{
+			TransformComponent* transform = static_cast<TransformComponent*>(comp);
+			transform->m_transform.Scale(2.f, 2.f, 2.f);
+			transform->m_transform.Move(5, 5, 5);
+		}
+	}
+	ennemyEntity = ennemy;
 
 	// 2
 	Entity* floor = mpEntityManager->CreateEntity();
