@@ -2,6 +2,7 @@
 
 #include "EntityManager.h"
 
+
 class ColliderManager
 {
 public:
@@ -10,6 +11,8 @@ public:
 	void UpdateCollider();
 
 	bool AABBIntersect(TransformComponent& a, TransformComponent& b);
+
+	DirectX::XMVECTOR ResolveAABBCollision(const TransformComponent& a, const TransformComponent& b);
 
 private:
 

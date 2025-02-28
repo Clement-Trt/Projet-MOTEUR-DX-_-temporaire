@@ -49,7 +49,7 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
 	if (health != 0)
-		mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
+		//mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 
 	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
@@ -99,13 +99,13 @@ void GameScene::OnInitialize()
 		if (component->ID == Transform_ID)
 		{
 			TransformComponent* transform = static_cast<TransformComponent*>(component);
-			transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
+			transform->m_transform.Scale(20.0f, 20.0f, 20.0f);
 			transform->m_transform.vPosition = { 1.0f , 10.0f, 1.0f };
 		}
 		if (component->ID == Camera_ID)
 		{
 			CameraComponent* cam = static_cast<CameraComponent*>(component);
-			cam->m_cameraTransform.Scale(10.f, 10.f, 10.f);
+			cam->m_cameraTransform.Scale(15.0f, 15.0f, 15.0f);
 		}
 	}
 	playerEntity = entity1;
