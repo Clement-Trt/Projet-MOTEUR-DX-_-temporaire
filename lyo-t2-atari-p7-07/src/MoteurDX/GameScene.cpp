@@ -26,7 +26,7 @@ void GameScene::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
 			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
-			mesh->textureID = L"IceTexture";
+			mesh->textureID = L"BoxTexture";
 		}
 		if (comp->ID == Transform_ID)
 		{
@@ -49,7 +49,7 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
 	if (health != 0)
-		//mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
+		mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 
 	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
@@ -99,13 +99,13 @@ void GameScene::OnInitialize()
 		if (component->ID == Transform_ID)
 		{
 			TransformComponent* transform = static_cast<TransformComponent*>(component);
-			transform->m_transform.Scale(20.0f, 20.0f, 20.0f);
-			transform->m_transform.vPosition = { 1.0f , 10.0f, 1.0f };
+			transform->m_transform.Scale(0.5f, 0.5f, 0.5f);
+			transform->m_transform.vPosition = { 0.0f , 0.0f, 0.0f };
 		}
 		if (component->ID == Camera_ID)
 		{
 			CameraComponent* cam = static_cast<CameraComponent*>(component);
-			cam->m_cameraTransform.Scale(15.0f, 15.0f, 15.0f);
+			cam->m_cameraTransform.Scale(1.0f, 1.0f, 1.0f);
 		}
 	}
 	playerEntity = entity1;
@@ -126,58 +126,62 @@ void GameScene::OnInitialize()
 		if (comp->ID == Transform_ID)
 		{
 			TransformComponent* transform = static_cast<TransformComponent*>(comp);
-			transform->m_transform.Scale(5000, 5000, 5000);
+			transform->m_transform.Scale(150, 150, 150);
 			transform->m_transform.Move(0, 0, 0);
 		}
 	}
+	
+	CreateWallBlock(10, 15, 8, 20, 30, 40, 10);
+	CreateWallBlock(12, 8, 5, -10, 50, 20, 20);
+	CreateWallBlock(7, 14, 10, 5, -20, 35, 10);
+	CreateWallBlock(15, 10, 6, 40, -30, 10, 20);
+	CreateWallBlock(8, 12, 14, -25, 15, -40, 10);
+	CreateWallBlock(10, 10, 10, 0, 0, 0, 20);
+	CreateWallBlock(9, 20, 7, 30, -40, 25, 10);
+	CreateWallBlock(14, 6, 12, -35, 10, 5, 20);
+	CreateWallBlock(5, 8, 15, 50, 25, -20, 10);
+	CreateWallBlock(12, 14, 9, -20, -10, 30, 20);
+	CreateWallBlock(10, 5, 10, 15, 40, -35, 10);
+	CreateWallBlock(7, 9, 12, -50, 20, 10, 20);
+	CreateWallBlock(15, 10, 8, 25, -30, 45, 10);
+	CreateWallBlock(6, 7, 14, -10, -50, 5, 20);
+	CreateWallBlock(8, 12, 10, 35, 0, -25, 10);
+	CreateWallBlock(10, 15, 6, -40, 30, 20, 20);
+	CreateWallBlock(12, 8, 5, 10, -20, 50, 10);
+	CreateWallBlock(9, 7, 14, -30, 45, -10, 20);
+	CreateWallBlock(14, 6, 12, 5, -35, 10, 10);
+	CreateWallBlock(5, 8, 15, 20, 50, -25, 20);
+	CreateWallBlock(12, 14, 9, -10, -30, 40, 10);
+	CreateWallBlock(10, 5, 10, 0, 15, -50, 20);
+	CreateWallBlock(7, 9, 12, 25, -20, 30, 10);
+	CreateWallBlock(15, 10, 8, -50, 35, 5, 20);
+	CreateWallBlock(6, 7, 14, 40, 10, -45, 10);
+	CreateWallBlock(8, 12, 10, -20, -10, 0, 20);
+	CreateWallBlock(10, 15, 6, 50, 25, -35, 10);
+	CreateWallBlock(12, 8, 5, -30, 40, 20, 20);
+	CreateWallBlock(9, 7, 14, 5, -50, 10, 10);
+	CreateWallBlock(14, 6, 12, -45, 15, 25, 20);
+	CreateWallBlock(5, 8, 15, 30, -35, 40, 10);
+	CreateWallBlock(12, 14, 9, -20, 0, -10, 20);
+	CreateWallBlock(10, 5, 10, 15, -50, 30, 10);
+	CreateWallBlock(7, 9, 12, -35, 20, -5, 20);
+	CreateWallBlock(15, 10, 8, 40, -25, 50, 10);
+	CreateWallBlock(6, 7, 14, -10, 30, -40, 20);
+	CreateWallBlock(8, 12, 10, 50, -20, 0, 10);
+	CreateWallBlock(10, 15, 6, -30, 5, -50, 20);
+	CreateWallBlock(12, 8, 5, 25, -10, 35, 10);
+	CreateWallBlock(9, 7, 14, -50, 15, -25, 20);
+	CreateWallBlock(14, 6, 12, 10, -35, 5, 10);
+	CreateWallBlock(5, 8, 15, -40, 20, 50, 20);
+	CreateWallBlock(12, 14, 9, 30, -50, -10, 10);
+	CreateWallBlock(10, 5, 10, -20, 40, 25, 20);
+	CreateWallBlock(7, 9, 12, 50, -30, -35, 10);
+	CreateWallBlock(15, 10, 8, -5, 25, 10, 20);
+	CreateWallBlock(6, 7, 14, -50, 0, 20, 10);
+	CreateWallBlock(8, 12, 10, 35, -40, 50, 20);
+	CreateWallBlock(10, 15, 6, 5, 10, -30, 10);
 
-	CreateWallBlock(500, 300, 700, -2000, 1000, -1500, 20);
-	CreateWallBlock(800, 600, 500, 500, -250, 2250, 20);
-	CreateWallBlock(1000, 400, 1200, -1250, 1500, 1000, 20);
-	CreateWallBlock(600, 900, 300, 1750, -1250, -2250, 20);
-	CreateWallBlock(1200, 500, 600, -2500, 2000, 500, 20);
-	CreateWallBlock(700, 700, 700, 1000, -1750, 1500, 20);
-	CreateWallBlock(900, 400, 900, -500, 1250, -1750, 20);
-	CreateWallBlock(400, 600, 1200, 2250, -1000, 1000, 20);
-	CreateWallBlock(1100, 1100, 500, -1750, 500, -2250, 20);
-	CreateWallBlock(1300, 500, 800, 250, -2000, 2500, 20);
-	CreateWallBlock(500, 500, 500, 0, 0, 0, 20);
-	CreateWallBlock(1400, 700, 700, -1250, 1500, -750, 20);
-	CreateWallBlock(600, 600, 1100, 1250, -750, 1750, 20);
-	CreateWallBlock(800, 1300, 400, -2250, 500, 2250, 20);
-	CreateWallBlock(1000, 1000, 1000, 1500, -1500, -1500, 20);
-	CreateWallBlock(700, 900, 700, -2500, 2000, -1000, 20);
-	CreateWallBlock(500, 1200, 800, 500, -500, 500, 20);
-	CreateWallBlock(1200, 800, 600, -1500, 250, 1500, 20);
-	CreateWallBlock(400, 400, 400, 1000, -250, -1000, 20);
-	CreateWallBlock(1300, 1300, 1300, -500, 1250, 2250, 20);
-	CreateWallBlock(900, 1100, 900, 2250, -1000, -1250, 20);
-	CreateWallBlock(1400, 600, 500, -1750, 500, 750, 20);
-	CreateWallBlock(1100, 1400, 700, 250, -2000, -2500, 20);
-	CreateWallBlock(800, 800, 800, -1250, 1500, 1750, 20);
-	CreateWallBlock(1000, 600, 1200, 1250, -750, -1750, 20);
-	CreateWallBlock(1200, 900, 900, -2250, 500, -500, 20);
-	CreateWallBlock(500, 500, 1400, 1500, -1500, 250, 20);
-	CreateWallBlock(700, 1200, 700, -2500, 2000, 1250, 20);
-	CreateWallBlock(1400, 500, 1000, 500, -500, -250, 20);
-	CreateWallBlock(800, 1100, 1100, -1500, 250, -2000, 20);
-	CreateWallBlock(600, 1300, 1300, 1000, -250, 2250, 20);
-	CreateWallBlock(900, 400, 1400, -500, 1250, -750, 20);
-	CreateWallBlock(1100, 1400, 600, 2250, -1000, 1500, 20);
-	CreateWallBlock(1000, 800, 500, -1750, 500, -1250, 20);
-	CreateWallBlock(1200, 900, 700, 250, -2000, 2000, 20);
-	CreateWallBlock(1300, 500, 800, -1250, 1500, -2250, 20);
-	CreateWallBlock(700, 1300, 900, 1250, -750, 1000, 20);
-	CreateWallBlock(1400, 1400, 1400, -2250, 500, 500, 20);
-	CreateWallBlock(1100, 600, 1100, 1500, -1500, -1000, 20);
-	CreateWallBlock(800, 1000, 1300, -2500, 2000, -1750, 20);
-	CreateWallBlock(1000, 1000, 800, 500, -500, 750, 20);
-	CreateWallBlock(900, 1400, 500, -1500, 250, 1750, 20);
-	CreateWallBlock(1300, 700, 900, 1000, -250, -500, 20);
-	CreateWallBlock(1200, 1100, 400, -500, 1250, 250, 20);
-	CreateWallBlock(700, 1200, 1200, 2250, -1000, -2500, 20);
-	CreateWallBlock(500, 500, 1100, -1750, 500, 1250, 20);
-	CreateWallBlock(1000, 1300, 1300, 250, -2000, -750, 20);
+
 
 
 	compteur = 50;
@@ -235,14 +239,14 @@ void GameScene::OnUpdate()
 				}
 
 
-				if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 5.f;
-				if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -5.f;
+				if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 0.5f;
+				if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -0.5f;
 
-				if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 5.f;
-				if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -5.f;
+				if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 0.5f;
+				if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -0.5f;
 
-				if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 5.f;
-				if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -5.f;
+				if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 0.5f;
+				if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -0.5f;
 				if (InputManager::GetKeyIsPressed('W'))
 				{
 
@@ -271,6 +275,7 @@ void GameScene::OnUpdate()
 				{
 					camComponent->m_cameraTransform.vPosition = transform->m_transform.vPosition;
 					camComponent->m_cameraTransform.qRotation = transform->m_transform.qRotation;
+					//camComponent->m_cameraTransform.vScale = { 1.0f, 1.0f, 1.0f };
 					camComponent->m_cameraTransform.UpdateMatrix();
 					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), &camComponent->m_cameraTransform);
 				}

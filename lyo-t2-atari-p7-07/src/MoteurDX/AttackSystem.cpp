@@ -64,15 +64,15 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                             {
                                 TransformComponent* transform = static_cast<TransformComponent*>(component);
                                 transform->m_transform = entityTransform->m_transform;
-                                transform->m_transform.Move(20, 0, 0);
-                                transform->m_transform.Scale(20.0f, 20.0f, 150.0f);
+                                transform->m_transform.Move(2.0f, 0, 0);
+                                transform->m_transform.Scale(0.2f, 0.2f, 1.0f);
                             }
                             if (component->ID == Velocity_ID)
                             {
                                 VelocityComponent* vel = static_cast<VelocityComponent*>(component);
                                 vel->vx = 0.0f;
                                 vel->vy = 0.0f;
-                                vel->vz = 50.f;
+                                vel->vz = 1.0f;
                             }
                             if (component->ID == Collider_ID)
                             {

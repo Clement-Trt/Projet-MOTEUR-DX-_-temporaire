@@ -23,44 +23,38 @@ void Movement::Move(Entity* entity, VelocityComponent* velComponent, TransformCo
 
 	if (entity->id != 1)
 	{
-		if (transformComponent->m_transform.GetPositionX() > 2490 || transformComponent->m_transform.GetPositionX() < -2490
-			|| transformComponent->m_transform.GetPositionY() > 2490 || transformComponent->m_transform.GetPositionY() < -2490
-			|| transformComponent->m_transform.GetPositionZ() > 2490 || transformComponent->m_transform.GetPositionZ() < -2490)
+		if (transformComponent->m_transform.GetPositionX() > 70 || transformComponent->m_transform.GetPositionX() < -70
+			|| transformComponent->m_transform.GetPositionY() > 70 || transformComponent->m_transform.GetPositionY() < -70
+			|| transformComponent->m_transform.GetPositionZ() > 70 || transformComponent->m_transform.GetPositionZ() < -70)
 		{
 			mGM->GetEntityManager()->ToDestroy(entity);
 		}
 	}
 	else
 	{
-		if (transformComponent->m_transform.GetPositionX() > 2490)
+		if (transformComponent->m_transform.GetPositionX() > 70)
 		{
-			transformComponent->m_transform.vPosition.x = 2490;
-			//transformComponent->m_transform.Move(0, -velComponent->vx, 0);
+			transformComponent->m_transform.vPosition.x = 70;
 		}
-		else if (transformComponent->m_transform.GetPositionX() < -2490)
+		else if (transformComponent->m_transform.GetPositionX() < -70)
 		{
-			transformComponent->m_transform.vPosition.x = -2490;
-			//transformComponent->m_transform.Move(0, -velComponent->vx, 0);
+			transformComponent->m_transform.vPosition.x = -70;
 		}
-		if (transformComponent->m_transform.GetPositionY() > 2490)
+		if (transformComponent->m_transform.GetPositionY() > 70)
 		{
-			transformComponent->m_transform.vPosition.y = 2490;
-			//transformComponent->m_transform.Move(0, 0, -velComponent->vy);
+			transformComponent->m_transform.vPosition.y = 70;
 		}
-		else if (transformComponent->m_transform.GetPositionY() < -2490)
+		else if (transformComponent->m_transform.GetPositionY() < -70)
 		{
-			transformComponent->m_transform.vPosition.y = -2490;
-			//transformComponent->m_transform.Move(0, 0, -velComponent->vy);
+			transformComponent->m_transform.vPosition.y = -70;
 		}
-		if (transformComponent->m_transform.GetPositionZ() > 2490)
+		if (transformComponent->m_transform.GetPositionZ() > 70)
 		{
-			transformComponent->m_transform.vPosition.z = 2490;
-			//transformComponent->m_transform.Move(-velComponent->vz, 0, 0);
+			transformComponent->m_transform.vPosition.z = 70;
 		}
-		else if (transformComponent->m_transform.GetPositionZ() < -2490)
+		else if (transformComponent->m_transform.GetPositionZ() < -70)
 		{
-			transformComponent->m_transform.vPosition.z = -2490;
-			//transformComponent->m_transform.Move(-velComponent->vz, 0, 0);
+			transformComponent->m_transform.vPosition.z = -70;
 		}
 	}
 }
