@@ -87,8 +87,8 @@ struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
 	//Camera m_camera;
-
-	DirectX::XMMATRIX cameraView;
+	Transform m_cameraTransform;
+	DirectX::XMMATRIX m_cameraView;
 };
 
 struct MeshComponent : public Component

@@ -17,9 +17,9 @@ void GameScene::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 	Entity* newIceBlock = mpEntityManager->CreateEntity();
 	mpEntityManager->AddComponent<TransformComponent>(newIceBlock);
 	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
-	//mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
-
+	if (health != 0)
+		mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
 		if (comp->ID == Mesh_ID)
@@ -42,13 +42,14 @@ void GameScene::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 	}
 }
 
-void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ)
+void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health)
 {
 	Entity* newIceBlock = mpEntityManager->CreateEntity();
 	mpEntityManager->AddComponent<TransformComponent>(newIceBlock);
 	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
-	//mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
+	if (health != 0)
+		mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 
 	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
@@ -63,6 +64,11 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 			TransformComponent* transform = static_cast<TransformComponent*>(comp);
 			transform->m_transform.Scale(sizeX, sizeY, sizeZ);
 			transform->m_transform.Move(posZ, posX, posY);
+		}
+		if (comp->ID == Health_ID)
+		{
+			HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
+			healthComp->maxHealth = healthComp->currentHealth = health;
 		}
 	}
 }
@@ -94,12 +100,13 @@ void GameScene::OnInitialize()
 		{
 			TransformComponent* transform = static_cast<TransformComponent*>(component);
 			transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
-		}/*
+			transform->m_transform.vPosition = { 1.0f , 10.0f, 1.0f };
+		}
 		if (component->ID == Camera_ID)
 		{
 			CameraComponent* cam = static_cast<CameraComponent*>(component);
-			mpGameManager->SetCamera(&cam->m_camera);
-		}*/
+			cam->m_cameraTransform.Scale(10.f, 10.f, 10.f);
+		}
 	}
 	playerEntity = entity1;
 
@@ -119,27 +126,58 @@ void GameScene::OnInitialize()
 		if (comp->ID == Transform_ID)
 		{
 			TransformComponent* transform = static_cast<TransformComponent*>(comp);
-			transform->m_transform.Scale(500, 500, 500);
+			transform->m_transform.Scale(5000, 5000, 5000);
 			transform->m_transform.Move(0, 0, 0);
 		}
 	}
 
-
-	CreateWallBlock(20, 2.5, 20, 10, 20, 0);
-
-
-
-	//for (int i = 1; i < 10; i++)
-	//{
-	//	for (int j = 1; j < 10; j++)
-	//	{
-	//		float posX = 10 * i - 50;
-	//		float posY = 10 * j;
-	//		//float posZ = ;
-	//		CreateDefaultBlock(8, 8, 8, posX, posY, 0);
-	//	}
-	//}
-
+	CreateWallBlock(500, 300, 700, -2000, 1000, -1500, 20);
+	CreateWallBlock(800, 600, 500, 500, -250, 2250, 20);
+	CreateWallBlock(1000, 400, 1200, -1250, 1500, 1000, 20);
+	CreateWallBlock(600, 900, 300, 1750, -1250, -2250, 20);
+	CreateWallBlock(1200, 500, 600, -2500, 2000, 500, 20);
+	CreateWallBlock(700, 700, 700, 1000, -1750, 1500, 20);
+	CreateWallBlock(900, 400, 900, -500, 1250, -1750, 20);
+	CreateWallBlock(400, 600, 1200, 2250, -1000, 1000, 20);
+	CreateWallBlock(1100, 1100, 500, -1750, 500, -2250, 20);
+	CreateWallBlock(1300, 500, 800, 250, -2000, 2500, 20);
+	CreateWallBlock(500, 500, 500, 0, 0, 0, 20);
+	CreateWallBlock(1400, 700, 700, -1250, 1500, -750, 20);
+	CreateWallBlock(600, 600, 1100, 1250, -750, 1750, 20);
+	CreateWallBlock(800, 1300, 400, -2250, 500, 2250, 20);
+	CreateWallBlock(1000, 1000, 1000, 1500, -1500, -1500, 20);
+	CreateWallBlock(700, 900, 700, -2500, 2000, -1000, 20);
+	CreateWallBlock(500, 1200, 800, 500, -500, 500, 20);
+	CreateWallBlock(1200, 800, 600, -1500, 250, 1500, 20);
+	CreateWallBlock(400, 400, 400, 1000, -250, -1000, 20);
+	CreateWallBlock(1300, 1300, 1300, -500, 1250, 2250, 20);
+	CreateWallBlock(900, 1100, 900, 2250, -1000, -1250, 20);
+	CreateWallBlock(1400, 600, 500, -1750, 500, 750, 20);
+	CreateWallBlock(1100, 1400, 700, 250, -2000, -2500, 20);
+	CreateWallBlock(800, 800, 800, -1250, 1500, 1750, 20);
+	CreateWallBlock(1000, 600, 1200, 1250, -750, -1750, 20);
+	CreateWallBlock(1200, 900, 900, -2250, 500, -500, 20);
+	CreateWallBlock(500, 500, 1400, 1500, -1500, 250, 20);
+	CreateWallBlock(700, 1200, 700, -2500, 2000, 1250, 20);
+	CreateWallBlock(1400, 500, 1000, 500, -500, -250, 20);
+	CreateWallBlock(800, 1100, 1100, -1500, 250, -2000, 20);
+	CreateWallBlock(600, 1300, 1300, 1000, -250, 2250, 20);
+	CreateWallBlock(900, 400, 1400, -500, 1250, -750, 20);
+	CreateWallBlock(1100, 1400, 600, 2250, -1000, 1500, 20);
+	CreateWallBlock(1000, 800, 500, -1750, 500, -1250, 20);
+	CreateWallBlock(1200, 900, 700, 250, -2000, 2000, 20);
+	CreateWallBlock(1300, 500, 800, -1250, 1500, -2250, 20);
+	CreateWallBlock(700, 1300, 900, 1250, -750, 1000, 20);
+	CreateWallBlock(1400, 1400, 1400, -2250, 500, 500, 20);
+	CreateWallBlock(1100, 600, 1100, 1500, -1500, -1000, 20);
+	CreateWallBlock(800, 1000, 1300, -2500, 2000, -1750, 20);
+	CreateWallBlock(1000, 1000, 800, 500, -500, 750, 20);
+	CreateWallBlock(900, 1400, 500, -1500, 250, 1750, 20);
+	CreateWallBlock(1300, 700, 900, 1000, -250, -500, 20);
+	CreateWallBlock(1200, 1100, 400, -500, 1250, 250, 20);
+	CreateWallBlock(700, 1200, 1200, 2250, -1000, -2500, 20);
+	CreateWallBlock(500, 500, 1100, -1750, 500, 1250, 20);
+	CreateWallBlock(1000, 1300, 1300, 250, -2000, -750, 20);
 
 
 	compteur = 50;
@@ -197,23 +235,22 @@ void GameScene::OnUpdate()
 				}
 
 
-				if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 2.0f;
-				if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -2.0f;
+				if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 5.f;
+				if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -5.f;
 
-				if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 2.0f;
-				if (InputManager::GetKeyIsPressed('S'))  velComponent->vz = -2.0f;
+				if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 5.f;
+				if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -5.f;
 
-				if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 2.0f;
-				if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -2.0f;
-				/*
-				if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -2.0f, 0.0f);
-				if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 2.0f, 0.0f);
+				if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 5.f;
+				if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -5.f;
+				if (InputManager::GetKeyIsPressed('W'))
+				{
 
-				if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(2.0f, 0.0f, 0.0f);
-				if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-2.0f, 0.0f, 0.0f);
+					velComponent->vx *= 2;
+					velComponent->vy *= 2;
+					velComponent->vz *= 2;
 
-				if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 2.0f);
-				if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -2.0f);*/
+				}
 
 				mMvmt->Move(entity, velComponent, transform);
 				mMvmt->SetVelocity(velComponent, 0, 0, 0);
@@ -232,15 +269,10 @@ void GameScene::OnUpdate()
 
 				if (transform != nullptr && camComponent != nullptr)
 				{
-					/*if (posY < 2)
-					{
-						transform->m_transform.GetPositionF3().y = 2;
-					}
-					if (posY > 5)
-					{
-						transform->m_transform.AddToGlobalPosY(-0.1f);
-					}*/
-					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), transform);
+					camComponent->m_cameraTransform.vPosition = transform->m_transform.vPosition;
+					camComponent->m_cameraTransform.qRotation = transform->m_transform.qRotation;
+					camComponent->m_cameraTransform.UpdateMatrix();
+					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), &camComponent->m_cameraTransform);
 				}
 			}
 		}
@@ -292,23 +324,20 @@ void GameScene::OnUpdate()
 			attack->targetEntity = iceBlockEntity;
 		}
 	}
-	/*if (InputManager::GetKeyIsPressed('W'))
-	{*/
-		TransformComponent* transform = nullptr;
-		auto& playerComponents = mpGameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
-		for (auto* component : playerComponents)
+	TransformComponent* transform = nullptr;
+	auto& playerComponents = mpGameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+	for (auto* component : playerComponents)
+	{
+		if (component->ID == Transform_ID)
 		{
-			if (component->ID == Transform_ID)
-			{
-				transform = static_cast<TransformComponent*>(component);
-				break;
-			}
+			transform = static_cast<TransformComponent*>(component);
+			break;
 		}
-		if (transform)
-		{
-			transform->m_transform.ResetRoll();
-		}
-	//}
+	}
+	if (transform)
+	{
+		transform->m_transform.ResetRoll();
+	}
 }
 
 void GameScene::OnClose()

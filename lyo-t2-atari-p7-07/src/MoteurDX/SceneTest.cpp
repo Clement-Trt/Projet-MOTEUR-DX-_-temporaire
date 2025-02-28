@@ -242,7 +242,7 @@ void SceneTest::OnUpdate()
 					{
 						transform->m_transform.AddToGlobalPosY(-0.1f);
 					}*/
-					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), transform);
+					//CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), transform);
 				}
 			}
 		}

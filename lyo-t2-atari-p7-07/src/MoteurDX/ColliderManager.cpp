@@ -103,9 +103,9 @@ void ColliderManager::UpdateCollider()
 					m_entityManager->DestroyEntity(entity2);
 				}
 
-				wchar_t buffer[256];
+				/*wchar_t buffer[256];
 				swprintf_s(buffer, 256, L"Collision ! posX: %f, posY: %f\n", transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY());
-				OutputDebugString(buffer);
+				OutputDebugString(buffer);*/
 				//OutputDebugString(L"Collision !\n");
 			}
 			else
