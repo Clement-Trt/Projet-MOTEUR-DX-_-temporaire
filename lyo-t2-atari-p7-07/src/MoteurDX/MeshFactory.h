@@ -34,9 +34,13 @@ public:
 	// Create mesh
 	Mesh* CreateCube();
 
+	Mesh* CreateSkyBoxCube();
+
 private:
 	// Type of mesh geometry
 	void CreateCubeModel(Mesh* cube);
+
+	void CreateCubeModelForSkyBox(Mesh* cube);
 
 	// Alloue et configure le constant buffer pour un cube
 	void CreateCubeConstantBuffer(Mesh* cube);

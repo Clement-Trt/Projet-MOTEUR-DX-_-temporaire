@@ -108,6 +108,8 @@ struct ColliderComponent : public Component
 	bool m_isSolide = false;
 	bool m_isDynamic = false;
 	bool m_destructable = false;
+	bool m_isDestructable = false;
+	bool m_isDestroyed = false;
 };
 
 struct particleComponent : public Component 

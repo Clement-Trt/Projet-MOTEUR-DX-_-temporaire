@@ -159,13 +159,19 @@ void ColliderManager::UpdateCollider()
 					health2->currentHealth -= attack1->damage;
 				}
 
-				if (collider1->m_destructable)
+				if (collider1->m_isDestructable && entity1)
+				{
+					//collider1->m_isDestroyed = true;
 					m_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
-					//m_entityManager->DestroyEntity(entity1); a certain moment un bloc detruit va me renvoyer une errreur de nullptr
+					m_entityManager->DestroyEntity(entity1);
+				}
 
-				if (collider2->m_destructable)
+				if (collider2->m_isDestructable && entity2)
+				{
 					m_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
+					//collider2->m_isDestroyed = true;
 					m_entityManager->DestroyEntity(entity2);
+				}
 
 				wchar_t buffer[256];
 				swprintf_s(buffer, 256, L"Collision ! posX: %f, posY: %f\n", transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY());
