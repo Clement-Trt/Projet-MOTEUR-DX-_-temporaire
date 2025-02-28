@@ -4,9 +4,12 @@
 
 #include "MeshFactory.h"
 #include "InputManager.h"
-#include "Scene.h"
 #include "EntityManager.h"
-#include "SceneTest.h"
+
+#include "Scene.h"
+//#include "SceneTest.h"
+#include "GameScene.h"
+
 #include "TextureLoaderDuLivre.h"
 #include "TextureManager.h"
 #include "CameraSystem.h"
@@ -85,7 +88,8 @@ bool InitDirect3DApp::Initialize()
 	FlushCommandQueue();
 
 	// Scene
-	SceneTest* scene = new SceneTest;
+	//SceneTest* scene = new SceneTest;
+	GameScene* scene = new GameScene;
 	SetScene(scene);
 	m_scene->Initialize(this);
 	m_scene->OnInitialize();
@@ -100,8 +104,8 @@ bool InitDirect3DApp::InitTexture()
 {
 	// Creation du TextureManager
 	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
-	// On cree un heap pour le nombre total de textures (ici 3)
-	m_textureManager->CreateDescriptorHeap(4);
+	// On cree un heap pour le nombre total de textures
+	m_textureManager->CreateDescriptorHeap(5);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
 	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
@@ -120,6 +124,11 @@ bool InitDirect3DApp::InitTexture()
 		return false;
 	}
 	if (!m_textureManager->LoadTexture(L"IceTexture", L"../../../src/MoteurDX/ice.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"SkyBox", L"../../../src/MoteurDX/SkyBoxTexture.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
 		return false;

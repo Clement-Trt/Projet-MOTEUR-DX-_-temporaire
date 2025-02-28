@@ -103,6 +103,7 @@ struct ColliderComponent : public Component
 	ColliderComponent() : Component(Collider_ID, COMPONENT_COLLIDER) {}
 	bool m_isColliding = false;
 	bool m_isDestructable = false;
+	bool m_isDestroyed = false;
 };
 
 struct TransformComponent : public Component

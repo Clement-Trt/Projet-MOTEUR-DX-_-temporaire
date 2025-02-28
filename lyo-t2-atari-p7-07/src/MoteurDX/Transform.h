@@ -11,6 +11,8 @@ public:
 
     void ResetRotation();
 
+    void ResetRoll();
+
     // Mes a jour la matrice
     void UpdateMatrix();
 

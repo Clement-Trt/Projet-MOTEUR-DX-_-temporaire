@@ -21,13 +21,30 @@ Mesh* MeshFactory::CreateCube()
 	// Nombre d'indice de la forme (36 points pour un cube)
 	newMesh->m_geometryMesh.m_meshIndex = 36;
 
-	// Creer la geometry du cube
+	// Creer la geometrie du cube
 	CreateCubeModel(newMesh);
 
 	// Creer le constant buffer pour ce cube
 	CreateCubeConstantBuffer(newMesh);
 
 	// InitMap
+	CD3DX12_RANGE readRange(0, 0);
+	newMesh->m_constantBuffer->Map(0, &readRange, &newMesh->m_mappedData);
+
+	return newMesh;
+}
+Mesh* MeshFactory::CreateSkyBoxCube()
+{
+	Mesh* newMesh = new Mesh;
+
+	newMesh->m_geometryMesh.m_meshIndex = 36;
+
+	CreateCubeModelForSkyBox(newMesh);
+
+	// Créer le constant buffer comme d'habitude
+	CreateCubeConstantBuffer(newMesh);
+
+	// Mappage du buffer constant
 	CD3DX12_RANGE readRange(0, 0);
 	newMesh->m_constantBuffer->Map(0, &readRange, &newMesh->m_mappedData);
 
@@ -95,6 +112,119 @@ void MeshFactory::CreateCubeModel(Mesh* cube)
 		16, 17, 18, 16, 18, 19,
 		// Bottom face
 		20, 21, 22, 20, 22, 23
+	};
+
+	const UINT vSize = sizeof(vertices);
+	const UINT iSize = sizeof(indices);
+
+	// On utilise un heap UPLOAD pour permettre au CPU d'ecrire dans la memoire
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+	CD3DX12_RESOURCE_DESC vbDesc = CD3DX12_RESOURCE_DESC::Buffer(vSize);
+	CD3DX12_RESOURCE_DESC ibDesc = CD3DX12_RESOURCE_DESC::Buffer(iSize);
+
+	// Creer le vertex buffer
+	ComPtr<ID3D12Resource>& cubeVertexBuffer = cube->m_geometryMesh.m_vertexBuffer;
+
+	HRESULT hr = m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
+		&vbDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&cubeVertexBuffer));
+	if (FAILED(hr)) { /* Gerer l'erreur */ }
+
+	// Creer l'index buffer
+	ComPtr<ID3D12Resource>& cubeIndexBuffer = cube->m_geometryMesh.m_indexBuffer;
+
+	hr = m_Device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE,
+		&ibDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&cubeIndexBuffer));
+	if (FAILED(hr)) { /* Gerer l'erreur */ }
+
+	// Copier les donnees dans le vertex buffer
+	void* pVertexData = nullptr;
+	CD3DX12_RANGE readRange(0, 0);
+	hr = cubeVertexBuffer->Map(0, &readRange, &pVertexData);
+	memcpy(pVertexData, vertices, vSize);
+	cubeVertexBuffer->Unmap(0, nullptr);
+
+	// Copier les donnees dans l'index buffer
+	void* pIndexData = nullptr;
+	hr = cubeIndexBuffer->Map(0, &readRange, &pIndexData);
+	memcpy(pIndexData, indices, iSize);
+	cubeIndexBuffer->Unmap(0, nullptr);
+
+	// Creer les vues
+	D3D12_VERTEX_BUFFER_VIEW& cubeBufferView = cube->m_geometryMesh.m_vertexBufferView;
+
+	cubeBufferView.BufferLocation = cubeVertexBuffer->GetGPUVirtualAddress();
+	cubeBufferView.StrideInBytes = sizeof(VertexMesh);
+	cubeBufferView.SizeInBytes = vSize;
+
+	D3D12_INDEX_BUFFER_VIEW& cubeIndexView = cube->m_geometryMesh.m_indexBufferView;
+
+	cubeIndexView.BufferLocation = cubeIndexBuffer->GetGPUVirtualAddress();
+	cubeIndexView.Format = DXGI_FORMAT_R16_UINT;
+	cubeIndexView.SizeInBytes = iSize;
+}
+
+void MeshFactory::CreateCubeModelForSkyBox(Mesh* cube)
+{
+	// On cree ici la geometrie d'un cube unitaire (de taille 1) ; pour obtenir des cubes de tailles differentes,
+	// on utilisera la transformation (scaling) dans le constant buffer.
+	float halfSize = 0.5f;
+	
+	// 6 faces * 4 sommets chacune = 24 sommets
+	VertexMesh vertices[24] =
+	{
+		// Front face (z = +halfSize)
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Back face (z = -halfSize)
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Left face (x = -halfSize)
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Right face (x = +halfSize)
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Top face (y = +halfSize)
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+
+		// Bottom face (y = -halfSize)
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+	};
+
+	// Indices : 6 faces * 2 triangles par face * 3 indices par triangle = 36 indices
+	// Inverses pour voir depuis l'interieur
+	uint16_t indices[36] =
+	{
+		// Front face
+		0,  2,  1,  0,  3,  2,
+		// Back face
+		4,  6,  5,  4,  7,  6,
+		// Left face
+		8,  10, 9,  8,  11, 10,
+		// Right face
+		12, 14, 13, 12, 15, 14,
+		// Top face
+		16, 18, 17, 16, 19, 18,
+		// Bottom face
+		20, 22, 21, 20, 23, 22
 	};
 
 	const UINT vSize = sizeof(vertices);

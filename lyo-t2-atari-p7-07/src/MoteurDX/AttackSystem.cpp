@@ -58,7 +58,7 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                             {
                                 MeshComponent* mesh = static_cast<MeshComponent*>(component);
                                 mesh->m_cubeMesh = mGM->GetFactory()->CreateCube();
-                                mesh->textureID = L"PlayerTexture"; // On assigne la texture
+                                mesh->textureID = L"IceTexture"; // On assigne la texture
                             }
                             if (component->ID == Transform_ID)
                             {
@@ -72,7 +72,7 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                                 VelocityComponent* vel = static_cast<VelocityComponent*>(component);
                                 vel->vx = 0.0f;
                                 vel->vy = 0.0f;
-                                vel->vz = 2.0f;
+                                vel->vz = 5.0f;
                             }
                             if (component->ID == Collider_ID)
                             {

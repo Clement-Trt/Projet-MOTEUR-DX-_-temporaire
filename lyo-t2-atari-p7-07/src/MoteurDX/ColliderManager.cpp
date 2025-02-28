@@ -91,11 +91,17 @@ void ColliderManager::UpdateCollider()
 					health2->currentHealth -= attack1->damage;
 				}
 
-				if (collider1->m_isDestructable)
+				if (collider1->m_isDestructable && entity1)
+				{
+					//collider1->m_isDestroyed = true;
 					m_entityManager->DestroyEntity(entity1);
+				}
 
-				if (collider2->m_isDestructable)
+				if (collider2->m_isDestructable && entity2)
+				{
+					//collider2->m_isDestroyed = true;
 					m_entityManager->DestroyEntity(entity2);
+				}
 
 				wchar_t buffer[256];
 				swprintf_s(buffer, 256, L"Collision ! posX: %f, posY: %f\n", transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY());
