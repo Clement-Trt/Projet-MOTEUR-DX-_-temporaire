@@ -33,10 +33,10 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
             }
             if (attack)
             {
-                // Toujours incrémenter le temps écoulE
+                // Toujours incrémenter le temps écoulé
                 attack->timeSinceLastAttack += deltaTime;  // a mettre en dehors de la boucle, non ?? /!\/!\/!\/!\/!\/!\/
 
-                // Si une attaque est demandée et que le cooldown est respectE
+                // Si une attaque est demandée et que le cooldown est respecté
                 if (attack->attackRequested && attack->timeSinceLastAttack >= attack->attackCooldown)
                 {
                     /*if (attack->targetEntity != nullptr)

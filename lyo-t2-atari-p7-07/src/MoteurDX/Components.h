@@ -23,9 +23,6 @@ enum ComponentType {
 	COMPONENT_HEALTH = 1 << 4,
 	COMPONENT_ATTACK = 1 << 5,
 	COMPONENT_COLLIDER = 1 << 6,
-	COMPONENT_PARTICLE = 1 << 7,
-	COMPONENT_ENNEMY = 1 << 8,
-	COMPONENT_PLAYER = 1 << 9,
 };
 
 enum ComponentIndex
@@ -37,9 +34,6 @@ enum ComponentIndex
 	Health_index,
 	Attack_index,
 	Collider_index,
-	Particle_index,
-	Ennemy_index,
-	Player_index,
 };
 
 enum ComponentID
@@ -51,9 +45,6 @@ enum ComponentID
 	Health_ID,
 	Attack_ID,
 	Collider_ID,
-	Particle_ID,
-	Ennemy_ID,
-	Player_ID,
 
 	TotalComponentsNumber
 };
@@ -111,27 +102,8 @@ struct ColliderComponent : public Component
 {
 	ColliderComponent() : Component(Collider_ID, COMPONENT_COLLIDER) {}
 	bool m_isColliding = false;
-	bool m_isSolide = false;
-	bool m_isDynamic = false;
-	bool m_destructable = false;
 	bool m_isDestructable = false;
 	bool m_isDestroyed = false;
-};
-
-struct particleComponent : public Component 
-{
-	particleComponent() : Component(Particle_ID, COMPONENT_PARTICLE) {}
-	float m_lifeTime = 0.0f;
-};
-
-struct EnnemyComponent : public Component
-{
-	EnnemyComponent() : Component(Ennemy_ID, COMPONENT_ENNEMY) {}
-};
-
-struct PlayerComponent : public Component
-{
-	PlayerComponent() : Component(Player_ID, COMPONENT_PLAYER) {}
 };
 
 struct TransformComponent : public Component
@@ -139,6 +111,7 @@ struct TransformComponent : public Component
 	TransformComponent() : Component(Transform_ID, COMPONENT_TRANSFORM) {}
 	Transform m_transform;	
 };
+
 
 struct VelocityComponent : public Component
 {

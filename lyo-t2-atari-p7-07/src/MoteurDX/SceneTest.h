@@ -21,6 +21,5 @@ protected:
 
 	Entity* playerEntity = nullptr;
 	Entity* iceBlockEntity = nullptr;
-	Entity* ennemyEntity = nullptr;
 };
 
