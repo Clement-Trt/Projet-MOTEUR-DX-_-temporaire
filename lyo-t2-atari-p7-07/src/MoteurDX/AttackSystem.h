@@ -3,7 +3,7 @@
 //#include "EntityManager.h"
 class InitDirect3DApp;
 class EntityManager;
-// Système de gestion des attaques
+// Systeme de gestion des attaques
 class AttackSystem
 {
 protected:
@@ -13,6 +13,6 @@ protected:
 public:
     void Initialize(InitDirect3DApp* gameManager);
 
-    // Met à jour le système en utilisant le temps écoulé (deltaTime)
+    // Met a jour le systeme en utilisant le temps ecoule (deltaTime)
     void Update(EntityManager* entityManager, float deltaTime);
 };

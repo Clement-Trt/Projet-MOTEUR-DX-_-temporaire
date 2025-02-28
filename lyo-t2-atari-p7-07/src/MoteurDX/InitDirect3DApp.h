@@ -10,6 +10,8 @@
 class MeshFactory;
 class Camera;
 class ColliderManager;
+class ParticleManager;
+class EnnemyManager;
 //class HealthSystem;
 //class AttackSystem;
 
@@ -48,6 +50,7 @@ public:
 
 	EntityManager* GetEntityManager() { return m_entityManager; }
 	MeshFactory* GetFactory() { return m_meshFactory; }
+	ParticleManager* GetParticleManager() { return m_particleManager; }
 
 	CameraComponent* GetMainView() { return m_mainView; }
 
@@ -64,6 +67,8 @@ private:
 	EntityManager* m_entityManager;
 	TextureManager* m_textureManager;
 	ColliderManager* m_colliderManager;
+	ParticleManager* m_particleManager;
+	EnnemyManager* m_ennemyManager;
 
 	Scene* m_scene;
 
