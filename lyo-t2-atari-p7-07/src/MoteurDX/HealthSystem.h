@@ -2,11 +2,11 @@
 
 #include "EntityManager.h"
 
-// Système de gestion de la santé
+// Système de gestion de la santE
 class HealthSystem
 {
 public:
-    // Met à jour le système en utilisant le temps écoulé (deltaTime)
+    // Met Ejour le système en utilisant le temps écoulE(deltaTime)
     void Update(EntityManager* entityManager, float deltaTime);
     //void TakeDamage(HealthComponent* healthComponent, float damage);
 };
