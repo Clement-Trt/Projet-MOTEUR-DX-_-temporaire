@@ -8,7 +8,7 @@ class Camera;
 class ColliderManager;
 class ParticleManager;
 class EnnemyManager;
-class Movement;
+class MovementManager;
 class CameraSystem;
 class Attackystem;
 class HealthSystem;
@@ -47,18 +47,19 @@ public:
 private:
 	D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
 
+	MeshFactory* m_meshFactory;
+
+	EntityManager* m_entityManager;
 	CameraComponent* m_mainView;
+
+	ColliderManager* m_colliderManager;
+	EnnemyManager* m_ennemyManager;
+	ParticleManager* m_particleManager;
+	TextureManager* m_textureManager;
+	MovementManager* m_movementManager;
+
 	HealthSystem* m_healthSystem;
 	AttackSystem* m_attackSystem;
-
-	MeshFactory* m_meshFactory;
-	EntityManager* m_entityManager;
-	TextureManager* m_textureManager;
-	ColliderManager* m_colliderManager;
-	ParticleManager* m_particleManager;
-	EnnemyManager* m_ennemyManager;
-
-	Movement* m_movementManager;
 	CameraSystem* m_cameraManager;
 
 	Scene* m_scene;

@@ -20,12 +20,12 @@ void SceneTest::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 	mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
 
-	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
+	for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
 		if (comp->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 			mesh->textureID = L"IceTexture";
 		}
 		if (comp->ID == Transform_ID)
@@ -63,12 +63,12 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<ColliderComponent>(entity1);
 	mpEntityManager->AddComponent<PlayerComponent>(entity1);
 
-	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
+	for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
 	{
 		if (component->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(component);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 			mesh->textureID = L"PlayerTexture"; // On assigne la texture
 		}
 		if (component->ID == Transform_ID)
@@ -79,7 +79,7 @@ void SceneTest::OnInitialize()
 		if (component->ID == Camera_ID)
 		{
 			CameraComponent* cam = static_cast<CameraComponent*>(component);
-			mpGameManager->SetCamera(&cam->m_camera);
+			m_gameManager->SetCamera(&cam->m_camera);
 		}*/
 		if (component->ID == Collider_ID)
 		{
@@ -101,12 +101,12 @@ void SceneTest::OnInitialize()
 	//mpEntityManager->AddComponent<MeshComponent>(entity2);
 	//mpEntityManager->AddComponent<ColliderComponent>(entity2);
 
-	//for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity2->tab_index]->vec_components)
+	//for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[entity2->tab_index]->vec_components)
 	//{
 	//	if (component->ID == Mesh_ID)
 	//	{
 	//		MeshComponent* mesh = static_cast<MeshComponent*>(component);
-	//		mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+	//		mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 	//		mesh->textureID = L"WallTexture"; // On assigne la texture
 	//	}
 	//	if (component->ID == Transform_ID)
@@ -124,12 +124,12 @@ void SceneTest::OnInitialize()
 	//mpEntityManager->AddComponent<HealthComponent>(entityIceBlock);
 	//mpEntityManager->AddComponent<ColliderComponent>(entityIceBlock);
 
-	//for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityBox->tab_index]->vec_components)
+	//for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[entityBox->tab_index]->vec_components)
 	//{
 	//	if (component->ID == Mesh_ID)
 	//	{
 	//		MeshComponent* mesh = static_cast<MeshComponent*>(component);
-	//		mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+	//		mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 	//		mesh->textureID = L"BoxTexture"; // On assigne la texture
 	//	}
 	//	if (component->ID == Transform_ID)
@@ -146,12 +146,12 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<HealthComponent>(entityIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(entityIceBlock);
 
-	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityIceBlock->tab_index]->vec_components)
+	for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[entityIceBlock->tab_index]->vec_components)
 	{
 		if (comp->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 			mesh->textureID = L"IceTexture";
 		}
 		if (comp->ID == Transform_ID)
@@ -173,12 +173,12 @@ void SceneTest::OnInitialize()
 		}
 	}
 	iceBlockEntity = entityIceBlock;
-	//for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entityIceBlock->tab_index]->vec_components)
+	//for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[entityIceBlock->tab_index]->vec_components)
 	//{
 	//	if (comp->ID == Mesh_ID)
 	//	{
 	//		MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-	//		mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+	//		mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 	//		mesh->textureID = L"IceTexture";
 	//	}
 	//	if (comp->ID == Transform_ID)
@@ -200,12 +200,12 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<TransformComponent>(skyBox);
 	mpEntityManager->AddComponent<MeshComponent>(skyBox);
 
-	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[skyBox->tab_index]->vec_components)
+	for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[skyBox->tab_index]->vec_components)
 	{
 		if (comp->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateSkyBoxCube();
+			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateSkyBoxCube();
 			mesh->textureID = L"SkyBox";
 		}
 		if (comp->ID == Transform_ID)
@@ -226,12 +226,12 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<AttackComponent>(ennemy);
 	mpEntityManager->AddComponent<HealthComponent>(ennemy);
 
-	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
+	for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
 	{
 		if (comp->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 			mesh->textureID = L"DroneTexture";
 		}
 		if (comp->ID == Transform_ID)
@@ -254,12 +254,12 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<TransformComponent>(floor);
 	mpEntityManager->AddComponent<MeshComponent>(floor);
 
-	for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[floor->tab_index]->vec_components)
+	for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[floor->tab_index]->vec_components)
 	{
 		if (component->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(component);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 			mesh->textureID = L"WallTexture"; // On assigne la texture
 		}
 		if (component->ID == Transform_ID)
@@ -367,7 +367,7 @@ void SceneTest::OnUpdate()
 					{
 						transform->m_transform.AddToGlobalPosY(-0.1f);
 					}*/
-					//CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), &transform->m_transform);
+					//CameraSystem::SetViewMatrix(m_gameManager->GetMainView(), &transform->m_transform);
 				}
 			}
 		}
@@ -403,7 +403,7 @@ void SceneTest::OnUpdate()
 	if (InputManager::GetKeyIsPressed('P'))
 	{
 		AttackComponent* attack = nullptr;
-		auto& playerComponents = mpGameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+		auto& playerComponents = m_gameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
 		for (auto* component : playerComponents)
 		{
 			if (component->ID == Attack_ID)
@@ -422,7 +422,7 @@ void SceneTest::OnUpdate()
 	if (InputManager::GetKeyIsPressed('W'))
 	{
 		TransformComponent* transform = nullptr;
-		auto& playerComponents = mpGameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+		auto& playerComponents = m_gameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
 		for (auto* component : playerComponents)
 		{
 			if (component->ID == Transform_ID)

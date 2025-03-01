@@ -13,7 +13,8 @@ void CameraSystem::Update()
 	{
 		if (!entity)
 			continue;
-		if (!m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_PLAYER)) // COMPONENT_PLAYER ou COMPONENT_CAMERA ?
+		//if (!m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_PLAYER)) // COMPONENT_PLAYER ou COMPONENT_CAMERA ?
+		if (!m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_CAMERA)) // COMPONENT_PLAYER ou COMPONENT_CAMERA ?
 			continue;
 
 		TransformComponent* transformComponent = nullptr;

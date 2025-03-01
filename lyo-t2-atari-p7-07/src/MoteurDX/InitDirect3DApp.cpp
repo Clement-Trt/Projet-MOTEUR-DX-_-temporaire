@@ -18,7 +18,7 @@
 #include "ColliderManager.h"
 #include "ParticleManager.h"
 #include "EnnemyManager.h"
-#include "Movement.h"
+#include "MovementManager.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
@@ -123,7 +123,7 @@ bool InitDirect3DApp::Initialize()
 	m_healthSystem->Initialize(this);
 
 	// MouvementManager
-	m_movementManager = new Movement;
+	m_movementManager = new MovementManager;
 	m_movementManager->Initialize(this);
 
 	// CameraManager

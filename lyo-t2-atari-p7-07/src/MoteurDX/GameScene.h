@@ -18,7 +18,7 @@ public:
 
 protected:
 
+	Entity* cameraView = nullptr;
 	Entity* playerEntity = nullptr;
-	Entity* iceBlockEntity = nullptr;
 };
 

@@ -9,9 +9,9 @@
 
 void Scene::Initialize(InitDirect3DApp* gameManager)
 {
-	mpGameManager = gameManager;
+	m_gameManager = gameManager;
 
-	mpEntityManager = mpGameManager->m_entityManager;
+	mpEntityManager = m_gameManager->m_entityManager;
 
 	/*mMvmt = new Movement;
 	mMvmt->InitMovementManager(mpGameManager);*/

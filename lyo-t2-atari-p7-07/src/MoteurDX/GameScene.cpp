@@ -20,12 +20,12 @@ void GameScene::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
 	if (health != 0)
 		mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
-	for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
+	for (auto& comp : mpEntityManager->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
 		if (comp->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-			mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 			mesh->textureID = L"BoxTexture";
 		}
 		if (comp->ID == Transform_ID)
@@ -51,12 +51,12 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 	if (health != 0)
 		//mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 
-		for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
+		for (auto& comp : mpEntityManager->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 		{
 			if (comp->ID == Mesh_ID)
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-				mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 				mesh->textureID = L"WallTexture";
 			}
 			if (comp->ID == Transform_ID)
@@ -78,6 +78,61 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 
 void GameScene::OnInitialize()
 {
+	////Entity* 1 = player
+	//{
+	//	Entity* entity1 = mpEntityManager->CreateEntity();
+
+	//	mpEntityManager->AddComponent<PlayerComponent>(entity1);
+	//	mpEntityManager->AddComponent<TransformComponent>(entity1);
+	//	mpEntityManager->AddComponent<CameraComponent>(entity1);
+
+
+	//	for (auto& component : mpEntityManager->GetComponentToAddTab()[entity1->tab_index]->vec_components)
+	//	{
+	//		if (component->ID == Transform_ID)
+	//		{
+	//			TransformComponent* transform = static_cast<TransformComponent*>(component);
+	//			transform->m_transform.Scale(1.0f, 1.0f, 1.0f);
+	//			transform->m_transform.vPosition = { 0.0f , 0.0f, 0.0f };
+	//		}
+	//		if (component->ID == Camera_ID)
+	//		{
+	//			CameraComponent* cam = static_cast<CameraComponent*>(component);
+	//			cam->m_cameraTransform.Scale(1.0f, 1.0f, 1.0f);
+	//		}
+	//	}
+	//	cameraView = entity1;
+	//}
+
+	//// Block a surveiller
+	//{
+	//	Entity* block = mpEntityManager->CreateEntity();
+
+	//	mpEntityManager->AddComponent<TransformComponent>(block);
+	//	mpEntityManager->AddComponent<VelocityComponent>(block);
+	//	mpEntityManager->AddComponent<AttackComponent>(block);
+	//	mpEntityManager->AddComponent<ColliderComponent>(block);
+	//	mpEntityManager->AddComponent<MeshComponent>(block);
+
+	//	for (auto& component : mpEntityManager->GetComponentToAddTab()[block->tab_index]->vec_components)
+	//	{
+	//		if (component->ID == Mesh_ID)
+	//		{
+	//			MeshComponent* mesh = static_cast<MeshComponent*>(component);
+	//			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
+	//			mesh->textureID = L"PlayerTexture"; // On assigne la texture
+	//		}
+	//		if (component->ID == Transform_ID)
+	//		{
+	//			TransformComponent* transform = static_cast<TransformComponent*>(component);
+	//			transform->m_transform.Scale(3.0f, 3.0f, 3.0f);
+	//			transform->m_transform.vPosition = { 0.0f , 0.0f, 0.0f };
+	//		}
+	//	}
+	//	playerEntity = block;
+	//}
+
+	
 	// Entity 1 = player
 	{
 		Entity* entity1 = mpEntityManager->CreateEntity();
@@ -90,12 +145,12 @@ void GameScene::OnInitialize()
 		mpEntityManager->AddComponent<AttackComponent>(entity1);
 		mpEntityManager->AddComponent<ColliderComponent>(entity1);
 
-		for (auto& component : mpGameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
+		for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
 		{
 			if (component->ID == Mesh_ID)
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(component);
-				mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateCube();
+				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 				mesh->textureID = L"PlayerTexture"; // On assigne la texture
 			}
 			if (component->ID == Transform_ID)
@@ -119,12 +174,12 @@ void GameScene::OnInitialize()
 		mpEntityManager->AddComponent<TransformComponent>(skyBox);
 		mpEntityManager->AddComponent<MeshComponent>(skyBox);
 
-		for (auto& comp : mpGameManager->GetEntityManager()->GetComponentToAddTab()[skyBox->tab_index]->vec_components)
+		for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[skyBox->tab_index]->vec_components)
 		{
 			if (comp->ID == Mesh_ID)
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-				mesh->m_cubeMesh = mpGameManager->GetFactory()->CreateSkyBoxCube();
+				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateSkyBoxCube();
 				mesh->textureID = L"BoxTexture";
 			}
 			if (comp->ID == Transform_ID)
@@ -190,12 +245,119 @@ void GameScene::OnInitialize()
 		CreateWallBlock(10, 15, 6, 5, 10, -30, 10);
 	}
 
+
+
 }
 
 void GameScene::OnUpdate()
 {
+
+	//TransformComponent* transformComponent1 = nullptr;
+	//TransformComponent* transformComponent2 = nullptr;
+
+	//VelocityComponent* velComponent = nullptr;
+
+	//for (auto* component : mpEntityManager->GetComponentsTab()[cameraView->tab_index]->vec_components)
+	//{
+	//	if (component->ID == Transform_ID)
+	//	{
+	//		transformComponent1 = static_cast<TransformComponent*>(component);
+	//	}
+	//}
+	//for (auto* component : mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components)
+	//{
+	//	if (component->ID == Transform_ID)
+	//	{
+	//		transformComponent2 = static_cast<TransformComponent*>(component);
+	//	}
+	//	if (component->ID == Velocity_ID)
+	//	{
+	//		velComponent = static_cast<VelocityComponent*>(component);
+	//	}
+	//}
+
+
+	//// Mettez a jour la souris en passant le handle de la fenetre
+	//InputManager::UpdateMouse(GetActiveWindow());
+
+	//// Recuperer le deplacement de la souris
+	//int deltaX = InputManager::GetMouseDeltaX();
+	//int deltaY = InputManager::GetMouseDeltaY();
+
+	//// Sensibilite de la souris
+	//const float sensitivity = 0.005f;
+	//if (InputManager::GetKeyIsPressed(MK_LBUTTON))
+	//{
+	//	// Mettre a jour la rotation de la camera en fonction du delta
+	//	transformComponent2->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
+	//}
+
+
+	//if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 0.5f;
+	//if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -0.5f;
+
+	//if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 0.5f;
+	//if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -0.5f;
+
+	//if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 0.5f;
+	//if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -0.5f;
+
+	//if (InputManager::GetKeyIsPressed('W'))
+	//{
+	//	velComponent->vx *= 2;
+	//	velComponent->vy *= 2;
+	//	velComponent->vz *= 2;
+	//}
+
+
+	//// Si la touche 'P' est presse, on demande une attaque du joueur sur l'IceBlock
+	//if (InputManager::GetKeyIsPressed(MK_RBUTTON))
+	//{
+	//	AttackComponent* attack = nullptr;
+	//	auto& playerComponents = mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+	//	for (auto* component : playerComponents)
+	//	{
+	//		if (component->ID == Attack_ID)
+	//		{
+	//			attack = static_cast<AttackComponent*>(component);
+	//			break;
+	//		}
+	//	}
+	//	if (attack)
+	//	{
+	//		// Declencher l'attaque en definissant le flag et en indiquant la cible
+	//		attack->attackRequested = true;
+	//	}
+	//}
+
+	//if (transformComponent2)
+	//{
+	//	transformComponent2->m_transform.ResetRoll();
+	//}
+
+	//transformComponent1->m_transform.matrix = transformComponent2->m_transform.matrix;
+	//transformComponent1->m_transform.UpdateMatrix();
+	//transformComponent1->m_transform.Move(-(transformComponent2->m_transform.vScale.z * 4), 0.0f, 0.0f);
+
+	//for (Entity* entity : mpEntityManager->GetEntityTab())
+	//{
+	//	if (!entity)
+	//		continue;
+	//	//if (!m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_CAMERA)) // COMPONENT_PLAYER ou COMPONENT_CAMERA ?
+	//	//	continue;
+	//	if (m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_CAMERA))
+	//	{
+	//		for (auto* component : mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components)
+	//		{
+	//			if (component->ID == Transform_ID)
+	//			{
+	//				transformComponent1 = static_cast<TransformComponent*>(component);
+	//			}
+	//		}
+	//	}
+	//}
+
 	TransformComponent* transform = nullptr;
-	CameraComponent* camComponent = nullptr;
 	VelocityComponent* velComponent = nullptr;
 
 
@@ -204,10 +366,6 @@ void GameScene::OnUpdate()
 		if (component->ID == Transform_ID)
 		{
 			transform = static_cast<TransformComponent*>(component);
-		}
-		if (component->ID == Camera_ID)
-		{
-			camComponent = static_cast<CameraComponent*>(component);
 		}
 		if (component->ID == Velocity_ID)
 		{
@@ -253,7 +411,7 @@ void GameScene::OnUpdate()
 	if (InputManager::GetKeyIsPressed(MK_RBUTTON))
 	{
 		AttackComponent* attack = nullptr;
-		auto& playerComponents = mpGameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+		auto& playerComponents = m_gameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
 		for (auto* component : playerComponents)
 		{
 			if (component->ID == Attack_ID)
@@ -278,5 +436,4 @@ void GameScene::OnUpdate()
 void GameScene::OnClose()
 {
 	delete playerEntity;
-	delete iceBlockEntity;
 }
