@@ -90,7 +90,7 @@ bool InitDirect3DApp::Initialize()
 
 	// Positionner la camera a une position initiale
 	m_mainView = new CameraComponent;
-	m_mainView->cameraView = CameraSystem::DefaultView();
+	m_mainView->m_cameraView = CameraSystem::DefaultView();
 
 	mCommandList->Close();
 	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
@@ -272,7 +272,7 @@ void InitDirect3DApp::Render()
 		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		DirectX::XMMATRIX view = m_mainView->cameraView;
+		DirectX::XMMATRIX view = m_mainView->m_cameraView;
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube

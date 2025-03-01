@@ -45,8 +45,6 @@ public:
     void AddToGlobalPosY(float deltaY);
     void AddToGlobalPosZ(float deltaZ);
 
-private:
-
     // m : matrice, v : vector, q : quaternion
     DirectX::XMFLOAT3 vPosition; // vector pos
     DirectX::XMFLOAT3 vScale; // vector scale

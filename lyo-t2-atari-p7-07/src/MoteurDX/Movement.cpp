@@ -22,11 +22,38 @@ void Movement::Move(Entity* entity, VelocityComponent* velComponent, TransformCo
 	transformComponent->m_transform.Move(velComponent->vz, velComponent->vx,velComponent->vy);
 	if (entity->id != 1)
 	{
-		if (transformComponent->m_transform.GetPositionX() > 500 || transformComponent->m_transform.GetPositionX() < -500
-			|| transformComponent->m_transform.GetPositionY() > 500 || transformComponent->m_transform.GetPositionY() < -500
-			|| transformComponent->m_transform.GetPositionZ() > 500 || transformComponent->m_transform.GetPositionZ() < -500)
+		if (transformComponent->m_transform.GetPositionX() > 70 || transformComponent->m_transform.GetPositionX() < -70
+			|| transformComponent->m_transform.GetPositionY() > 70 || transformComponent->m_transform.GetPositionY() < -70
+			|| transformComponent->m_transform.GetPositionZ() > 70 || transformComponent->m_transform.GetPositionZ() < -70)
 		{
 			mGM->GetEntityManager()->ToDestroy(entity);
+		}
+	}
+	else
+	{
+		if (transformComponent->m_transform.GetPositionX() > 70)
+		{
+			transformComponent->m_transform.vPosition.x = 70;
+		}
+		else if (transformComponent->m_transform.GetPositionX() < -70)
+		{
+			transformComponent->m_transform.vPosition.x = -70;
+		}
+		if (transformComponent->m_transform.GetPositionY() > 70)
+		{
+			transformComponent->m_transform.vPosition.y = 70;
+		}
+		else if (transformComponent->m_transform.GetPositionY() < -70)
+		{
+			transformComponent->m_transform.vPosition.y = -70;
+		}
+		if (transformComponent->m_transform.GetPositionZ() > 70)
+		{
+			transformComponent->m_transform.vPosition.z = 70;
+		}
+		else if (transformComponent->m_transform.GetPositionZ() < -70)
+		{
+			transformComponent->m_transform.vPosition.z = -70;
 		}
 	}
 }

@@ -39,7 +39,7 @@ void ParticleManager::CreateDefaultBlock(float startPosX, float startPosY, float
 	Entity* newIceBlock = m_entityManager->CreateEntity();
 	m_entityManager->AddComponent<TransformComponent>(newIceBlock);
 	m_entityManager->AddComponent<MeshComponent>(newIceBlock);
-	m_entityManager->AddComponent<particleComponent>(newIceBlock);
+	m_entityManager->AddComponent<ParticleComponent>(newIceBlock);
 	m_entityManager->AddComponent<VelocityComponent>(newIceBlock);
 
 	for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
@@ -58,7 +58,7 @@ void ParticleManager::CreateDefaultBlock(float startPosX, float startPosY, float
 		}
 		if (comp->ID == Particle_ID)
 		{
-			particleComponent* particle = static_cast<particleComponent*>(comp);
+			ParticleComponent* particle = static_cast<ParticleComponent*>(comp);
 		}
 		if (comp->ID == Velocity_ID)
 		{

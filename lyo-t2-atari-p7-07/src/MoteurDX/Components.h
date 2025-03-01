@@ -95,9 +95,8 @@ struct Component
 struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
-	//Camera m_camera;
-
-	DirectX::XMMATRIX cameraView;
+	Transform m_cameraTransform;
+	DirectX::XMMATRIX m_cameraView;
 };
 
 struct MeshComponent : public Component
@@ -111,16 +110,16 @@ struct ColliderComponent : public Component
 {
 	ColliderComponent() : Component(Collider_ID, COMPONENT_COLLIDER) {}
 	bool m_isColliding = false;
-	bool m_isSolide = false;
+	bool m_isSolid = false;
 	bool m_isDynamic = false;
 	bool m_destructable = false;
 	bool m_isDestructable = false;
 	bool m_isDestroyed = false;
 };
 
-struct particleComponent : public Component 
+struct ParticleComponent : public Component 
 {
-	particleComponent() : Component(Particle_ID, COMPONENT_PARTICLE) {}
+	ParticleComponent() : Component(Particle_ID, COMPONENT_PARTICLE) {}
 	float m_lifeTime = 0.0f;
 };
 

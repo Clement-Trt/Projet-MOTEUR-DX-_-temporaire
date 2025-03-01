@@ -84,7 +84,7 @@ void SceneTest::OnInitialize()
 		if (component->ID == Collider_ID)
 		{
 			ColliderComponent* collider = static_cast<ColliderComponent*>(component);
-			collider->m_isSolide = true;
+			collider->m_isSolid = true;
 			collider->m_isDynamic = true;
 		}
 		if (component->ID == Player_ID)
@@ -169,7 +169,7 @@ void SceneTest::OnInitialize()
 		if (comp->ID == Collider_ID)
 		{
 			ColliderComponent* collider = static_cast<ColliderComponent*>(comp);
-			collider->m_isSolide = true;
+			collider->m_isSolid = true;
 		}
 	}
 	iceBlockEntity = entityIceBlock;
@@ -367,7 +367,7 @@ void SceneTest::OnUpdate()
 					{
 						transform->m_transform.AddToGlobalPosY(-0.1f);
 					}*/
-					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), transform);
+					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), &transform->m_transform);
 				}
 			}
 		}
