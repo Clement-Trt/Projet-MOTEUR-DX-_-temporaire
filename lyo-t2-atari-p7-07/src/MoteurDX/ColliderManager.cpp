@@ -1,9 +1,10 @@
 #include "pch.h"
 #include "ColliderManager.h"
 
-void ColliderManager::InitCollider(EntityManager* entityManager)
+void ColliderManager::InitCollider(EntityManager* entityManager, ParticleManager* particleManager)
 {
 	m_entityManager = entityManager;
+	m_particleManager = particleManager;
 }
 
 void ColliderManager::UpdateCollider()
@@ -17,7 +18,6 @@ void ColliderManager::UpdateCollider()
 		// Transform & Collider Components
 		TransformComponent* transform1 = nullptr;
 		ColliderComponent* collider1 = nullptr;
-		VelocityComponent* velocity1 = nullptr;
 		HealthComponent* health1 = nullptr;
 		AttackComponent* attack1 = nullptr;
 		for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
@@ -29,10 +29,6 @@ void ColliderManager::UpdateCollider()
 			if (component->ID == Collider_ID)
 			{
 				collider1 = static_cast<ColliderComponent*>(component);
-			}
-			if (component->ID == Velocity_ID)
-			{
-				velocity1 = static_cast<VelocityComponent*>(component);
 			}
 			if (component->ID == Health_ID)
 			{
@@ -56,7 +52,6 @@ void ColliderManager::UpdateCollider()
 			// Transform & Collider Components
 			TransformComponent* transform2 = nullptr;
 			ColliderComponent* collider2 = nullptr;
-			VelocityComponent* velocity2 = nullptr;
 			HealthComponent* health2 = nullptr;
 			AttackComponent* attack2 = nullptr;
 			for (auto* component : m_entityManager->GetComponentsTab()[entity2Index]->vec_components)
@@ -68,10 +63,6 @@ void ColliderManager::UpdateCollider()
 				if (component->ID == Collider_ID)
 				{
 					collider2 = static_cast<ColliderComponent*>(component);
-				}
-				if (component->ID == Velocity_ID)
-				{
-					velocity2 = static_cast<VelocityComponent*>(component);
 				}
 				if (component->ID == Health_ID)
 				{
@@ -88,65 +79,76 @@ void ColliderManager::UpdateCollider()
 			// Test de collision
 			if (AABBIntersect(*transform1, *transform2))
 			{
-				// Ici, vous pouvez ajouter le traitement neessaire en cas de collision
 				collider1->m_isColliding = true;
 				collider2->m_isColliding = true;
+				OutputDebugString(L"Collision !\n");
 
-
-				//Si l'objet 1 est dynamique et l'objet 2 est statique, on corrige seulement l'objet 1
-				//if (collider1->m_isDynamic && !collider2->m_isDynamic)
-				if (velocity1 && !velocity2)
+				if (collider1->m_isSolide && collider2->m_isSolide)
 				{
-					// Calculer le vecteur de correction minimal
-					DirectX::XMVECTOR correction = ResolveAABBCollision(*transform1, *transform2); // sortir du if ?
+					// Si l'objet 1 est dynamique et l'objet 2 est statique, on corrige seulement l'objet 1
+					//if (collider1->m_isDynamic && !collider2->m_isDynamic)
+					//{
+					//	// Calculer le vecteur de correction minimal
+					//	XMVECTOR correction = ResolveAABBCollision(*transform1, *transform2);
+					//	// Calculer la normale de collision
+					//	XMVECTOR collisionNormal = XMVector3Normalize(correction);
 
-					// Charger la position actuelle dans un XMVECTOR
-					DirectX::XMVECTOR newPos = DirectX::XMLoadFloat3(&transform1->m_transform.vPosition);
+					//	// Charger la position actuelle et la position precedente
+					//	XMVECTOR currentPos = XMLoadFloat3(&transform1->m_transform.vPosition);
+					//	XMVECTOR oldPos = XMLoadFloat3(&transform1->m_transform.m_oldPosition);
 
-					// Soustraire le vecteur de correction
-					newPos = DirectX::XMVectorSubtract(newPos, correction);
+					//	// Calculer le deplacement effectif
+					//	XMVECTOR displacement = XMVectorSubtract(currentPos, oldPos);
+					//	float dot = XMVectorGetX(XMVector3Dot(displacement, collisionNormal));
 
-					// Stocker la nouvelle position dans vPosition
-					DirectX::XMStoreFloat3(&transform1->m_transform.vPosition, newPos);
-					transform1->m_transform.UpdateMatrix();
+					//	// Si le deplacement va vers l'interieur du mur (dot negatif), annuler le deplacement
+					//	if (dot < 0)
+					//	{
+					//		XMStoreFloat3(&transform1->m_transform.vPosition, oldPos);
+					//	}
+					//	else
+					//	{
+					//		// Sinon, appliquer la correction pour permettre le glissement
+					//		XMVECTOR correctedPos = XMVectorAdd(currentPos, correction);
+					//		XMStoreFloat3(&transform1->m_transform.vPosition, correctedPos);
+					//	}
+
+					//	transform1->m_transform.UpdateMatrix();
+					//}
+					//else if (!collider1->m_isDynamic && collider2->m_isDynamic)
+					//{
+					//	// Cas inverse: corriger l'objet 2
+					//	XMVECTOR correction = ResolveAABBCollision(*transform2, *transform1);
+					//	XMVECTOR currentPos = XMLoadFloat3(&transform2->m_transform.vPosition);
+					//	XMVECTOR oldPos = XMLoadFloat3(&transform2->m_transform.m_oldPosition);
+					//	XMVECTOR displacement = XMVectorSubtract(currentPos, oldPos);
+					//	XMVECTOR collisionNormal = XMVector3Normalize(correction);
+					//	float dot = XMVectorGetX(XMVector3Dot(displacement, collisionNormal));
+
+					//	if (dot < 0)
+					//	{
+					//		XMStoreFloat3(&transform2->m_transform.vPosition, oldPos);
+					//	}
+					//	else
+					//	{
+					//		XMVECTOR correctedPos = XMVectorAdd(currentPos, correction);
+					//		XMStoreFloat3(&transform2->m_transform.vPosition, correctedPos);
+					//	}
+
+					//	transform2->m_transform.UpdateMatrix();
+					//}
+					//else // Si les deux sont dynamiques, repartir la correction
+					//{
+					//	XMVECTOR correction = ResolveAABBCollision(*transform1, *transform2);
+					//	XMVECTOR halfCorr = XMVectorScale(correction, 0.5f);
+					//	XMVECTOR pos1 = XMLoadFloat3(&transform1->m_transform.vPosition);
+					//	XMVECTOR pos2 = XMLoadFloat3(&transform2->m_transform.vPosition);
+					//	XMStoreFloat3(&transform1->m_transform.vPosition, XMVectorAdd(pos1, halfCorr));
+					//	XMStoreFloat3(&transform2->m_transform.vPosition, XMVectorSubtract(pos2, halfCorr));
+					//	transform1->m_transform.UpdateMatrix();
+					//	transform2->m_transform.UpdateMatrix();
+					//}
 				}
-				else if (!velocity1 && velocity2)
-				{
-					// Calculer le vecteur de correction minimal
-					DirectX::XMVECTOR correction = ResolveAABBCollision(*transform2, *transform1); // sortir du if ?
-
-					// Charger la position actuelle dans un XMVECTOR
-					DirectX::XMVECTOR newPos = DirectX::XMLoadFloat3(&transform2->m_transform.vPosition);
-
-					// Soustraire le vecteur de correction
-					newPos = DirectX::XMVectorSubtract(newPos, correction);
-
-					// Stocker la nouvelle position dans vPosition
-					DirectX::XMStoreFloat3(&transform2->m_transform.vPosition, newPos);
-					transform2->m_transform.UpdateMatrix();
-				}
-				else // Si les deux sont dynamiques, repartir la correction
-				{
-					DirectX::XMVECTOR correction = ResolveAABBCollision(*transform1, *transform2);
-					DirectX::XMVECTOR halfCorr = DirectX::XMVectorScale(correction, 0.5f);
-
-					// Charger la position actuelle dans un XMVECTOR
-					DirectX::XMVECTOR newPos1 = DirectX::XMLoadFloat3(&transform1->m_transform.vPosition);
-					DirectX::XMVECTOR newPos2 = DirectX::XMLoadFloat3(&transform2->m_transform.vPosition);
-
-					// Soustraire le vecteur de correction
-					newPos1 = DirectX::XMVectorSubtract(newPos1, halfCorr);
-					newPos2 = DirectX::XMVectorSubtract(newPos2, halfCorr);
-					// Stocker la nouvelle position dans vPosition
-					DirectX::XMStoreFloat3(&transform1->m_transform.vPosition, newPos1);
-					DirectX::XMStoreFloat3(&transform2->m_transform.vPosition, newPos2);
-
-
-					transform1->m_transform.UpdateMatrix();
-					transform2->m_transform.UpdateMatrix();
-				}
-
-				
 
 				if (health1 && attack2)
 				{
@@ -162,18 +164,20 @@ void ColliderManager::UpdateCollider()
 				if (collider1->m_isDestructable && entity1)
 				{
 					//collider1->m_isDestroyed = true;
+					m_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
 					m_entityManager->DestroyEntity(entity1);
 				}
 
 				if (collider2->m_isDestructable && entity2)
 				{
+					m_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
 					//collider2->m_isDestroyed = true;
 					m_entityManager->DestroyEntity(entity2);
 				}
 
-				/*wchar_t buffer[256];
+				wchar_t buffer[256];
 				swprintf_s(buffer, 256, L"Collision ! posX: %f, posY: %f\n", transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY());
-				OutputDebugString(buffer);*/
+				OutputDebugString(buffer);
 				//OutputDebugString(L"Collision !\n");
 			}
 			else
@@ -203,7 +207,7 @@ bool ColliderManager::AABBIntersect(TransformComponent& a, TransformComponent& b
 	float bMinZ = b.m_transform.GetPositionZ() - b.m_transform.GetScale().z / 2;
 	float bMaxZ = b.m_transform.GetPositionZ() + b.m_transform.GetScale().z / 2;
 
-	// Vérification du chevauchement sur chaque axe
+	// Verification du chevauchement sur chaque axe
 	if (aMaxX < bMinX || aMinX > bMaxX)
 		return false;
 	if (aMaxY < bMinY || aMinY > bMaxY)
@@ -214,56 +218,56 @@ bool ColliderManager::AABBIntersect(TransformComponent& a, TransformComponent& b
 	return true;
 }
 
-DirectX::XMVECTOR ColliderManager::ResolveAABBCollision(const TransformComponent& a, const TransformComponent& b)
+XMVECTOR ColliderManager::ResolveAABBCollision(const TransformComponent& a, const TransformComponent& b)
 {
 	// Calculer les bornes pour lobjet A
-	float aMinX = a.m_transform.vPosition.x - a.m_transform.vScale.x / 2;
-	float aMaxX = a.m_transform.vPosition.x + a.m_transform.vScale.x / 2;
-	float aMinY = a.m_transform.vPosition.y - a.m_transform.vScale.y / 2;
-	float aMaxY = a.m_transform.vPosition.y + a.m_transform.vScale.y / 2;
-	float aMinZ = a.m_transform.vPosition.z - a.m_transform.vScale.z / 2;
-	float aMaxZ = a.m_transform.vPosition.z + a.m_transform.vScale.z / 2;
+	//float aMinX = a.m_transform.vPosition.x - a.m_transform.vScale.x;
+	//float aMaxX = a.m_transform.vPosition.x + a.m_transform.vScale.x;
+	//float aMinY = a.m_transform.vPosition.y - a.m_transform.vScale.y;
+	//float aMaxY = a.m_transform.vPosition.y + a.m_transform.vScale.y;
+	//float aMinZ = a.m_transform.vPosition.z - a.m_transform.vScale.z;
+	//float aMaxZ = a.m_transform.vPosition.z + a.m_transform.vScale.z;
 
-	// Calculer les bornes pour lobjet B
-	float bMinX = b.m_transform.vPosition.x - b.m_transform.vScale.x / 2;
-	float bMaxX = b.m_transform.vPosition.x + b.m_transform.vScale.x / 2;
-	float bMinY = b.m_transform.vPosition.y - b.m_transform.vScale.y / 2;
-	float bMaxY = b.m_transform.vPosition.y + b.m_transform.vScale.y / 2;
-	float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z / 2;
-	float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z / 2;
+	//// Calculer les bornes pour lobjet B
+	//float bMinX = b.m_transform.vPosition.x - b.m_transform.vScale.x;
+	//float bMaxX = b.m_transform.vPosition.x + b.m_transform.vScale.x;
+	//float bMinY = b.m_transform.vPosition.y - b.m_transform.vScale.y;
+	//float bMaxY = b.m_transform.vPosition.y + b.m_transform.vScale.y;
+	//float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z;
+	//float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z;
 
-	// Calcul des profondeurs de penetration sur chaque axe
-	// On calcule combien lobjet B setend au dela de lobjet A sur chaque cote
-	float penX1 = bMaxX - aMinX; // penetration si B est a droite de A
-	float penX2 = aMaxX - bMinX; // penetration si A est a droite de B
+	//// Calcul des profondeurs de penetration sur chaque axe
+	//// On calcule combien lobjet B setend au dela de lobjet A sur chaque cote
+	//float penX1 = bMaxX - aMinX; // penetration si B est a droite de A
+	//float penX2 = aMaxX - bMinX; // penetration si A est a droite de B
 
-	float penY1 = bMaxY - aMinY;
-	float penY2 = aMaxY - bMinY;
+	//float penY1 = bMaxY - aMinY;
+	//float penY2 = aMaxY - bMinY;
 
-	float penZ1 = bMaxZ - aMinZ;
-	float penZ2 = aMaxZ - bMinZ;
+	//float penZ1 = bMaxZ - aMinZ;
+	//float penZ2 = aMaxZ - bMinZ;
 
-	// On prend la penetration minimale pour chaque axe
-	float penX = (penX1 < penX2) ? penX1 : penX2;
-	float penY = (penY1 < penY2) ? penY1 : penY2;
-	float penZ = (penZ1 < penZ2) ? penZ1 : penZ2;
+	//// On prend la penetration minimale pour chaque axe
+	//float penX = (penX1 < penX2) ? penX1 : penX2;
+	//float penY = (penY1 < penY2) ? penY1 : penY2;
+	//float penZ = (penZ1 < penZ2) ? penZ1 : penZ2;
 
-	// On trouve l'axe ou la penetration est la moins importante
-	float minPenetration = penX;
-	DirectX::XMVECTOR correction = DirectX::XMVectorSet((penX1 < penX2 ? -penX1 : penX2), 0.0f, 0.0f, 0.0f);
+	//// On trouve l'axe ou la penetration est la moins importante
+	//float minPenetration = penX;
+	//XMVECTOR correction = XMVectorSet((penX1 < penX2 ? -penX1 : penX2), 0.0f, 0.0f, 0.0f);
 
-	if (penY < minPenetration)
-	{
-		minPenetration = penY;
-		correction = DirectX::XMVectorSet(0.0f, (penY1 < penY2 ? -penY1 : penY2), 0.0f, 0.0f);
-	}
-	if (penZ < minPenetration)
-	{
-		minPenetration = penZ;
-		correction = DirectX::XMVectorSet(0.0f, 0.0f, (penZ1 < penZ2 ? -penZ1 : penZ2), 0.0f);
-	}
+	//if (penY < minPenetration)
+	//{
+	//	minPenetration = penY;
+	//	correction = XMVectorSet(0.0f, (penY1 < penY2 ? -penY1 : penY2), 0.0f, 0.0f);
+	//}
+	//if (penZ < minPenetration)
+	//{
+	//	minPenetration = penZ;
+	//	correction = XMVectorSet(0.0f, 0.0f, (penZ1 < penZ2 ? -penZ1 : penZ2), 0.0f);
+	//}
 
 	// On peut choisir d'appliquer la moitie de la correction a chaque objet
-	//DirectX::XMVECTOR correction = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-	return DirectX::XMVectorScale(correction, 1.f);
+	XMVECTOR correction = XMVectorSet(0.0f, 0.0f,0.0f, 0.0f);
+	return XMVectorScale(correction, 1.f);
 }

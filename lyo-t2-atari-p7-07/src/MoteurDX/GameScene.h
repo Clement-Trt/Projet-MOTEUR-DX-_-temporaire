@@ -6,9 +6,9 @@ class GameScene : public Scene
 {
 public:
 
-	void CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health = 0);
+	void CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health);
 
-	void CreateWallBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health = 0);
+	void CreateWallBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
 
 	void OnInitialize() override;
 

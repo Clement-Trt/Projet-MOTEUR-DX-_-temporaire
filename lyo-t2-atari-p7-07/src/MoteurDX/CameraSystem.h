@@ -12,11 +12,9 @@ public:
     void MoveRelative(float forwardDelta, float rightDelta, float upDelta);
     void Rotate(float pitch, float yaw);*/
 
-    static DirectX::XMMATRIX GetViewMatrix(CameraComponent* camView);
+    static DirectX::XMMATRIX GetViewMatrix(CameraComponent* camView, TransformComponent* transform);
 
-    static void SetViewMatrix(CameraComponent* camView, Transform* transform);
-
-    static void SetViewMatrix(CameraComponent* camView, CameraComponent* playerCam);
+    static void SetViewMatrix(CameraComponent* camView, TransformComponent* transform);
 
     //static void SetViewMatrix(CameraComponent* camViewFrom, CameraComponent* camViewTo);
 
