@@ -196,7 +196,7 @@ void InitDirect3DApp::Update()
 	UpdateTimer();
 	UpdatePhysics();
 
-	m_healthSystem.Update(m_entityManager, m_deltaTime);
+	m_healthSystem.Update(m_entityManager,m_ennemyManager, m_deltaTime);
 	m_attackSystem->Update(m_entityManager, m_deltaTime);
 }
 

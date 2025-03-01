@@ -218,7 +218,7 @@ void SceneTest::OnInitialize()
 
 
 	// Ennemy
-	Entity* ennemy = mpEntityManager->CreateEntity();
+	/*Entity* ennemy = mpEntityManager->CreateEntity();
 	mpEntityManager->AddComponent<TransformComponent>(ennemy);
 	mpEntityManager->AddComponent<MeshComponent>(ennemy);
 	mpEntityManager->AddComponent<ColliderComponent>(ennemy);
@@ -246,7 +246,7 @@ void SceneTest::OnInitialize()
 			healthComp->maxHealth = healthComp->currentHealth = 10;
 		}
 	}
-	ennemyEntity = ennemy;
+	ennemyEntity = ennemy;*/
 
 	// 2
 	Entity* floor = mpEntityManager->CreateEntity();

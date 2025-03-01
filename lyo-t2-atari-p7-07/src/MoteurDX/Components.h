@@ -158,7 +158,7 @@ struct AttackComponent : public Component
 {
 	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
 	int damage = 10;
-	float attackCooldown = 0.1;
+	float attackCooldown = 1;
 	float timeSinceLastAttack = 0.0f; 
 	bool attackRequested = false;     
 	Entity* targetEntity = nullptr;   

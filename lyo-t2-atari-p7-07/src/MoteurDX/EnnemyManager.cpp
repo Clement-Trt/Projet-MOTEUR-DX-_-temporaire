@@ -9,9 +9,20 @@ void EnnemyManager::InitEnnemyManager(EntityManager* entityManager, InitDirect3D
 {
 	m_entityManager = entityManager;
 	m_gameManager = app;
+    m_nbEnnemy = 0;
+    m_nbEnnemyToSpawn = 0;
+    m_waveNb = 1;
+    m_startNextWave = true;
+    //SpawnEnnemy(20,20,20);
 }
 
 void EnnemyManager::Update()
+{
+    WaveSystem();
+    EnnemyAttackSystem();
+}
+
+void EnnemyManager::EnnemyAttackSystem()
 {
     // Premiere boucle : rechercher la transform du joueur
     m_playerTransform = nullptr;
@@ -90,6 +101,123 @@ void EnnemyManager::Update()
                 attack->attackRequested = true;
                 attack->targetEntity = m_player;
             }
+        }
+    }
+}
+
+void EnnemyManager::SpawnEnnemy(float posX, float posY, float posZ)
+{
+    Entity* ennemy = m_entityManager->CreateEntity();
+    m_entityManager->AddComponent<TransformComponent>(ennemy);
+    m_entityManager->AddComponent<MeshComponent>(ennemy);
+    m_entityManager->AddComponent<ColliderComponent>(ennemy);
+    m_entityManager->AddComponent<EnnemyComponent>(ennemy);
+    m_entityManager->AddComponent<AttackComponent>(ennemy);
+    m_entityManager->AddComponent<HealthComponent>(ennemy);
+
+    for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
+    {
+        if (comp->ID == Mesh_ID)
+        {
+            MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+            mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
+            mesh->textureID = L"DroneTexture";
+        }
+        if (comp->ID == Transform_ID)
+        {
+            TransformComponent* transform = static_cast<TransformComponent*>(comp);
+            transform->m_transform.Scale(2.f, 2.f, 2.f);
+            transform->m_transform.Move(posZ, posX, posY);
+        }
+        if (comp->ID == Health_ID)
+        {
+            HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
+            healthComp->maxHealth = healthComp->currentHealth = 10;
+        }
+    }
+}
+
+void EnnemyManager::SpawnEnnemyBoss(float posX, float posY, float posZ)
+{
+    Entity* ennemy = m_entityManager->CreateEntity();
+    m_entityManager->AddComponent<TransformComponent>(ennemy);
+    m_entityManager->AddComponent<MeshComponent>(ennemy);
+    m_entityManager->AddComponent<ColliderComponent>(ennemy);
+    m_entityManager->AddComponent<EnnemyComponent>(ennemy);
+    m_entityManager->AddComponent<AttackComponent>(ennemy);
+    m_entityManager->AddComponent<HealthComponent>(ennemy);
+
+    for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
+    {
+        if (comp->ID == Mesh_ID)
+        {
+            MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+            mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
+            mesh->textureID = L"DroneTexture";
+        }
+        if (comp->ID == Transform_ID)
+        {
+            TransformComponent* transform = static_cast<TransformComponent*>(comp);
+            transform->m_transform.Scale(10.f, 10.f, 10.f);
+            transform->m_transform.Move(posZ, posX, posY);
+        }
+        if (comp->ID == Health_ID)
+        {
+            HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
+            healthComp->maxHealth = 100;
+            healthComp->currentHealth = 100;
+        }
+    }
+}
+
+void EnnemyManager::WaveSystem()
+{
+    if (m_startNextWave) 
+    {
+        switch (m_waveNb)
+        {
+        case 1:
+            m_nbEnnemyToSpawn = 5;
+
+            break;
+        case 2:
+            m_nbEnnemyToSpawn = 10;
+
+            break;
+        case 3:
+            m_nbEnnemyToSpawn = 20;
+
+            break;
+        default:
+
+            break;
+        }
+
+        while (m_nbEnnemy < m_nbEnnemyToSpawn)
+        {
+            float randPosX = -50 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (50 - -50);
+            float randPosY = -50 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (50 - -50);
+            float randPosZ = -50 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (50 - -50);
+            SpawnEnnemy(randPosX, randPosY, randPosZ);
+            m_nbEnnemy++;
+            OutputDebugString(L"SpawnEnnemy\n");
+        }
+        if (m_waveNb = 3)
+        {
+            float randPosX = -50 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (50 - -50);
+            float randPosY = -50 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (50 - -50);
+            float randPosZ = -50 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (50 - -50);
+            SpawnEnnemyBoss(randPosX, randPosY, randPosZ);
+        }
+
+        m_startNextWave = false;
+    }
+    else
+    {
+        if (m_nbEnnemy <= 0)
+        {
+            m_waveNb++;
+            m_startNextWave = true;
         }
     }
 }
