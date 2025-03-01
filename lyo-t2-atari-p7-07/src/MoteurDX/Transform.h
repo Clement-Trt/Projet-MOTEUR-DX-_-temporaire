@@ -13,10 +13,6 @@ public:
 
     void ResetRoll();
 
-    void FollowTarget(const DirectX::XMFLOAT3& target, float speed);
-
-    void LookAt(const DirectX::XMFLOAT3& target);
-
     // Mes a jour la matrice
     void UpdateMatrix();
 
@@ -45,7 +41,7 @@ public:
     void AddToGlobalPosY(float deltaY);
     void AddToGlobalPosZ(float deltaZ);
 
-private:
+//private:
 
     // m : matrice, v : vector, q : quaternion
     DirectX::XMFLOAT3 vPosition; // vector pos
@@ -59,7 +55,5 @@ private:
     DirectX::XMFLOAT3 vUp;
 
     DirectX::XMFLOAT4X4 matrix; // matrice contenant les coordonees et rotation
-
-    DirectX::XMFLOAT3 m_oldPosition;
 };
 

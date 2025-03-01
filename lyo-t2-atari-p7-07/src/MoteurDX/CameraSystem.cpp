@@ -22,35 +22,50 @@ DirectX::XMMATRIX CameraSystem::DefaultView(/*CameraComponent* cam*/)
 	return DirectX::XMMatrixLookToLH(pos, forward, up);
 }
 
-DirectX::XMMATRIX CameraSystem::GetViewMatrix(CameraComponent* camView, TransformComponent* transform)
+//DirectX::XMMATRIX CameraSystem::GetViewMatrix(CameraComponent* camView, TransformComponent* transform)
+//{
+//	//if (transform == nullptr)
+//	//{
+//	//	// Charger la position de la caméra dans un XMVECTOR
+//	//	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_Position);
+//
+//	//	// Calcul du vecteur direction à partir des angles (m_Pitch et m_Yaw)
+//	//	float cosPitch = cosf(m_Pitch);
+//	//	float sinPitch = sinf(m_Pitch);
+//	//	float cosYaw = cosf(m_Yaw);
+//	//	float sinYaw = sinf(m_Yaw);
+//
+//	//	// Le vecteur forward est calculé en utilisant des coordonnées sphériques.
+//	//	DirectX::XMVECTOR forward = DirectX::XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
+//
+//	//	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+//
+//	//	return DirectX::XMMatrixLookToLH(pos, forward, up);
+//	//}
+//
+//	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->m_transform.GetMatrix());
+//	return DirectX::XMMatrixInverse(nullptr, worldMatrix);
+//}
+
+DirectX::XMMATRIX CameraSystem::GetViewMatrix(CameraComponent* camView)
 {
-	//if (transform == nullptr)
-	//{
-	//	// Charger la position de la caméra dans un XMVECTOR
-	//	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&m_Position);
-
-	//	// Calcul du vecteur direction à partir des angles (m_Pitch et m_Yaw)
-	//	float cosPitch = cosf(m_Pitch);
-	//	float sinPitch = sinf(m_Pitch);
-	//	float cosYaw = cosf(m_Yaw);
-	//	float sinYaw = sinf(m_Yaw);
-
-	//	// Le vecteur forward est calculé en utilisant des coordonnées sphériques.
-	//	DirectX::XMVECTOR forward = DirectX::XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
-
-	//	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-
-	//	return DirectX::XMMatrixLookToLH(pos, forward, up);
-	//}
-
-	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->m_transform.GetMatrix());
-	return DirectX::XMMatrixInverse(nullptr, worldMatrix);
+	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&camView->m_cameraTransform.GetMatrix());
+	return worldMatrix;
 }
 
-void CameraSystem::SetViewMatrix(CameraComponent* camView, TransformComponent* transform)
+void CameraSystem::SetViewMatrix(CameraComponent* camView, Transform* transform)
 {
-	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->m_transform.GetMatrix());
-	camView->cameraView = DirectX::XMMatrixInverse(nullptr, worldMatrix);
+	//DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->m_transform.GetMatrix());
+	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->GetMatrix());
+	camView->m_cameraView = DirectX::XMMatrixInverse(nullptr, worldMatrix);
+
+}
+void CameraSystem::SetViewMatrix(CameraComponent* camView, CameraComponent* playerCam)
+{
+
+	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&playerCam->m_cameraTransform.GetMatrix());
+	camView->m_cameraView = DirectX::XMMatrixInverse(nullptr, worldMatrix);
+
 }
 
 //void CameraSystem::SetViewMatrix(CameraComponent* camViewFrom, CameraComponent* camViewTo)

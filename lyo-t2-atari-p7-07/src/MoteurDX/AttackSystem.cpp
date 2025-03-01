@@ -33,10 +33,10 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
             }
             if (attack)
             {
-                // Toujours incrémenter le temps écoulE
+                // Toujours incrémenter le temps écoulé
                 attack->timeSinceLastAttack += deltaTime;  // a mettre en dehors de la boucle, non ?? /!\/!\/!\/!\/!\/!\/
 
-                // Si une attaque est demandée et que le cooldown est respectE
+                // Si une attaque est demandée et que le cooldown est respecté
                 if (attack->attackRequested && attack->timeSinceLastAttack >= attack->attackCooldown)
                 {
                     /*if (attack->targetEntity != nullptr)
@@ -64,15 +64,15 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                             {
                                 TransformComponent* transform = static_cast<TransformComponent*>(component);
                                 transform->m_transform = entityTransform->m_transform;
-                                transform->m_transform.Move(1, 0, 0);
-                                transform->m_transform.Scale(0.5f, 0.5f, 0.5f);
+                                transform->m_transform.Move(2.0f, 0, 0);
+                                transform->m_transform.Scale(0.2f, 0.2f, 1.0f);
                             }
                             if (component->ID == Velocity_ID)
                             {
                                 VelocityComponent* vel = static_cast<VelocityComponent*>(component);
                                 vel->vx = 0.0f;
                                 vel->vy = 0.0f;
-                                vel->vz = 5.0f;
+                                vel->vz = 1.0f;
                             }
                             if (component->ID == Collider_ID)
                             {
