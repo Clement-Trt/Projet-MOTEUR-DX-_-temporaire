@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "ColliderManager.h"
 
-void ColliderManager::InitCollider(EntityManager* entityManager, ParticleManager* particleManager)
+void ColliderManager::Initialize(EntityManager* entityManager, ParticleManager* particleManager)
 {
 	m_entityManager = entityManager;
 	m_particleManager = particleManager;
 }
 
-void ColliderManager::UpdateCollider()
+void ColliderManager::Update()
 {
 	// Collisions
 	for (auto& entity1 : m_entityManager->GetEntityTab())

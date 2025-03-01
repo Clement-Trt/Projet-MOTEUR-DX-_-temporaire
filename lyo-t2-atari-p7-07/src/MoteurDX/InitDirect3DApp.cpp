@@ -5,6 +5,8 @@
 #include "MeshFactory.h"
 #include "InputManager.h"
 #include "EntityManager.h"
+#include "HealthSystem.h"
+#include "AttackSystem.h"
 
 #include "Scene.h"
 #include "SceneTest.h"
@@ -16,10 +18,27 @@
 #include "ColliderManager.h"
 #include "ParticleManager.h"
 #include "EnnemyManager.h"
+#include "Movement.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
 	m_lastTime = timeGetTime();
+}
+
+InitDirect3DApp::~InitDirect3DApp()
+{
+	delete m_mainView;
+	delete m_healthSystem;
+	delete m_attackSystem;
+	delete m_meshFactory;
+	delete m_entityManager;
+	delete m_textureManager;
+	delete m_colliderManager;
+	delete m_particleManager;
+	delete m_ennemyManager;
+	delete m_movementManager;
+	delete m_cameraManager;
+	delete m_scene;
 }
 
 bool InitDirect3DApp::Initialize()
@@ -49,25 +68,6 @@ bool InitDirect3DApp::Initialize()
 
 	mCurrFrameResource = mFrameResources[0].get();
 
-	// Initialisation Game Manager et Scene (ECS)
-	m_entityManager = new EntityManager();
-
-	// MeshFactory
-	m_meshFactory = new MeshFactory;
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(), this);
-	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
-
-	// Particles
-	m_particleManager = new ParticleManager;
-	m_particleManager->InitParticleManager(GetEntityManager(), this);
-
-	// Collider
-	m_colliderManager = new ColliderManager;
-	m_colliderManager->InitCollider(GetEntityManager(), GetParticleManager());
-
-	// Ennemy
-	m_ennemyManager = new EnnemyManager;
-	m_ennemyManager->InitEnnemyManager(GetEntityManager(), this);
 
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
@@ -88,24 +88,60 @@ bool InitDirect3DApp::Initialize()
 		return false;
 	}
 
-	// Positionner la camera a une position initiale
-	m_mainView = new CameraComponent;
-	m_mainView->m_cameraView = CameraSystem::DefaultView();
 
 	mCommandList->Close();
 	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 	FlushCommandQueue();
 
+	// Initialisation Game Manager et Scene (ECS)
+	m_entityManager = new EntityManager();
+
+	// MeshFactory
+	m_meshFactory = new MeshFactory;
+	m_meshFactory->Initialize(mD3DDevice.Get(), m_entityManager, this);
+	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
+
+	// Particles
+	m_particleManager = new ParticleManager;
+	m_particleManager->Initialize(this);
+
+	// Collider
+	m_colliderManager = new ColliderManager;
+	m_colliderManager->Initialize(m_entityManager, m_particleManager);
+
+	// Ennemy
+	m_ennemyManager = new EnnemyManager;
+	m_ennemyManager->Initialize(this);
+
+	// AttackSystem
+	m_attackSystem = new AttackSystem;
+	m_attackSystem->Initialize(this);
+
+	// HealthManager
+	m_healthSystem = new HealthSystem;
+	m_healthSystem->Initialize(this);
+
+	// MouvementManager
+	m_movementManager = new Movement;
+	m_movementManager->Initialize(this);
+
+	// CameraManager
+	m_cameraManager = new CameraSystem;
+	m_cameraManager->Initialize(this);
+
+	// MainView
+	m_mainView = new CameraComponent;
+	m_mainView->m_cameraView = m_cameraManager->DefaultView();
+
+
 	// Scene
-	SceneTest* scene = new SceneTest;
-	//GameScene* scene = new GameScene;
+	//SceneTest* scene = new SceneTest;
+	GameScene* scene = new GameScene;
 	SetScene(scene);
 	m_scene->Initialize(this);
 	m_scene->OnInitialize();
 
-	m_attackSystem = new AttackSystem;
-	m_attackSystem->Initialize(this);
 
 	return true;
 }
@@ -159,100 +195,63 @@ bool InitDirect3DApp::InitTexture()
 
 void InitDirect3DApp::Update()
 {
-	//SetDeltaTime(m_deltaTime); // AJOUTER SYSTEME DE TIMER
-
-	//HandleInput(); // AJOUTER SYSTEME DE GESTION D'INPUT
-
-	// GESTION DES INPUTS
-	//{
-		//// Mettez a jour la souris en passant le handle de la fenetre
-		//InputManager::UpdateMouse(GetActiveWindow());
-
-		//// Recuperer le deplacement de la souris
-		//int deltaX = InputManager::GetMouseDeltaX();
-		//int deltaY = InputManager::GetMouseDeltaY();
-
-		//// Sensibilite de la souris
-		//const float sensitivity = 0.005f;
-		//if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-		//{
-		//	// Mettre a jour la rotation de la camera en fonction du delta
-		//	m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
-		//}
-
-		///*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		//if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		//if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		//if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
-		//if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		//if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		//if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		//if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
-		//if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
-		//if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
-	//}
-
 	// UPDATE DU JEU
 	UpdateTimer();
 	UpdatePhysics();
 
-	m_healthSystem.Update(m_entityManager, m_deltaTime);
-	m_attackSystem->Update(m_entityManager, m_deltaTime);
 }
 
-//AABB InitDirect3DApp::GetAABB(const Transform& transform)
-//{
-//	AABB box;
-//	box.min.x = transform.vPosition.x - transform.vScale.x;
-//	box.min.y = transform.vPosition.y - transform.vScale.y;
-//	box.min.z = transform.vPosition.z - transform.vScale.z;
-//
-//	box.max.x = transform.vPosition.x + transform.vScale.x;
-//	box.max.y = transform.vPosition.y + transform.vScale.y;
-//	box.max.z = transform.vPosition.z + transform.vScale.z;
-//
-//	return box;
-//}
-//
-//bool InitDirect3DApp::CheckCollision(const AABB& a, const AABB& b)
-//{
-//	if (a.max.x < b.min.x || a.min.x > b.max.x)
-//		return false;
-//	if (a.max.y < b.min.y || a.min.y > b.max.y)
-//		return false;
-//	if (a.max.z < b.min.z || a.min.z > b.max.z)
-//		return false;
-//	return true;
-//
-//}
-//bool InitDirect3DApp::AABBIntersect(const TransformComponent& a, const TransformComponent& b)
-//{
-//	// Calcul des bornes pour l'objet A
-//	float aMinX = a.m_transform.vPosition.x - a.m_transform.vScale.x;
-//	float aMaxX = a.m_transform.vPosition.x + a.m_transform.vScale.x;
-//	float aMinY = a.m_transform.vPosition.y - a.m_transform.vScale.y;
-//	float aMaxY = a.m_transform.vPosition.y + a.m_transform.vScale.y;
-//	float aMinZ = a.m_transform.vPosition.z - a.m_transform.vScale.z;
-//	float aMaxZ = a.m_transform.vPosition.z + a.m_transform.vScale.z;
-//
-//	// Calcul des bornes pour l'objet B
-//	float bMinX = b.m_transform.vPosition.x - b.m_transform.vScale.x;
-//	float bMaxX = b.m_transform.vPosition.x + b.m_transform.vScale.x;
-//	float bMinY = b.m_transform.vPosition.y - b.m_transform.vScale.y;
-//	float bMaxY = b.m_transform.vPosition.y + b.m_transform.vScale.y;
-//	float bMinZ = b.m_transform.vPosition.z - b.m_transform.vScale.z;
-//	float bMaxZ = b.m_transform.vPosition.z + b.m_transform.vScale.z;
-//
-//	// Verification du chevauchement sur chaque axe
-//	if (aMaxX < bMinX || aMinX > bMaxX)
-//		return false;
-//	if (aMaxY < bMinY || aMinY > bMaxY)
-//		return false;
-//	if (aMaxZ < bMinZ || aMinZ > bMaxZ)
-//		return false;
-//
-//	return true;
-//}
+void InitDirect3DApp::UpdateTimer()
+{
+	DWORD currentTime = timeGetTime();
+	m_deltaTime = (currentTime - m_lastTime) / 1000.0f; // conversion en secondes
+	m_lastTime = currentTime;
+}
+
+void InitDirect3DApp::UpdatePhysics()
+{
+	// UPDATE SCENE
+	if (m_entityManager->GetNbEntity() > 0 && m_entityManager->GetEntityTab()[0] != nullptr)
+	{
+		// Update (En gros gestion des input)
+		m_scene->OnUpdate();
+
+		// Ennemies
+		m_ennemyManager->Update();
+
+		// MovementSystem
+		m_movementManager->Update(); 
+
+		// CollisionsSystem
+		m_colliderManager->Update();
+
+		// cameraSystem
+		m_cameraManager->Update(); 
+
+		// attacksystem
+		m_attackSystem->Update(m_deltaTime);
+
+		// HealthSystem
+		m_healthSystem->Update(m_deltaTime); 
+	}
+
+	// DESTROY ENTITIES
+	for (auto& entityToDestroy : m_entityManager->GetToDestroyTab())
+	{
+		m_entityManager->DestroyEntity(entityToDestroy);
+	}
+	m_entityManager->GetToDestroyTab().clear();
+
+	// ADD ENTITIES
+	for (auto& entityToAdd : m_entityManager->GetEntityToAddTab())
+	{
+		m_entityManager->AddEntityToTab(entityToAdd, m_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
+	}
+	m_entityManager->GetEntityToAddTab().clear();
+	m_entityManager->GetComponentToAddTab().clear();
+	m_entityManager->ResetEntitiesToAdd();
+}
+
 
 void InitDirect3DApp::Render()
 {
@@ -436,92 +435,6 @@ void InitDirect3DApp::CreatePipelineState()
 		MessageBox(0, L"CreateGraphicsPipelineState failed.", L"Error", MB_OK);
 		return;
 	}
-}
-
-void InitDirect3DApp::UpdatePhysics()
-{
-
-	if (m_entityManager->GetNbEntity() > 0 && m_entityManager->GetEntityTab()[0] != nullptr)
-	{
-		// Update
-		m_scene->OnUpdate();
-
-		// update transform of entites
-
-
-		// COLLISIONS a ajouter
-
-	}
-
-	// Collisions
-	m_colliderManager->UpdateCollider();
-
-	// Ennemies
-	m_ennemyManager->Update();
-
-	//for (auto& entity1 : m_entityManager->GetEntityTab())
-	//{
-	//	if (entity1 == nullptr)
-	//		continue;
-	//	
-	//	TransformComponent* transform1 = nullptr;
-	//	for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
-	//	{
-	//		if (component->ID == Transform_ID)
-	//		{
-	//			transform1 = static_cast<TransformComponent*>(component);
-	//		}
-	//	}
-	//	if (!transform1)
-	//		continue;
-	//	for (uint32_t entity2 = entity1->tab_index + 1; entity2 < 64000; entity2++)
-	//	{
-	//		if (!m_entityManager->GetEntityTab()[entity2])
-	//			continue;
-
-	//		TransformComponent* transform2 = nullptr;
-	//		for (auto* component : m_entityManager->GetComponentsTab()[entity2]->vec_components)
-	//		{
-	//			if (component->ID == Transform_ID)
-	//			{
-	//				transform2 = static_cast<TransformComponent*>(component);
-	//			}
-	//		}
-	//		if (!transform2)
-	//			continue;
-
-	//		// Test de collision
-	//		if (AABBIntersect(*transform1, *transform2))
-	//		{
-	//			// Ici, vous pouvez ajouter le traitement n�cessaire en cas de collision
-	//		}
-	//	}
-
-	//}
-
-
-	// DESTROY ENTITIES
-	for (auto& entityToDestroy : m_entityManager->GetToDestroyTab())
-	{
-		m_entityManager->DestroyEntity(entityToDestroy);
-	}
-	m_entityManager->GetToDestroyTab().clear();
-
-	// ADD ENTITIES
-	for (auto& entityToAdd : m_entityManager->GetEntityToAddTab())
-	{
-		m_entityManager->AddEntityToTab(entityToAdd, m_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
-	}
-	m_entityManager->GetEntityToAddTab().clear();
-	m_entityManager->GetComponentToAddTab().clear();
-	m_entityManager->ResetEntitiesToAdd();
-}
-
-void InitDirect3DApp::UpdateTimer()
-{
-	DWORD currentTime = timeGetTime();
-	m_deltaTime = (currentTime - m_lastTime) / 1000.0f; // conversion en secondes
-	m_lastTime = currentTime;
 }
 
 

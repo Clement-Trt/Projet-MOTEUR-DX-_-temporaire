@@ -29,7 +29,7 @@ public:
 	MeshFactory();
 
 	// Init meshFactory
-	void InitMeshFactory(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx);
+	void Initialize(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx);
 
 	// Create mesh
 	Mesh* CreateCube();

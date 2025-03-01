@@ -18,9 +18,6 @@ public:
 
 protected:
 
-	int compteur;
-	int compteur2;
-
 	Entity* playerEntity = nullptr;
 	Entity* iceBlockEntity = nullptr;
 };

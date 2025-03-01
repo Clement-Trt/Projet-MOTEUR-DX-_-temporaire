@@ -367,7 +367,7 @@ void SceneTest::OnUpdate()
 					{
 						transform->m_transform.AddToGlobalPosY(-0.1f);
 					}*/
-					CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), &transform->m_transform);
+					//CameraSystem::SetViewMatrix(mpGameManager->GetMainView(), &transform->m_transform);
 				}
 			}
 		}
@@ -392,7 +392,7 @@ void SceneTest::OnUpdate()
 				}
 				if (transform != nullptr && vel != nullptr)
 				{
-					mMvmt->Move(entity, vel, transform);
+					//mMvmt->Move(entity, vel, transform);
 				}
 				//mMvmt->SetVelocity(vel, transform->m_transform.)
 			}

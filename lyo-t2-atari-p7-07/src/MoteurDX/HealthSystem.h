@@ -1,12 +1,16 @@
 #pragma once
 
-#include "EntityManager.h"
+class InitDirect3DApp;
 
-// Système de gestion de la santE
 class HealthSystem
 {
 public:
-    // Met Ejour le système en utilisant le temps écoulE(deltaTime)
-    void Update(EntityManager* entityManager, float deltaTime);
-    //void TakeDamage(HealthComponent* healthComponent, float damage);
+    void Initialize(InitDirect3DApp* gameManager);
+
+    void Update(float deltaTime);
+
+protected:
+
+    InitDirect3DApp* m_gameManager;
+
 };

@@ -15,7 +15,7 @@ protected:
 	EntityManager* mpEntityManager;
 
 	// Pointeur vers chaque System
-	Movement* mMvmt;
+	//Movement* mMvmt;
 	AttackSystem* mAttack;
 public:
 

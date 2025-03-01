@@ -1,31 +1,26 @@
 #pragma once
 
 #include "WindowDX.h";
-//#include "Camera.h";
 #include "Scene.h";
-#include "HealthSystem.h"
-#include "AttackSystem.h"
 
-//class GameManager;
 class MeshFactory;
 class Camera;
 class ColliderManager;
 class ParticleManager;
 class EnnemyManager;
-//class HealthSystem;
-//class AttackSystem;
+class Movement;
+class CameraSystem;
+class Attackystem;
+class HealthSystem;
 
 class TextureManager;
-
-//struct AABB {
-//	DirectX::XMFLOAT3 min;
-//	DirectX::XMFLOAT3 max;
-//};
 
 class InitDirect3DApp : public WindowDX
 {
 public:
 	InitDirect3DApp(HINSTANCE hInstance);
+	~InitDirect3DApp();
+
 	bool Initialize();
 	bool InitTexture();
 	void Update() override;
@@ -33,19 +28,12 @@ public:
 	void UpdateTimer();
 	void Draw() override;
 
-	// __ Game loop __ 
-
-	//void HandleInput();
-	//AABB GetAABB(const Transform& transform);
-	//bool CheckCollision(const AABB& a, const AABB& b);
-	//bool AABBIntersect(const TransformComponent& a, const TransformComponent& b);
 
 	void Render();
 	void CreatePipelineState();
 
 	void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
 	void SetScene(Scene* scene) { m_scene = scene; }
-	//void SetCamera(Camera* camView) { m_Camera = camView; }
 
 
 	EntityManager* GetEntityManager() { return m_entityManager; }
@@ -60,7 +48,7 @@ private:
 	D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
 
 	CameraComponent* m_mainView;
-	HealthSystem m_healthSystem;
+	HealthSystem* m_healthSystem;
 	AttackSystem* m_attackSystem;
 
 	MeshFactory* m_meshFactory;
@@ -70,9 +58,12 @@ private:
 	ParticleManager* m_particleManager;
 	EnnemyManager* m_ennemyManager;
 
+	Movement* m_movementManager;
+	CameraSystem* m_cameraManager;
+
 	Scene* m_scene;
 
-	float m_deltaTime = 0.0f; //    /!\/!\/!\/!\    A UTILISER DANS LA BOUCLE DE JEU    /!\/!\/!\/!\/
+	float m_deltaTime = 0.0f; //   PAS UTILISE ?
 	DWORD m_lastTime = 0;
 
 	// Textures:

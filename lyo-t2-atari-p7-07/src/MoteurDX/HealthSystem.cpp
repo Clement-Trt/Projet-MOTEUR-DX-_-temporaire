@@ -1,9 +1,17 @@
 #include "pch.h"
 #include "HealthSystem.h"
+#include "InitDirect3DApp.h"
 #include "Components.h" // Pour HealthComponent
 
-void HealthSystem::Update(EntityManager* entityManager, float deltaTime)
+void HealthSystem::Initialize(InitDirect3DApp* gameManager)
 {
+    m_gameManager = gameManager;
+}
+
+void HealthSystem::Update(float deltaTime)
+{
+    EntityManager* entityManager = m_gameManager->GetEntityManager();
+
     // Parcourir toutes les entités
     for (Entity* entity : entityManager->GetEntityTab())
     {
@@ -39,7 +47,3 @@ void HealthSystem::Update(EntityManager* entityManager, float deltaTime)
     }
 }
 
-//void HealthSystem::TakeDamage(HealthComponent* healthComponent, float damage)
-//{
-//    healthComponent->currentHealth -= damage;
-//}

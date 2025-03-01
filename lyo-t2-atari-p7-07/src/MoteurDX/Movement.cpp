@@ -10,6 +10,38 @@ void Movement::Initialize(InitDirect3DApp* gameManager)
 	mGM = gameManager;
 }
 
+void Movement::Update()
+{
+	for (Entity* entity : mGM->GetEntityManager()->GetEntityTab())
+	{
+		if (!entity)
+			continue;
+
+		if (mGM->GetEntityManager()->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY))
+		{
+			TransformComponent* transform = nullptr;
+			VelocityComponent* velocity = nullptr;
+
+
+			for (auto* component : mGM->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
+			{
+				if (component->ID == Transform_ID)
+				{
+					transform = static_cast<TransformComponent*>(component);
+				}
+				if (component->ID == Velocity_ID)
+				{
+					velocity = static_cast<VelocityComponent*>(component);
+				}
+			}
+			if (transform != nullptr && velocity != nullptr)
+			{
+				Move(entity, velocity, transform);
+			}
+		}
+	}
+}
+
 void Movement::SetVelocity(/*Entity* entity, */VelocityComponent* velComponent, float velFront, float velRight, float velUp)
 {
 	velComponent->vz = velFront;
@@ -19,8 +51,9 @@ void Movement::SetVelocity(/*Entity* entity, */VelocityComponent* velComponent, 
 
 void Movement::Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent)
 {
-	transformComponent->m_transform.Move(velComponent->vz, velComponent->vx,velComponent->vy);
-	if (entity->id != 1)
+	transformComponent->m_transform.Move(velComponent->vz, velComponent->vx, velComponent->vy);
+
+	if (entity->id != 1) // Si ce n'est pas le joueur
 	{
 		if (transformComponent->m_transform.GetPositionX() > 70 || transformComponent->m_transform.GetPositionX() < -70
 			|| transformComponent->m_transform.GetPositionY() > 70 || transformComponent->m_transform.GetPositionY() < -70
@@ -29,7 +62,7 @@ void Movement::Move(Entity* entity, VelocityComponent* velComponent, TransformCo
 			mGM->GetEntityManager()->ToDestroy(entity);
 		}
 	}
-	else
+	else // Si c'est le joueur
 	{
 		if (transformComponent->m_transform.GetPositionX() > 70)
 		{
@@ -55,5 +88,6 @@ void Movement::Move(Entity* entity, VelocityComponent* velComponent, TransformCo
 		{
 			transformComponent->m_transform.vPosition.z = -70;
 		}
+		SetVelocity(velComponent, 0, 0, 0);
 	}
 }

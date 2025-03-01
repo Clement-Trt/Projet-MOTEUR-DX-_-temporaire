@@ -8,7 +8,7 @@ MeshFactory::MeshFactory()
 {
 }
 
-void MeshFactory::InitMeshFactory(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx)
+void MeshFactory::Initialize(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx)
 {
 	m_Device = device;
 	m_entityManager = entityManager;

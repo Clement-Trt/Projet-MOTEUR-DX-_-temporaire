@@ -2,29 +2,27 @@
 #include "Components.h"
 
 
+class InitDirect3DApp;
+
 class CameraSystem
 {
 public:
-    static DirectX::XMMATRIX DefaultView(/*CameraComponent* cam*/);
 
-   /* void SetPosition(float x, float y, float z);
-    void Move(float rightDir, float upDir, float frontDir);
-    void MoveRelative(float forwardDelta, float rightDelta, float upDelta);
-    void Rotate(float pitch, float yaw);*/
+    void Initialize(InitDirect3DApp* gameManager);
 
-    static DirectX::XMMATRIX GetViewMatrix(CameraComponent* camView);
-
-    static void SetViewMatrix(CameraComponent* camView, Transform* transform);
-
-    static void SetViewMatrix(CameraComponent* camView, CameraComponent* playerCam);
-
-    //static void SetViewMatrix(CameraComponent* camViewFrom, CameraComponent* camViewTo);
+    void Update();
 
 
-    /*void SetViewMatrixT(DirectX::XMFLOAT4X4& transformMatrix) { matrix = transformMatrix; }
-    void SetTransform(Transform* transformComponent) { transform = transformComponent; }*/
+    DirectX::XMMATRIX DefaultView(/*CameraComponent* cam*/);
 
+
+    //DirectX::XMMATRIX GetViewMatrix(CameraComponent* camView);
+
+    void SetViewMatrix(CameraComponent* camView, Transform* transform);
+
+    //void SetViewMatrix(CameraComponent* camView, CameraComponent* playerCam);
 private:
 
+    InitDirect3DApp* m_gameManager;
 };
 

@@ -5,10 +5,10 @@ EnnemyManager::EnnemyManager()
 {
 }
 
-void EnnemyManager::InitEnnemyManager(EntityManager* entityManager, InitDirect3DApp* app)
+void EnnemyManager::Initialize(InitDirect3DApp* app)
 {
-	m_entityManager = entityManager;
 	m_gameManager = app;
+	m_entityManager = app->GetEntityManager();
 }
 
 void EnnemyManager::Update()

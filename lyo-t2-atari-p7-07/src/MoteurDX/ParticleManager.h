@@ -8,7 +8,7 @@ class ParticleManager
 public:
 	ParticleManager();
 
-	void InitParticleManager(EntityManager* entityManager, InitDirect3DApp* app);
+	void Initialize(InitDirect3DApp* app);
 
 	void Update();
 

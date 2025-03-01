@@ -8,7 +8,7 @@ class EnnemyManager
 public:
 	EnnemyManager();
 
-	void InitEnnemyManager(EntityManager* entityManager, InitDirect3DApp* app);
+	void Initialize(InitDirect3DApp* app);
 
 	void Update();
 
