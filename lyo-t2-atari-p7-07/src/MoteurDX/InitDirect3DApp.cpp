@@ -27,7 +27,7 @@ InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 
 InitDirect3DApp::~InitDirect3DApp()
 {
-	delete m_mainView;
+	//delete m_mainView;
 	delete m_healthSystem;
 	delete m_attackSystem;
 	delete m_meshFactory;
@@ -130,9 +130,9 @@ bool InitDirect3DApp::Initialize()
 	m_cameraManager = new CameraSystem;
 	m_cameraManager->Initialize(this);
 
-	// MainView
-	m_mainView = new CameraComponent;
-	m_mainView->m_cameraView = m_cameraManager->DefaultView();
+	//// MainView
+	//m_mainView = new CameraComponent;
+	//m_mainView->m_cameraView = m_cameraManager->DefaultView();
 
 
 	// Scene
@@ -271,7 +271,7 @@ void InitDirect3DApp::Render()
 		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		DirectX::XMMATRIX view = m_mainView->m_cameraView;
+		DirectX::XMMATRIX view = m_cameraManager->GetViewMatrix();
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube

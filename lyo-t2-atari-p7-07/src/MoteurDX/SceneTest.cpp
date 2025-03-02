@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "EntityManager.h"
-#include "Movement.h"
 #include "InitDirect3DApp.h"
 #include "Camera.h"
 #include "InputManager.h"

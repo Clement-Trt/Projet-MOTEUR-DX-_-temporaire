@@ -39,8 +39,9 @@ public:
 	EntityManager* GetEntityManager() { return m_entityManager; }
 	MeshFactory* GetFactory() { return m_meshFactory; }
 	ParticleManager* GetParticleManager() { return m_particleManager; }
+	CameraSystem* GetCameraSystem() { return m_cameraManager; }
 
-	CameraComponent* GetMainView() { return m_mainView; }
+	//CameraComponent* GetMainView() { return m_mainView; }
 
 	friend class Scene;
 
@@ -50,7 +51,7 @@ private:
 	MeshFactory* m_meshFactory;
 
 	EntityManager* m_entityManager;
-	CameraComponent* m_mainView;
+	//CameraComponent* m_mainView;
 
 	ColliderManager* m_colliderManager;
 	EnnemyManager* m_ennemyManager;

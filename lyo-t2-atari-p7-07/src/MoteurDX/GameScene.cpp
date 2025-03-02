@@ -5,7 +5,6 @@
 #include <iostream>
 
 #include "EntityManager.h"
-#include "Movement.h"
 #include "InitDirect3DApp.h"
 #include "Camera.h"
 #include "InputManager.h"
@@ -195,7 +194,7 @@ void GameScene::OnInitialize()
 		CreateWallBlock(10, 15, 6, 5, 10, -30, 10);
 	}
 
-
+	m_camera->SetFPS();
 
 }
 
@@ -275,215 +274,25 @@ void GameScene::OnUpdate()
 	{
 		transform->m_transform.ResetRoll();
 	}
+
+
+	if (InputManager::GetKeyDown('V'))
+	{
+		m_camera->ChangeView();
+	}
+	if (InputManager::GetKeyIsPressed('N'))
+	{
+		m_camera->SetTPS_Lock(true); 
+	}
+	else m_camera->SetTPS_Lock(false);
+
+
+	
+
+
 }
 
 void GameScene::OnClose()
 {
 	delete playerEntity;
 }
-
-
-
-// --------- CODE VUE SUR UN BLOCK -------------
-
-
-//void GameScene::OnInitialize()
-//{
-//	// ----- Initialize -----
-//
-//	// Block a surveiller
-//	{
-//		Entity* block = mpEntityManager->CreateEntity();
-//
-//		mpEntityManager->AddComponent<TransformComponent>(block);
-//		mpEntityManager->AddComponent<VelocityComponent>(block);
-//		mpEntityManager->AddComponent<AttackComponent>(block);
-//		mpEntityManager->AddComponent<ColliderComponent>(block);
-//		mpEntityManager->AddComponent<MeshComponent>(block);
-//
-//		for (auto& component : mpEntityManager->GetComponentToAddTab()[block->tab_index]->vec_components)
-//		{
-//			if (component->ID == Mesh_ID)
-//			{
-//				MeshComponent* mesh = static_cast<MeshComponent*>(component);
-//				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-//				mesh->textureID = L"PlayerTexture"; // On assigne la texture
-//			}
-//			if (component->ID == Transform_ID)
-//			{
-//				TransformComponent* transform = static_cast<TransformComponent*>(component);
-//				transform->m_transform.Scale(3.0f, 3.0f, 3.0f);
-//				transform->m_transform.vPosition = { 0.0f , 0.0f, 0.0f };
-//			}
-//		}
-//		playerEntity = block;
-//	}
-//
-//	// SkyBox
-//	{
-//		Entity* skyBox = mpEntityManager->CreateEntity();
-//		mpEntityManager->AddComponent<TransformComponent>(skyBox);
-//		mpEntityManager->AddComponent<MeshComponent>(skyBox);
-//
-//		for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[skyBox->tab_index]->vec_components)
-//		{
-//			if (comp->ID == Mesh_ID)
-//			{
-//				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-//				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateSkyBoxCube();
-//				mesh->textureID = L"BoxTexture";
-//			}
-//			if (comp->ID == Transform_ID)
-//			{
-//				TransformComponent* transform = static_cast<TransformComponent*>(comp);
-//				transform->m_transform.Scale(150, 150, 150);
-//				transform->m_transform.Move(0, 0, 0);
-//			}
-//		}
-//	}
-//}
-//
-//
-//void GameScene::OnUpdate()
-//{
-//	// ----- Update -----
-//
-//	CameraComponent* camComponent = nullptr;
-//
-//	TransformComponent* transformComponent = nullptr;
-//
-//	VelocityComponent* velComponent = nullptr;
-//
-//	for (auto* component : mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components)
-//	{
-//		if (component->ID == Transform_ID)
-//		{
-//			transformComponent = static_cast<TransformComponent*>(component);
-//		}
-//		if (component->ID == Velocity_ID)
-//		{
-//			velComponent = static_cast<VelocityComponent*>(component);
-//		}
-//	}
-//
-//
-//	// Mettez a jour la souris en passant le handle de la fenetre
-//	InputManager::UpdateMouse(GetActiveWindow());
-//
-//	// Recuperer le deplacement de la souris
-//	int deltaX = InputManager::GetMouseDeltaX();
-//	int deltaY = InputManager::GetMouseDeltaY();
-//
-//	// Sensibilite de la souris
-//	const float sensitivity = 0.005f;
-//	if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-//	{
-//		// Mettre a jour la rotation de la camera en fonction du delta
-//		transformComponent->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
-//	}
-//
-//	bool move = false;
-//
-//	if (InputManager::GetKeyIsPressed('D'))
-//	{
-//		velComponent->vx = 0.5f;
-//	}
-//	if (InputManager::GetKeyIsPressed('Q'))
-//	{
-//		velComponent->vx = -0.5f;
-//	}
-//
-//	if (InputManager::GetKeyIsPressed('Z'))
-//	{
-//		velComponent->vz = 0.5f;
-//	}
-//	if (InputManager::GetKeyIsPressed('S'))
-//	{
-//		velComponent->vz = -0.5f;
-//	}
-//
-//	if (InputManager::GetKeyIsPressed('A'))
-//	{
-//		velComponent->vy = 0.5f;
-//	}
-//	if (InputManager::GetKeyIsPressed('E'))
-//	{
-//		velComponent->vy = -0.5f;
-//	}
-//
-//	if (InputManager::GetKeyIsPressed('W'))
-//	{
-//		velComponent->vx *= 2;
-//		velComponent->vy *= 2;
-//		velComponent->vz *= 2;
-//	}
-//
-//	// Si la touche 'P' est presse, on demande une attaque du joueur sur l'IceBlock
-//	if (InputManager::GetKeyIsPressed(MK_RBUTTON))
-//	{
-//		AttackComponent* attack = nullptr;
-//		auto& playerComponents = mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components;
-//		for (auto* component : playerComponents)
-//		{
-//			if (component->ID == Attack_ID)
-//			{
-//				attack = static_cast<AttackComponent*>(component);
-//				break;
-//			}
-//		}
-//		if (attack)
-//		{
-//			// Declencher l'attaque en definissant le flag et en indiquant la cible
-//			attack->attackRequested = true;
-//		}
-//	}
-//
-//	if (transformComponent)
-//	{
-//		transformComponent->m_transform.ResetRoll();
-//	}
-//
-//	bool followRotation = true;
-//	if (InputManager::GetKeyIsPressed('V'))
-//	{
-//		followRotation = !followRotation;  // Inverse le mode à chaque appui sur S
-//	}
-//
-//
-//	float distanceBehind = transformComponent->m_transform.vScale.z * 4.0f; // Distance derrière le cube
-//	float distanceUp = transformComponent->m_transform.vScale.z; // Distance derrière le cube
-//
-//	float fdistanceBehind = 10 * 4.0f; // Distance derrière le cube
-//	float fdistanceUp = 10; // Distance derrière le cube
-//
-//	DirectX::XMVECTOR localOffset;
-//
-//
-//	DirectX::XMVECTOR cubePos = DirectX::XMLoadFloat3(&transformComponent->m_transform.vPosition);
-//
-//	DirectX::XMVECTOR eyePos;
-//	DirectX::XMVECTOR upDir;
-//	if (followRotation)
-//	{
-//		DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transformComponent->m_transform.matrix);
-//		localOffset = DirectX::XMVectorSet(0.0f, distanceUp, -distanceBehind, 0.0f);
-//		eyePos = DirectX::XMVector3Transform(localOffset, worldMatrix);
-//		upDir = DirectX::XMLoadFloat3(&transformComponent->m_transform.vUp);
-//	}
-//	else
-//	{
-//		localOffset = DirectX::XMVectorSet(0.0f, fdistanceUp, -fdistanceBehind, 0.0f);
-//		eyePos = DirectX::XMVectorAdd(cubePos, localOffset);
-//		upDir = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-//	}
-//
-//
-//
-//	//DirectX::XMVECTOR upDir = DirectX::XMLoadFloat3(&transformComponent->m_transform.vUp); // Haut de la caméra
-//
-//	DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(eyePos, cubePos, upDir);
-//
-//	CameraSystem cam;
-//
-//	cam.SetViewMatrix(m_gameManager->GetMainView(), viewMatrix);
-//}
