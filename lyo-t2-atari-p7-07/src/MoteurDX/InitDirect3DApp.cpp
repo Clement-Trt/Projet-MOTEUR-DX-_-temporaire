@@ -192,7 +192,6 @@ void InitDirect3DApp::Update()
 	// UPDATE DU JEU
 	UpdateTimer();
 	UpdatePhysics();
-
 }
 
 void InitDirect3DApp::UpdateTimer()

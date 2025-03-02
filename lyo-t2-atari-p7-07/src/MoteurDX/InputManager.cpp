@@ -1,25 +1,26 @@
 #include "pch.h"
 #include "InputManager.h"
 
-bool InputManager::GetKeyIsPressed(char key)
+bool InputManager::GetKeyIsPressed(char key) 
 {
-	if (GetAsyncKeyState(key) < 0)
-		return true;
-	return false;
+	return (GetAsyncKeyState(static_cast<unsigned char>(key)) < 0);
 }
 
-bool InputManager::GetKeyDown(char key) {
-	bool isKeyPressed = (GetAsyncKeyState(key) & 0x8000) != 0;
-	if (isKeyPressed && !wasKeyPressed) {
-		wasKeyPressed = true;
+bool InputManager::GetKeyDown(char key) 
+{
+	// Utiliser la touche comme index
+	unsigned char ucKey = static_cast<unsigned char>(key);
+	bool isKeyPressed = (GetAsyncKeyState(ucKey) & 0x8000) != 0;
+	if (isKeyPressed && !wasKeyPressed[ucKey]) {
+		wasKeyPressed[ucKey] = true;
 		return true;
 	}
 	if (!isKeyPressed) {
-		wasKeyPressed = false;
+		wasKeyPressed[ucKey] = false;
 	}
-
 	return false;
 }
+
 
 // Cette fonction doit etre appelee chaque frame (avant de recuperer le delta)
 void InputManager::UpdateMouse(HWND hWnd)
