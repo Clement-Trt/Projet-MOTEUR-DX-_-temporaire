@@ -134,7 +134,7 @@ void GameScene::OnInitialize()
 			if (comp->ID == Transform_ID)
 			{
 				TransformComponent* transform = static_cast<TransformComponent*>(comp);
-				transform->m_transform.Scale(150, 150, 150);
+				transform->m_transform.Scale(300, 300, 300);
 				transform->m_transform.Move(0, 0, 0);
 			}
 		}

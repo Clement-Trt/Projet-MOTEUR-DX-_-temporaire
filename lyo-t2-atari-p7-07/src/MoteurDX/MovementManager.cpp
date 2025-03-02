@@ -53,38 +53,38 @@ void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, Tran
 
 	if (entity->id != 1) // Si ce n'est pas le joueur
 	{
-		if (transformComponent->m_transform.GetPositionX() > 70 || transformComponent->m_transform.GetPositionX() < -70
-			|| transformComponent->m_transform.GetPositionY() > 70 || transformComponent->m_transform.GetPositionY() < -70
-			|| transformComponent->m_transform.GetPositionZ() > 70 || transformComponent->m_transform.GetPositionZ() < -70)
+		if (transformComponent->m_transform.GetPositionX() > 145 || transformComponent->m_transform.GetPositionX() < -145
+			|| transformComponent->m_transform.GetPositionY() > 145 || transformComponent->m_transform.GetPositionY() < -145
+			|| transformComponent->m_transform.GetPositionZ() > 145 || transformComponent->m_transform.GetPositionZ() < -145)
 		{
 			mGM->GetEntityManager()->ToDestroy(entity);
 		}
 	}
 	else // Si c'est le joueur
 	{
-		if (transformComponent->m_transform.GetPositionX() > 70)
+		if (transformComponent->m_transform.GetPositionX() > 145)
 		{
-			transformComponent->m_transform.vPosition.x = 70;
+			transformComponent->m_transform.vPosition.x = 145;
 		}
-		else if (transformComponent->m_transform.GetPositionX() < -70)
+		else if (transformComponent->m_transform.GetPositionX() < -145)
 		{
-			transformComponent->m_transform.vPosition.x = -70;
+			transformComponent->m_transform.vPosition.x = -145;
 		}
-		if (transformComponent->m_transform.GetPositionY() > 70)
+		if (transformComponent->m_transform.GetPositionY() > 145)
 		{
-			transformComponent->m_transform.vPosition.y = 70;
+			transformComponent->m_transform.vPosition.y = 145;
 		}
-		else if (transformComponent->m_transform.GetPositionY() < -70)
+		else if (transformComponent->m_transform.GetPositionY() < -145)
 		{
-			transformComponent->m_transform.vPosition.y = -70;
+			transformComponent->m_transform.vPosition.y = -145;
 		}
-		if (transformComponent->m_transform.GetPositionZ() > 70)
+		if (transformComponent->m_transform.GetPositionZ() > 145)
 		{
-			transformComponent->m_transform.vPosition.z = 70;
+			transformComponent->m_transform.vPosition.z = 145;
 		}
-		else if (transformComponent->m_transform.GetPositionZ() < -70)
+		else if (transformComponent->m_transform.GetPositionZ() < -145)
 		{
-			transformComponent->m_transform.vPosition.z = -70;
+			transformComponent->m_transform.vPosition.z = -145;
 		}
 		SetVelocity(velComponent, 0, 0, 0);
 	}

@@ -27,7 +27,6 @@ InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 
 InitDirect3DApp::~InitDirect3DApp()
 {
-	//delete m_mainView;
 	delete m_healthSystem;
 	delete m_attackSystem;
 	delete m_meshFactory;
@@ -131,8 +130,8 @@ bool InitDirect3DApp::Initialize()
 	m_cameraManager->Initialize(this);
 
 	// Scene
-	SceneTest* scene = new SceneTest;
-	//GameScene* scene = new GameScene;
+	//SceneTest* scene = new SceneTest;
+	GameScene* scene = new GameScene;
 	SetScene(scene);
 	m_scene->Initialize(this);
 	m_scene->OnInitialize();
