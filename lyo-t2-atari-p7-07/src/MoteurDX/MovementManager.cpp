@@ -51,7 +51,7 @@ void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, Tran
 {
 	transformComponent->m_transform.Move(velComponent->vz, velComponent->vx, velComponent->vy);
 
-	if (entity->id != 1 && entity->id != 2) // Si ce n'est pas le joueur
+	if (entity->id != 1) // Si ce n'est pas le joueur
 	{
 		if (transformComponent->m_transform.GetPositionX() > 70 || transformComponent->m_transform.GetPositionX() < -70
 			|| transformComponent->m_transform.GetPositionY() > 70 || transformComponent->m_transform.GetPositionY() < -70

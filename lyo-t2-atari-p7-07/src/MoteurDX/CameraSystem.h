@@ -20,7 +20,7 @@ public:
 
     void SetViewMatrix(CameraComponent* camView, Transform* transform);
 
-    //void SetViewMatrix(CameraComponent* camView, CameraComponent* playerCam);
+    void SetViewMatrix(CameraComponent* camView, DirectX::XMMATRIX viewMatrix);
 private:
 
     InitDirect3DApp* m_gameManager;

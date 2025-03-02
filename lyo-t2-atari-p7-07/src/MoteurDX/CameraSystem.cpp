@@ -74,9 +74,7 @@ void CameraSystem::SetViewMatrix(CameraComponent* camView, Transform* transform)
 	camView->m_cameraView = DirectX::XMMatrixInverse(nullptr, worldMatrix);
 
 }
-//void CameraSystem::SetViewMatrix(CameraComponent* camView, CameraComponent* playerCam)
-//{
-//
-//	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&playerCam->m_cameraTransform.GetMatrix());
-//	camView->m_cameraView = DirectX::XMMatrixInverse(nullptr, worldMatrix);
-//}
+void CameraSystem::SetViewMatrix(CameraComponent* camView, DirectX::XMMATRIX viewMatrix)
+{
+	camView->m_cameraView = viewMatrix;
+}
