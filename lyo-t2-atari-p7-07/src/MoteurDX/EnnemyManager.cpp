@@ -5,15 +5,15 @@ EnnemyManager::EnnemyManager()
 {
 }
 
-void EnnemyManager::InitEnnemyManager(EntityManager* entityManager, InitDirect3DApp* app)
+void EnnemyManager::Initialize(InitDirect3DApp* app)
 {
-	m_entityManager = entityManager;
 	m_gameManager = app;
     m_nbEnnemy = 0;
     m_nbEnnemyToSpawn = 0;
     m_waveNb = 1;
     m_startNextWave = true;
     //SpawnEnnemy(20,20,20);
+	m_entityManager = app->GetEntityManager();
 }
 
 void EnnemyManager::Update()

@@ -4,6 +4,7 @@ class GameManager;
 class EntityManager;
 class Movement;
 class AttackSystem;
+class CameraSystem;
 class InitDirect3DApp;
 
 class Scene
@@ -11,12 +12,14 @@ class Scene
 protected:
 
 	// Pointeur vers GM
-	InitDirect3DApp* mpGameManager;
+	InitDirect3DApp* m_gameManager;
 	EntityManager* mpEntityManager;
 
+	CameraSystem* m_camera;
+
 	// Pointeur vers chaque System
-	Movement* mMvmt;
-	AttackSystem* mAttack;
+	//Movement* mMvmt;
+	//AttackSystem* mAttack;
 public:
 
 	//Scene();

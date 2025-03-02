@@ -8,8 +8,9 @@ void AttackSystem::Initialize(InitDirect3DApp* gameManager)
     mGM = gameManager;
 }
 
-void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
+void AttackSystem::Update(float deltaTime)
 {
+    EntityManager* entityManager = mGM->GetEntityManager();
     for (Entity* entity : entityManager->GetEntityTab())
     {
         if (!entity)
@@ -34,7 +35,7 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
             if (attack)
             {
                 // Toujours incrémenter le temps écoulE
-                attack->timeSinceLastAttack += deltaTime;  // a mettre en dehors de la boucle, non ?? /!\/!\/!\/!\/!\/!\/
+                attack->timeSinceLastAttack += deltaTime;  
 
                 // Si une attaque est demandée et que le cooldown est respectE
                 if (attack->attackRequested && attack->timeSinceLastAttack >= attack->attackCooldown)
@@ -84,23 +85,6 @@ void AttackSystem::Update(EntityManager* entityManager, float deltaTime)
                                 AttackComponent* attack = static_cast<AttackComponent*>(component);
                             }
                         }
-
-
-                       /* HealthComponent* health = nullptr;
-                        auto& targetCompTab = entityManager->GetComponentsTab()[attack->targetEntity->tab_index]->vec_components;
-                        for (auto* comp : targetCompTab)
-                        {
-                            if (comp->ID == Health_ID)
-                            {
-                                health = static_cast<HealthComponent*>(comp);
-                                break;
-                            }
-                        }
-                        if (health)
-                        {
-                            health->currentHealth -= attack->damage;
-                        }*/
-                    //}
                     // Réinitialiser le cooldown et le flag d'attaque
                     attack->timeSinceLastAttack = 0.0f;
                     attack->attackRequested = false;

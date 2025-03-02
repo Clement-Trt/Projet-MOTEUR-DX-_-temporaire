@@ -2,29 +2,37 @@
 #include "Components.h"
 
 
+class InitDirect3DApp;
+
 class CameraSystem
 {
 public:
-    static DirectX::XMMATRIX DefaultView(/*CameraComponent* cam*/);
 
-   /* void SetPosition(float x, float y, float z);
-    void Move(float rightDir, float upDir, float frontDir);
-    void MoveRelative(float forwardDelta, float rightDelta, float upDelta);
-    void Rotate(float pitch, float yaw);*/
+    void Initialize(InitDirect3DApp* gameManager);
 
-    static DirectX::XMMATRIX GetViewMatrix(CameraComponent* camView);
+    void Update();
 
-    static void SetViewMatrix(CameraComponent* camView, Transform* transform);
+    DirectX::XMMATRIX DefaultView();
 
-    static void SetViewMatrix(CameraComponent* camView, CameraComponent* playerCam);
+    DirectX::XMMATRIX GetViewMatrix() { return m_viewMatrix; }
 
-    //static void SetViewMatrix(CameraComponent* camViewFrom, CameraComponent* camViewTo);
+    void SetViewMatrix(Transform* transform);
 
+    void SetViewMatrix(DirectX::XMMATRIX viewMatrix);
 
-    /*void SetViewMatrixT(DirectX::XMFLOAT4X4& transformMatrix) { matrix = transformMatrix; }
-    void SetTransform(Transform* transformComponent) { transform = transformComponent; }*/
+    void ChangeView() { FPS = !FPS; TPS = !TPS; }
 
+    void SetFPS() { FPS = true; TPS = false; }
+    void SetTPS() { TPS = true; FPS = false; }
+    void SetTPS_Lock(bool value) { TPS_Lock = value; }
 private:
 
+    InitDirect3DApp* m_gameManager;
+
+    DirectX::XMMATRIX m_viewMatrix;
+
+    bool FPS = false; // First Person Shooter
+    bool TPS = false; // Third Person Shooter
+    bool TPS_Lock = false; // Third Person Shooter
 };
 

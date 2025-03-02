@@ -3,20 +3,14 @@
 #include <iostream>
 #include "Scene.h"
 #include "InitDirect3DApp.h"
-//#include "EntityManager.h"
-//#include "GameManager.h"
-#include "Movement.h"
 
 void Scene::Initialize(InitDirect3DApp* gameManager)
 {
-	mpGameManager = gameManager;
+	m_gameManager = gameManager;
 
-	mpEntityManager = mpGameManager->m_entityManager;
+	mpEntityManager = m_gameManager->m_entityManager;
 
-	mMvmt = new Movement;
-	mMvmt->Initialize(mpGameManager);
-	//mAttack = new AttackSystem;
-	//mAttack->Initialize(mpGameManager);
+	m_camera = m_gameManager->GetCameraSystem();
 }
 
 void Scene::Update()

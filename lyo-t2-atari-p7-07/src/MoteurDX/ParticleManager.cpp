@@ -5,10 +5,10 @@ ParticleManager::ParticleManager()
 {
 }
 
-void ParticleManager::InitParticleManager(EntityManager* entityManager, InitDirect3DApp* app)
+void ParticleManager::Initialize(InitDirect3DApp* app)
 {
-	m_entityManager = entityManager;
 	m_gameManager = app;
+	m_entityManager = app->GetEntityManager();
 }
 
 void ParticleManager::Update()

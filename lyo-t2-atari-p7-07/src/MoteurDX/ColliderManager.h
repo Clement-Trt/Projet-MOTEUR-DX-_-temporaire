@@ -13,9 +13,9 @@ struct AABB {
 class ColliderManager
 {
 public:
-	void InitCollider(EntityManager* entityManager, ParticleManager* particleManager);
+	void Initialize(EntityManager* entityManager, ParticleManager* particleManager);
 
-	void UpdateCollider();
+	void Update();
 
 	bool AABBIntersect(const TransformComponent& a, const TransformComponent& b);
 

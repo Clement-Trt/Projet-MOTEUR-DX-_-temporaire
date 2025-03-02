@@ -1,17 +1,26 @@
 #include "pch.h"
 #include "HealthSystem.h"
+#include "InitDirect3DApp.h"
 #include "Components.h" // Pour HealthComponent
 #include "EnnemyManager.h"
 
-void HealthSystem::Update(EntityManager* entityManager, EnnemyManager* ennemyManager, float deltaTime)
+// void HealthSystem::Update(EntityManager* entityManager, EnnemyManager* ennemyManager, float deltaTime)
+void HealthSystem::Initialize(InitDirect3DApp* gameManager)
 {
-    // Parcourir toutes les entités
+    m_gameManager = gameManager;
+}
+
+void HealthSystem::Update(float deltaTime)
+{
+    EntityManager* entityManager = m_gameManager->GetEntityManager();
+
+    // Parcourir toutes les entitï¿½s
     for (Entity* entity : entityManager->GetEntityTab())
     {
         if (!entity)
             continue;
 
-        // Vérifier si l'entitEpossède le composant Health
+        // Vï¿½rifier si l'entitï¿½Epossï¿½de le composant Health
         if (entityManager->HasComponent(entity, COMPONENT_HEALTH))
         {
             HealthComponent* health = nullptr;
@@ -32,7 +41,7 @@ void HealthSystem::Update(EntityManager* entityManager, EnnemyManager* ennemyMan
             }
             if (health)
             {
-                // Exemple de logique : détruire l'entitEsi la santEest épuisée
+                // Exemple de logique : dï¿½truire l'entitï¿½Esi la santï¿½Eest ï¿½puisï¿½e
                 if (health->currentHealth <= 0)
                 {
                     // baisse le compte des ennemies
@@ -43,7 +52,7 @@ void HealthSystem::Update(EntityManager* entityManager, EnnemyManager* ennemyMan
                     entityManager->ToDestroy(entity);
                 }
 
-                // Vous pouvez par exemple ajouter une régénération de la santE:
+                // Vous pouvez par exemple ajouter une rï¿½gï¿½nï¿½ration de la santï¿½E:
                 // float regenRate = 5.0f; // points de vie par seconde
                 // health->currentHealth = std::min(health->currentHealth + regenRate * deltaTime, float(health->maxHealth));
             }
@@ -51,7 +60,3 @@ void HealthSystem::Update(EntityManager* entityManager, EnnemyManager* ennemyMan
     }
 }
 
-//void HealthSystem::TakeDamage(HealthComponent* healthComponent, float damage)
-//{
-//    healthComponent->currentHealth -= damage;
-//}

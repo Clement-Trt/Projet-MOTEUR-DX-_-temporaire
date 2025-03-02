@@ -18,10 +18,7 @@ public:
 
 protected:
 
-	int compteur;
-	int compteur2;
-
+	Entity* cameraView = nullptr;
 	Entity* playerEntity = nullptr;
-	Entity* iceBlockEntity = nullptr;
 };
 
