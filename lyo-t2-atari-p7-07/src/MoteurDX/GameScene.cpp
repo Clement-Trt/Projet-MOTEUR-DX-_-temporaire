@@ -113,6 +113,11 @@ void GameScene::OnInitialize()
 				CameraComponent* cam = static_cast<CameraComponent*>(component);
 				cam->m_cameraTransform.Scale(1.0f, 1.0f, 1.0f);
 			}
+			if (component->ID == Attack_ID)
+			{
+				AttackComponent* attack = static_cast<AttackComponent*>(component);
+				attack->attackCooldown = 0.15;
+			}
 		}
 		playerEntity = entity1;
 	}
