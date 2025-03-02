@@ -12,14 +12,28 @@ void EnnemyManager::Initialize(InitDirect3DApp* app)
     m_nbEnnemyToSpawn = 0;
     m_waveNb = 1;
     m_startNextWave = true;
+    m_gameStart = false;
     //SpawnEnnemy(20,20,20);
 	m_entityManager = app->GetEntityManager();
 }
 
 void EnnemyManager::Update()
 {
-    WaveSystem();
-    EnnemyAttackSystem();
+    if (!m_gameStart) 
+    {
+        // VK_key pour les touches comme enter ou shift
+        if (InputManager::GetKeyIsPressed(VK_RETURN)) { m_gameStart = true; };
+
+        // Skip wave at start
+        if (InputManager::GetKeyIsPressed('1')) { m_waveNb = 1; m_gameStart = true; };
+        if (InputManager::GetKeyIsPressed('2')) { m_waveNb = 2; m_gameStart = true; };
+        if (InputManager::GetKeyIsPressed('3')) { m_waveNb = 3; m_gameStart = true; };
+    }
+    else
+    {
+        WaveSystem();
+        EnnemyAttackSystem();
+    }
 }
 
 void EnnemyManager::EnnemyAttackSystem()
@@ -214,7 +228,7 @@ void EnnemyManager::WaveSystem()
     }
     else
     {
-        if (m_nbEnnemy <= 0)
+        if (m_nbEnnemy <= 0 && m_waveNb < 3)
         {
             m_waveNb++;				
             wchar_t buffer[256];

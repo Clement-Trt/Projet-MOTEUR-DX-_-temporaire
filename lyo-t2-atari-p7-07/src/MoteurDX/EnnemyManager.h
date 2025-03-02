@@ -2,6 +2,7 @@
 
 #include "EntityManager.h"
 #include "InitDirect3DApp.h"
+#include "InputManager.h"
 
 class EnnemyManager
 {
@@ -29,6 +30,7 @@ private:
 	TransformComponent* m_playerTransform;
 	Entity* m_player;
 
+	bool m_gameStart;
 	bool m_startNextWave;
 
 	int m_waveNb;
