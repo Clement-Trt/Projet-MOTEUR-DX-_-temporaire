@@ -40,6 +40,7 @@ public:
 	MeshFactory* GetFactory() { return m_meshFactory; }
 	ParticleManager* GetParticleManager() { return m_particleManager; }
 	CameraSystem* GetCameraSystem() { return m_cameraManager; }
+	EnnemyManager* GetEnnemyManager() { return m_ennemyManager; }
 
 	//CameraComponent* GetMainView() { return m_mainView; }
 

@@ -276,7 +276,7 @@ void SceneTest::OnInitialize()
 			float posX = 10 * i - 50;
 			float posY = 10 * j;
 			//float posZ = ;
-			CreateDefaultBlock(8,8,8, posX, posY, 0);
+			CreateDefaultBlock(8, 8, 8, posX, posY, 0);
 		}
 	}
 	/*CreateDefaultBlock(1, 0.1, 0.1, 0, 0, 0);
@@ -284,119 +284,123 @@ void SceneTest::OnInitialize()
 	CreateDefaultBlock(0.1, 0.1, 1, 0, 0, 0);*/
 	compteur = 50;
 	compteur2 = 150;
+
+
+	m_camera->SetFPS();
+
 }
 
 void SceneTest::OnUpdate()
 {
-	for (auto& entity : mpEntityManager->GetEntityTab())
+	//for (auto& entity : mpEntityManager->GetEntityTab())
+	//{
+	//	if (entity == nullptr)
+	//	{
+	//		continue;
+	//	}
+	//	if (mpEntityManager->HasComponent(entity, COMPONENT_CAMERA))
+	//	{
+	//		// Update de position player
+	//		if (mpEntityManager->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_CAMERA))
+	//		{
+	TransformComponent* transform = nullptr;
+	CameraComponent* camComponent = nullptr;
+	ColliderComponent* collider = nullptr;
+
+	for (auto* component : mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components)
 	{
-		if (entity == nullptr)
+		if (component->ID == Transform_ID)
 		{
-			continue;
+			transform = static_cast<TransformComponent*>(component);
 		}
-		if (mpEntityManager->HasComponent(entity, COMPONENT_CAMERA))
+		if (component->ID == Camera_ID)
 		{
-			// Update de position player
-			if (mpEntityManager->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_CAMERA))
-			{
-				TransformComponent* transform = nullptr;
-				CameraComponent* camComponent = nullptr;
-				ColliderComponent* collider = nullptr;
-
-				for (auto* component : mpEntityManager->GetComponentsTab()[entity->tab_index]->vec_components)
-				{
-					if (component->ID == Transform_ID)
-					{
-						transform = static_cast<TransformComponent*>(component);
-					}
-					if (component->ID == Camera_ID)
-					{
-						camComponent = static_cast<CameraComponent*>(component);
-					}
-					if (component->ID == Collider_ID)
-					{
-						collider = static_cast<ColliderComponent*>(component);
-					}
-				}
-
-
-				// Mettez a jour la souris en passant le handle de la fenetre
-				InputManager::UpdateMouse(GetActiveWindow());
-
-				// Recuperer le deplacement de la souris
-				int deltaX = InputManager::GetMouseDeltaX();
-				int deltaY = InputManager::GetMouseDeltaY();
-
-				// Sensibilite de la souris
-				const float sensitivity = 0.005f;
-				if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-				{
-					// Mettre a jour la rotation de la camera en fonction du delta
-					transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
-				}
-
-				if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -0.4f, 0.0f);
-				if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 0.4, 0.0f);
-
-				if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(0.4, 0.0f, 0.0f);
-				if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-0.4f, 0.0f, 0.0f);
-
-				if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.4);
-				if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.4f);
-
-				float posY = transform->m_transform.GetPositionY();
-				/*wchar_t title[256];
-				swprintf_s(title, 256, L"lFrontDir = %f", posY);
-				SetWindowText(GetActiveWindow(), title);*/
-
-
-				/*DWORD t = timeGetTime();
-				DWORD dt = timeGetTime() - t;*/
-				/*wchar_t title[256];
-				swprintf_s(title, 256, L"lFrontDir = ", transform->m_transform.GetPositionZ());
-				SetWindowText(GetActiveWindow(), title);*/
-
-				if (transform != nullptr && camComponent != nullptr)
-				{
-					/*if (posY < 2)
-					{
-						transform->m_transform.GetPositionF3().y = 2;
-					}
-					if (posY > 5)
-					{
-						transform->m_transform.AddToGlobalPosY(-0.1f);
-					}*/
-					//CameraSystem::SetViewMatrix(m_gameManager->GetMainView(), &transform->m_transform);
-				}
-			}
+			camComponent = static_cast<CameraComponent*>(component);
 		}
-		else
+		if (component->ID == Collider_ID)
 		{
-			if (mpEntityManager->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY))
-			{
-				TransformComponent* transform = nullptr;
-				VelocityComponent* vel = nullptr;
-
-
-				for (auto* component : mpEntityManager->GetComponentsTab()[entity->tab_index]->vec_components)
-				{
-					if (component->ID == Transform_ID)
-					{
-						transform = static_cast<TransformComponent*>(component);
-					}
-					if (component->ID == Velocity_ID)
-					{
-						vel = static_cast<VelocityComponent*>(component);
-					}
-				}
-				if (transform != nullptr && vel != nullptr)
-				{
-					//mMvmt->Move(entity, vel, transform);
-				}
-				//mMvmt->SetVelocity(vel, transform->m_transform.)
-			}
+			collider = static_cast<ColliderComponent*>(component);
 		}
 	}
+
+
+	// Mettez a jour la souris en passant le handle de la fenetre
+	InputManager::UpdateMouse(GetActiveWindow());
+
+	// Recuperer le deplacement de la souris
+	int deltaX = InputManager::GetMouseDeltaX();
+	int deltaY = InputManager::GetMouseDeltaY();
+
+	// Sensibilite de la souris
+	const float sensitivity = 0.005f;
+	if (InputManager::GetKeyIsPressed(MK_LBUTTON))
+	{
+		// Mettre a jour la rotation de la camera en fonction du delta
+		transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
+	}
+
+	if (InputManager::GetKeyIsPressed('Q')) transform->m_transform.Move(0.0f, -0.4f, 0.0f);
+	if (InputManager::GetKeyIsPressed('D')) transform->m_transform.Move(0.0f, 0.4, 0.0f);
+
+	if (InputManager::GetKeyIsPressed('Z')) transform->m_transform.Move(0.4, 0.0f, 0.0f);
+	if (InputManager::GetKeyIsPressed('S')) transform->m_transform.Move(-0.4f, 0.0f, 0.0f);
+
+	if (InputManager::GetKeyIsPressed('A')) transform->m_transform.Move(0.0f, 0.0f, 0.4);
+	if (InputManager::GetKeyIsPressed('E')) transform->m_transform.Move(0.0f, 0.0f, -0.4f);
+
+	float posY = transform->m_transform.GetPositionY();
+	/*wchar_t title[256];
+	swprintf_s(title, 256, L"lFrontDir = %f", posY);
+	SetWindowText(GetActiveWindow(), title);*/
+
+
+	/*DWORD t = timeGetTime();
+	DWORD dt = timeGetTime() - t;*/
+	/*wchar_t title[256];
+	swprintf_s(title, 256, L"lFrontDir = ", transform->m_transform.GetPositionZ());
+	SetWindowText(GetActiveWindow(), title);*/
+
+	if (transform != nullptr && camComponent != nullptr)
+	{
+		/*if (posY < 2)
+		{
+			transform->m_transform.GetPositionF3().y = 2;
+		}
+		if (posY > 5)
+		{
+			transform->m_transform.AddToGlobalPosY(-0.1f);
+		}*/
+		//CameraSystem::SetViewMatrix(m_gameManager->GetMainView(), &transform->m_transform);
+	}
+	//}
+	//}
+	//else
+	//{
+	//	if (mpEntityManager->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY))
+	//	{
+	//		TransformComponent* transform = nullptr;
+	//		VelocityComponent* vel = nullptr;
+
+
+	//		for (auto* component : mpEntityManager->GetComponentsTab()[entity->tab_index]->vec_components)
+	//		{
+	//			if (component->ID == Transform_ID)
+	//			{
+	//				transform = static_cast<TransformComponent*>(component);
+	//			}
+	//			if (component->ID == Velocity_ID)
+	//			{
+	//				vel = static_cast<VelocityComponent*>(component);
+	//			}
+	//		}
+	//		if (transform != nullptr && vel != nullptr)
+	//		{
+	//			//mMvmt->Move(entity, vel, transform);
+	//		}
+	//		//mMvmt->SetVelocity(vel, transform->m_transform.)
+	//	}
+	//}
+	//}
 
 	// Si la touche 'P' est presse, on demande une attaque du joueur sur l'IceBlock
 	if (InputManager::GetKeyIsPressed('P'))

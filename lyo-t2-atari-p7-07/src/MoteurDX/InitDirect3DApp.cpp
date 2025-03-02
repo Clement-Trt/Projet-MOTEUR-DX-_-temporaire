@@ -130,14 +130,9 @@ bool InitDirect3DApp::Initialize()
 	m_cameraManager = new CameraSystem;
 	m_cameraManager->Initialize(this);
 
-	//// MainView
-	//m_mainView = new CameraComponent;
-	//m_mainView->m_cameraView = m_cameraManager->DefaultView();
-
-
 	// Scene
-	//SceneTest* scene = new SceneTest;
-	GameScene* scene = new GameScene;
+	SceneTest* scene = new SceneTest;
+	//GameScene* scene = new GameScene;
 	SetScene(scene);
 	m_scene->Initialize(this);
 	m_scene->OnInitialize();

@@ -13,6 +13,7 @@ void HealthSystem::Initialize(InitDirect3DApp* gameManager)
 void HealthSystem::Update(float deltaTime)
 {
     EntityManager* entityManager = m_gameManager->GetEntityManager();
+    EnnemyManager* ennemyManager = m_gameManager->GetEnnemyManager();
 
     // Parcourir toutes les entit�s
     for (Entity* entity : entityManager->GetEntityTab())
