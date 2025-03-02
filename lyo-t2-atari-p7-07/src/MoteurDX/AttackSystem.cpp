@@ -73,7 +73,7 @@ void AttackSystem::Update(float deltaTime)
                                 VelocityComponent* vel = static_cast<VelocityComponent*>(component);
                                 vel->vx = 0.0f;
                                 vel->vy = 0.0f;
-                                vel->vz = 1.0f;
+                                vel->vz = 3.0f;
                             }
                             if (component->ID == Collider_ID)
                             {

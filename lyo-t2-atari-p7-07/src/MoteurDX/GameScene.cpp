@@ -139,7 +139,7 @@ void GameScene::OnInitialize()
 			if (comp->ID == Transform_ID)
 			{
 				TransformComponent* transform = static_cast<TransformComponent*>(comp);
-				transform->m_transform.Scale(300, 300, 300);
+				transform->m_transform.Scale(500, 500, 500);
 				transform->m_transform.Move(0, 0, 0);
 			}
 		}
@@ -237,16 +237,16 @@ void GameScene::OnUpdate()
 	}
 
 
-	if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 0.5f;
-	if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -0.5f;
+	if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 1.0f;
+	if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -1.0f;
 
-	if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 0.5f;
-	if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -0.5f;
+	if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 1.0f;
+	if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -1.0f;
 
-	if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 0.5f;
-	if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -0.5f;
+	if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 1.0f;
+	if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -1.0f;
 
-	if (InputManager::GetKeyIsPressed('W'))
+	if (InputManager::GetKeyIsPressed(VK_SHIFT))
 	{
 		velComponent->vx *= 2;
 		velComponent->vy *= 2;
