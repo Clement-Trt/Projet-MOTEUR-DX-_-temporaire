@@ -92,8 +92,8 @@ void ParticleManager::MakeEffect(float startPosX, float startPosY, float startPo
 	}
 
 	
-	swprintf_s(buffer, 256, L"NB new Particles: %d\r\n", randSplashNb);
-	OutputDebugString(buffer);
+	/*swprintf_s(buffer, 256, L"NB new Particles: %d\r\n", randSplashNb);
+	OutputDebugString(buffer);*/
 }
 
 void ParticleManager::CreateParticle(float size, float speed)

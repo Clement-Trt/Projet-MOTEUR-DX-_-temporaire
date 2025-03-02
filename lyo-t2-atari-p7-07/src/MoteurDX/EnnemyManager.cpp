@@ -202,7 +202,7 @@ void EnnemyManager::WaveSystem()
             m_nbEnnemy++;
             OutputDebugString(L"SpawnEnnemy\n");
         }
-        if (m_waveNb = 3)
+        if (m_waveNb == 3)
         {
             float randPosX = -50 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (50 - -50);
             float randPosY = -50 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (50 - -50);
@@ -216,7 +216,10 @@ void EnnemyManager::WaveSystem()
     {
         if (m_nbEnnemy <= 0)
         {
-            m_waveNb++;
+            m_waveNb++;				
+            wchar_t buffer[256];
+            swprintf_s(buffer, 256, L"NB waves %d\r\n", m_waveNb);
+            OutputDebugString(buffer);
             m_startNextWave = true;
         }
     }

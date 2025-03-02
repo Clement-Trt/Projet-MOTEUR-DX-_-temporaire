@@ -91,7 +91,7 @@ void ColliderManager::UpdateCollider()
 			{
 				collider1->m_isColliding = true;
 				collider2->m_isColliding = true;
-				OutputDebugString(L"Collision !\n");
+				//OutputDebugString(L"Collision !\n");
 
 				//Si l'objet 1 est dynamique et l'objet 2 est statique, on corrige seulement l'objet 1
 				//if (collider1->m_isDynamic && !collider2->m_isDynamic)
@@ -149,12 +149,12 @@ void ColliderManager::UpdateCollider()
 				if (health1 && attack2)
 				{
 					health1->currentHealth -= attack2->damage;
-					OutputDebugString(L"Ouch1\n");
+					//OutputDebugString(L"Ouch1\n");
 				}
 				if (health2 && attack1)
 				{
 					health2->currentHealth -= attack1->damage;
-					OutputDebugString(L"Ouch2\n");
+					//OutputDebugString(L"Ouch2\n");
 				}
 
 				if (collider1->m_isDestructable && entity1)
@@ -171,9 +171,9 @@ void ColliderManager::UpdateCollider()
 					//m_entityManager->DestroyEntity(entity2);
 				}
 
-				wchar_t buffer[256];
-				swprintf_s(buffer, 256, L"Collision ! posX: %f, posY: %f\n", transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY());
-				OutputDebugString(buffer);
+				//wchar_t buffer[256];
+				//swprintf_s(buffer, 256, L"Collision ! posX: %f, posY: %f\n", transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY());
+				//OutputDebugString(buffer);
 				//OutputDebugString(L"Collision !\n");
 			}
 			else
