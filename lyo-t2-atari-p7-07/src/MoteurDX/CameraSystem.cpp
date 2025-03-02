@@ -48,11 +48,11 @@ void CameraSystem::Update()
 		{
 			
 
-			float distanceBehind = transformComponent->m_transform.vScale.z * 4.0f; // Distance derrière le cube
-			float distanceUp = transformComponent->m_transform.vScale.z; // Distance derrière le cube
+			float distanceBehind = transformComponent->m_transform.vScale.z * 4.0f; // Distance derriere le cube
+			float distanceUp = transformComponent->m_transform.vScale.z; // Distance derriere le cube
 
-			float fdistanceBehind = 10 * 4.0f; // Distance derrière le cube
-			float fdistanceUp = 10; // Distance derrière le cube
+			float fdistanceBehind = 10 * 4.0f; // Distance derriere le cube
+			float fdistanceUp = 10; // Distance derriere le cube
 
 			DirectX::XMVECTOR localOffset;
 
@@ -87,16 +87,14 @@ void CameraSystem::Update()
 DirectX::XMMATRIX CameraSystem::DefaultView()
 {
 	DirectX::XMFLOAT3 position(0.0f, 0.0f, 0.0f);
-	// Charger la position de la caméra dans un XMVECTOR
+
 	DirectX::XMVECTOR pos = DirectX::XMLoadFloat3(&position);
 
-	// Calcul du vecteur direction à partir des angles (m_Pitch et m_Yaw)
 	float cosPitch = cosf(0.0f);
 	float sinPitch = sinf(0.0f);
 	float cosYaw = cosf(0.0f);
 	float sinYaw = sinf(0.0f);
 
-	// Le vecteur forward est calculé en utilisant des coordonnées sphériques.
 	DirectX::XMVECTOR forward = DirectX::XMVectorSet(cosPitch * sinYaw, sinPitch, cosPitch * cosYaw, 0.0f);
 
 	DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -104,18 +102,6 @@ DirectX::XMMATRIX CameraSystem::DefaultView()
 	return DirectX::XMMatrixLookToLH(pos, forward, up);
 }
 
-//DirectX::XMMATRIX CameraSystem::GetViewMatrix(CameraComponent* camView)
-//{
-//	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&camView->m_cameraTransform.GetMatrix());
-//	return worldMatrix;
-//}
-
-void CameraSystem::SetViewMatrix(CameraComponent* camView, Transform* transform)
-{
-	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->GetMatrix());
-	camView->m_cameraView = DirectX::XMMatrixInverse(nullptr, worldMatrix);
-
-}
 void CameraSystem::SetViewMatrix(Transform* transform)
 {
 	DirectX::XMMATRIX worldMatrix = DirectX::XMLoadFloat4x4(&transform->GetMatrix());
@@ -127,7 +113,3 @@ void CameraSystem::SetViewMatrix(DirectX::XMMATRIX viewMatrix)
 	m_viewMatrix = viewMatrix;
 }
 
-void CameraSystem::SetViewMatrix(CameraComponent* camView, DirectX::XMMATRIX viewMatrix)
-{
-	camView->m_cameraView = viewMatrix;
-}

@@ -142,7 +142,6 @@ void GameScene::OnInitialize()
 
 	// Blocks
 	{
-
 		CreateWallBlock(10, 15, 8, 20, 30, 40, 10);
 		CreateWallBlock(12, 8, 5, -10, 50, 20, 20);
 		CreateWallBlock(7, 14, 10, 5, -20, 35, 10);
@@ -274,7 +273,6 @@ void GameScene::OnUpdate()
 	{
 		transform->m_transform.ResetRoll();
 	}
-
 
 	if (InputManager::GetKeyDown('V'))
 	{

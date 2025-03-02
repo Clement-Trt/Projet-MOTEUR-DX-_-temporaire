@@ -124,8 +124,8 @@ void ColliderManager::Update()
 					// Stocker la nouvelle position dans vPosition
 					DirectX::XMStoreFloat3(&transform2->m_transform.vPosition, newPos);
 					transform2->m_transform.UpdateMatrix();
-				}
-				else // Si les deux sont dynamiques, repartir la correction
+				}	
+				else if (velocity1 && velocity2)// Si les deux sont dynamiques, repartir la correction
 				{
 					DirectX::XMVECTOR correction = ResolveAABBCollision(*transform1, *transform2);
 					DirectX::XMVECTOR halfCorr = DirectX::XMVectorScale(correction, 0.5f);

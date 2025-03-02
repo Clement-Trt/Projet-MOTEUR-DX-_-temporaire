@@ -12,20 +12,13 @@ public:
 
     void Update();
 
-
-    DirectX::XMMATRIX DefaultView(/*CameraComponent* cam*/);
+    DirectX::XMMATRIX DefaultView();
 
     DirectX::XMMATRIX GetViewMatrix() { return m_viewMatrix; }
-
-    //DirectX::XMMATRIX GetViewMatrix(CameraComponent* camView);
-
-    void SetViewMatrix(CameraComponent* camView, Transform* transform);
 
     void SetViewMatrix(Transform* transform);
 
     void SetViewMatrix(DirectX::XMMATRIX viewMatrix);
-
-    void SetViewMatrix(CameraComponent* camView, DirectX::XMMATRIX viewMatrix);
 
     void ChangeView() { FPS = !FPS; TPS = !TPS; }
 
