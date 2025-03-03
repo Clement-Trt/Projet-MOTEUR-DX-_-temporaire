@@ -48,7 +48,7 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
 	if (health != 0)
-		mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
+		//mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 
 		for (auto& comp : mpEntityManager->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 		{

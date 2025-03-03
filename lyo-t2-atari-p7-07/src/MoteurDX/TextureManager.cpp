@@ -13,16 +13,16 @@ bool TextureManager::LoadTexture(const std::wstring& id, const std::wstring& fil
     if (FAILED(hr))
         return false;
 
-    // Stocker la texture pour éviter qu'elle ne soit détrsuite
+    // Stocker la texture pour eviter qu'elle ne soit detrsuite
     m_textures[id] = texture;
     
     // Conserver l'upload heap dans le vector pour qu'il reste valide
     m_uploadHeaps.push_back(textureUploadHeap);
 
     // Creer le SRV pour la texture
-    // Le Shader Resource View (SRV) est un descripteur qui définit comment une ressource (ici une texture) est vue par les shaders. Il précise notamment 
-    // le format de la texture, le nombre de mipmaps et la dimension de la ressource. Grâce au SRV, le shader (souvent le pixel shader) peut échantillonner 
-    // la texture pour en extraire les données de couleur lors du rendu.
+    // Le Shader Resource View (SRV) est un descripteur qui definit comment une ressource (ici une texture) est vue par les shaders. Il precise notamment 
+    // le format de la texture, le nombre de mipmaps et la dimension de la ressource. Grâce au SRV, le shader (souvent le pixel shader) peut echantillonner 
+    // la texture pour en extraire les donnees de couleur lors du rendu.
     D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
     srvDesc.Format = texture->GetDesc().Format;
@@ -55,9 +55,9 @@ D3D12_GPU_DESCRIPTOR_HANDLE TextureManager::GetTextureHandle(const std::wstring&
 void TextureManager::CreateDescriptorHeap(UINT numDescriptors)
 {
     // Creer un descriptor heap pour le SRV 
-    // Le descriptor heap est une zone mémoire réservée sur la carte graphique qui stocke plusieurs descripteurs. Dans le cas du SRV, il contient les 
-    // descriptions de ressources (comme les textures) afin que le GPU puisse y accéder directement lors du rendu. Une fois créé et rempli, le heap permet 
-    // de regrouper et de gérer ces descripteurs de façon efficace et de les rendre visibles aux shaders.
+    // Le descriptor heap est une zone memoire reservee sur la carte graphique qui stocke plusieurs descripteurs. Dans le cas du SRV, il contient les 
+    // descriptions de ressources (comme les textures) afin que le GPU puisse y acceder directement lors du rendu. Une fois cree et rempli, le heap permet 
+    // de regrouper et de gerer ces descripteurs de façon efficace et de les rendre visibles aux shaders.
     D3D12_DESCRIPTOR_HEAP_DESC heapDesc = {};
     heapDesc.NumDescriptors = numDescriptors;
     heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -66,7 +66,7 @@ void TextureManager::CreateDescriptorHeap(UINT numDescriptors)
     HRESULT hr = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&m_srvHeap));
     if (FAILED(hr))
     {
-        // Gérer l'erreur
+        // Gerer l'erreur
     }
     mDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 }

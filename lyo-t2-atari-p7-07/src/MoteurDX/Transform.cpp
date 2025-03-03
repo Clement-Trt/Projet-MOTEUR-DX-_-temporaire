@@ -93,7 +93,7 @@ void Transform::ResetRoll()
 		DirectX::XMVector3Rotate(DirectX::XMVectorSet(0.f, 0.f, 1.f, 0.f), XMLoadFloat4(&qRotation))
 	);
 
-	// 2. Définir le vecteur up du monde (celui qu'on souhaite obtenir, par exemple (0,1,0))
+	// 2. Definir le vecteur up du monde (celui qu'on souhaite obtenir, par exemple (0,1,0))
 	DirectX::XMVECTOR worldUp = DirectX::XMVectorSet(0.f, 1.f, 0.f, 0.f);
 
 	// 3. Calculer le vecteur right (perpendiculaire EworldUp et forward)
@@ -105,12 +105,12 @@ void Transform::ResetRoll()
 	// 5. Construire une matrice de rotation Epartir de ces axes
 	DirectX::XMMATRIX rotationMat = DirectX::XMMATRIX(right, up, forward, DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f));
 
-	// 6. Convertir cette matrice en quaternion : ce quaternion a le même forward (donc le même yaw et pitch)
+	// 6. Convertir cette matrice en quaternion : ce quaternion a le meme forward (donc le meme yaw et pitch)
 	//    mais son roll est forcEE0 car l'axe up est alignEsur worldUp.
 	DirectX::XMVECTOR newQuat = DirectX::XMQuaternionRotationMatrix(rotationMat);
 
 	// Optionnel : si tu souhaites une transition en douceur, interpole avec le quaternion actuel
-	float deltaTime = 1.0f; // Remplacer par le delta time réel
+	float deltaTime = 1.0f; // Remplacer par le delta time reel
 	const float rotationSpeed = 0.04f;
 	float t = rotationSpeed * deltaTime;
 	if (t > 1.0f) t = 1.0f;

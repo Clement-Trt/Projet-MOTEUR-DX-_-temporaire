@@ -112,8 +112,7 @@ struct ColliderComponent : public Component
 	bool m_isColliding = false;
 	bool m_isSolid = false;
 	bool m_isDynamic = false;
-	bool m_destructable = false;
-	bool m_isDestructable = false;
+	bool m_isDestructible = false;
 	bool m_isDestroyed = false;
 };
 

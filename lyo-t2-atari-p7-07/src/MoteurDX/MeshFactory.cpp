@@ -41,7 +41,7 @@ Mesh* MeshFactory::CreateSkyBoxCube()
 
 	CreateCubeModelForSkyBox(newMesh);
 
-	// Créer le constant buffer comme d'habitude
+	// Creer le constant buffer comme d'habitude
 	CreateCubeConstantBuffer(newMesh);
 
 	// Mappage du buffer constant

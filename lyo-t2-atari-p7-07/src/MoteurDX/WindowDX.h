@@ -49,8 +49,8 @@ private:
 	// Window parameters
 	HWND m_mainWindow = nullptr;
 	std::wstring m_windowTitle = L"WINDOW 3D";
-	int m_clientWidth = 800;
-	int m_clientHeight = 600;
+	int m_clientWidth = 1000;
+	int m_clientHeight = 800;
 
 protected:
 	// Nouvelle methode pour initialiser DirectX12

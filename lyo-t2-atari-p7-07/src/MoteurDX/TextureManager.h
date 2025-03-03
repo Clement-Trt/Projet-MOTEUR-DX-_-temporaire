@@ -16,7 +16,7 @@ public:
     // Charge une texture ・partir d'un fichier et la stocke avec un identifiant
     bool LoadTexture(const std::wstring& id, const std::wstring& filename);
 
-    // Retourne le GPU descriptor handle pour la texture associ馥 ・l'id
+    // Retourne le GPU descriptor handle pour la texture associee ・l'id
     D3D12_GPU_DESCRIPTOR_HANDLE GetTextureHandle(const std::wstring& id) const;
 
     // Pour simplifier, on suppose un unique descriptor heap partag・pour toutes les textures.
@@ -30,7 +30,7 @@ private:
     ComPtr<ID3D12DescriptorHeap> m_srvHeap;
     UINT mDescriptorSize = 0;
 
-    // On stocke les offset (dans le heap) associ駸 ・chaque texture
+    // On stocke les offset (dans le heap) associes ・chaque texture
     std::unordered_map<std::wstring, UINT> mTextureOffsets;
 
     std::unordered_map<std::wstring, Microsoft::WRL::ComPtr<ID3D12Resource>> m_textures;

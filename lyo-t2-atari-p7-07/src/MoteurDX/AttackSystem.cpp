@@ -34,10 +34,10 @@ void AttackSystem::Update(float deltaTime)
             }
             if (attack)
             {
-                // Toujours incrémenter le temps écoulE
+                // Toujours incrementer le temps ecoulE
                 attack->timeSinceLastAttack += deltaTime;  
 
-                // Si une attaque est demandée et que le cooldown est respectE
+                // Si une attaque est demandee et que le cooldown est respectE
                 if (attack->attackRequested && attack->timeSinceLastAttack >= attack->attackCooldown)
                 {
                     /*if (attack->targetEntity != nullptr)
@@ -78,14 +78,14 @@ void AttackSystem::Update(float deltaTime)
                             if (component->ID == Collider_ID)
                             {
                                 ColliderComponent* collider = static_cast<ColliderComponent*>(component);
-                                collider->m_isDestructable = true;
+                                collider->m_isDestructible = true;
                             }
                             if (component->ID == Attack_ID)
                             {
                                 AttackComponent* attack = static_cast<AttackComponent*>(component);
                             }
                         }
-                    // Réinitialiser le cooldown et le flag d'attaque
+                    // Reinitialiser le cooldown et le flag d'attaque
                     attack->timeSinceLastAttack = 0.0f;
                     attack->attackRequested = false;
                     attack->targetEntity = nullptr;
