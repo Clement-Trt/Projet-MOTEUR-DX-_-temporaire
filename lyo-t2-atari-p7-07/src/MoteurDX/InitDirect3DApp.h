@@ -71,5 +71,7 @@ private:
 
 	// Textures:
 	ComPtr<ID3D12Resource> m_texture;
+
+	bool m_gameIsPaused;
 };
 

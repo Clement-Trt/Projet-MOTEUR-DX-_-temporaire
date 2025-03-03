@@ -25,18 +25,45 @@ bool InputManager::GetKeyDown(char key)
 // Cette fonction doit etre appelee chaque frame (avant de recuperer le delta)
 void InputManager::UpdateMouse(HWND hWnd)
 {
-	POINT currentPos;
-	// Recuperer la position de la souris en coordonnees ecran
-	GetCursorPos(&currentPos);
-	// Convertir en coordonnees client
-	ScreenToClient(hWnd, &currentPos);
+	if (m_cursorLockedAndInvisible == true)
+	{
+		// Obtenir les dimensions de la fenetre client
+		RECT rect;
+		GetClientRect(hWnd, &rect);
+		POINT center;
+		center.x = (rect.right - rect.left) / 2;
+		center.y = (rect.bottom - rect.top) / 2;
 
-	// Calculer le delta par rapport a la derniere position
-	s_MouseDelta.x = currentPos.x - s_LastMousePos.x;
-	s_MouseDelta.y = currentPos.y - s_LastMousePos.y;
+		// Convertir le centre en coordonnees ecran
+		POINT centerScreen = center;
+		ClientToScreen(hWnd, &centerScreen);
+		POINT currentPos;
+		// Recuperer la position de la souris en coordonnees ecran
+		GetCursorPos(&currentPos);
 
-	// Mettre a jour la derniere position
-	s_LastMousePos = currentPos;
+		// Calculer le delta par rapport au centre
+		s_MouseDelta.x = currentPos.x - centerScreen.x;
+		s_MouseDelta.y = currentPos.y - centerScreen.y;
+
+		// Reinitialiser la souris au centre de l'ecran
+		SetCursorPos(centerScreen.x, centerScreen.y);
+	}
+
+	else
+	{
+		POINT currentPos;
+		// Recuperer la position de la souris en coordonnees ecran
+		GetCursorPos(&currentPos);
+		// Convertir en coordonnees client
+		ScreenToClient(hWnd, &currentPos);
+
+		// Calculer le delta par rapport a la derniere position
+		s_MouseDelta.x = currentPos.x - s_LastMousePos.x;
+		s_MouseDelta.y = currentPos.y - s_LastMousePos.y;
+
+		// Mettre a jour la derniere position
+		s_LastMousePos = currentPos;
+	}
 }
 
 int InputManager::GetMouseDeltaX()
@@ -47,4 +74,9 @@ int InputManager::GetMouseDeltaX()
 int InputManager::GetMouseDeltaY()
 {
 	return s_MouseDelta.y;
+}
+
+void InputManager::SetCursorLockedAndInvisible(bool CursorLockedAndInvisible) 
+{ 
+	m_cursorLockedAndInvisible = CursorLockedAndInvisible; 
 }
