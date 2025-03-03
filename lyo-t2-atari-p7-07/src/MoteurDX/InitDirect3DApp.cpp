@@ -4,15 +4,40 @@
 
 #include "MeshFactory.h"
 #include "InputManager.h"
-#include "Scene.h"
 #include "EntityManager.h"
+#include "HealthSystem.h"
+#include "AttackSystem.h"
+
+#include "Scene.h"
 #include "SceneTest.h"
+#include "GameScene.h"
+
 #include "TextureLoaderDuLivre.h"
 #include "TextureManager.h"
 #include "CameraSystem.h"
+#include "ColliderManager.h"
+#include "ParticleManager.h"
+#include "EnnemyManager.h"
+#include "MovementManager.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
+	m_lastTime = timeGetTime();
+}
+
+InitDirect3DApp::~InitDirect3DApp()
+{
+	delete m_healthSystem;
+	delete m_attackSystem;
+	delete m_meshFactory;
+	delete m_entityManager;
+	delete m_textureManager;
+	delete m_colliderManager;
+	delete m_particleManager;
+	delete m_ennemyManager;
+	delete m_movementManager;
+	delete m_cameraManager;
+	delete m_scene;
 }
 
 bool InitDirect3DApp::Initialize()
@@ -42,19 +67,6 @@ bool InitDirect3DApp::Initialize()
 
 	mCurrFrameResource = mFrameResources[0].get();
 
-	// Initialisation Game Manager et Scene (ECS)
-	m_entityManager = new EntityManager();
-
-	// MeshFactory
-	m_meshFactory = new MeshFactory;
-	m_meshFactory->InitMeshFactory(mD3DDevice.Get(), GetEntityManager(),this);
-	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
-
-	// Scene
-	SceneTest* scene = new SceneTest;
-	SetScene(scene);
-	mScene->Initialize(this);
-	mScene->OnInitialize();
 
 	m_depthStencilDesc = {};
 	m_depthStencilDesc.DepthEnable = TRUE;
@@ -75,14 +87,55 @@ bool InitDirect3DApp::Initialize()
 		return false;
 	}
 
-	// Positionner la camera a une position initiale
-	m_mainView = new CameraComponent;
-	m_mainView->cameraView = CameraSystem::DefaultView();
 
 	mCommandList->Close();
 	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
 	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 	FlushCommandQueue();
+
+	// Initialisation Game Manager et Scene (ECS)
+	m_entityManager = new EntityManager();
+
+	// MeshFactory
+	m_meshFactory = new MeshFactory;
+	m_meshFactory->Initialize(mD3DDevice.Get(), m_entityManager, this);
+	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
+
+	// Particles
+	m_particleManager = new ParticleManager;
+	m_particleManager->Initialize(this);
+
+	// Collider
+	m_colliderManager = new ColliderManager;
+	m_colliderManager->Initialize(m_entityManager, m_particleManager);
+
+	// Ennemy
+	m_ennemyManager = new EnnemyManager;
+	m_ennemyManager->Initialize(this);
+
+	// AttackSystem
+	m_attackSystem = new AttackSystem;
+	m_attackSystem->Initialize(this);
+
+	// HealthManager
+	m_healthSystem = new HealthSystem;
+	m_healthSystem->Initialize(this);
+
+	// MouvementManager
+	m_movementManager = new MovementManager;
+	m_movementManager->Initialize(this);
+
+	// CameraManager
+	m_cameraManager = new CameraSystem;
+	m_cameraManager->Initialize(this);
+
+	// Scene
+	//SceneTest* scene = new SceneTest;
+	GameScene* scene = new GameScene;
+	SetScene(scene);
+	m_scene->Initialize(this);
+	m_scene->OnInitialize();
+
 
 	return true;
 }
@@ -92,7 +145,8 @@ bool InitDirect3DApp::InitTexture()
 	// Creation du TextureManager
 	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
 	// On cree un heap pour le nombre total de textures (ici 3)
-	m_textureManager->CreateDescriptorHeap(3);
+	// On cree un heap pour le nombre total de textures
+	m_textureManager->CreateDescriptorHeap(7);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
 	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
@@ -110,48 +164,87 @@ bool InitDirect3DApp::InitTexture()
 		MessageBox(0, L"echec du chargement de la texture Box.", L"Erreur", MB_OK);
 		return false;
 	}
+	if (!m_textureManager->LoadTexture(L"IceTexture", L"../../../src/MoteurDX/ice.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"FireTexture", L"../../../src/MoteurDX/fire.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Fire.", L"Erreur", MB_OK);
+	}
+	if (!m_textureManager->LoadTexture(L"DroneTexture", L"../../../src/MoteurDX/Drone.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"SkyBox", L"../../../src/MoteurDX/SkyBoxTexture.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
 
 	return true;
 }
 
 void InitDirect3DApp::Update()
 {
-	//SetDeltaTime(mDeltaTime); // AJOUTER SYSTEME DE TIMER
-
-	//HandleInput(); // AJOUTER SYSTEME DE GESTION D'INPUT
-
-	// GESTION DES INPUTS
-	{
-		//// Mettez a jour la souris en passant le handle de la fenetre
-		//InputManager::UpdateMouse(GetActiveWindow());
-
-		//// Recuperer le deplacement de la souris
-		//int deltaX = InputManager::GetMouseDeltaX();
-		//int deltaY = InputManager::GetMouseDeltaY();
-
-		//// Sensibilite de la souris
-		//const float sensitivity = 0.005f;
-		//if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-		//{
-		//	// Mettre a jour la rotation de la camera en fonction du delta
-		//	m_Camera.Rotate(-deltaY * sensitivity, deltaX * sensitivity);
-		//}
-
-		///*if (InputManager::GetKeyIsPressed(VK_LEFT)) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		//if (InputManager::GetKeyIsPressed(VK_RIGHT)) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		//if (InputManager::GetKeyIsPressed(VK_UP)) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		//if (InputManager::GetKeyIsPressed(VK_DOWN)) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);*/
-		//if (InputManager::GetKeyIsPressed('Q')) m_Camera.MoveRelative(0.0f, -0.1f, 0.0f);
-		//if (InputManager::GetKeyIsPressed('D')) m_Camera.MoveRelative(0.0f, 0.1f, 0.0f);
-		//if (InputManager::GetKeyIsPressed('Z')) m_Camera.MoveRelative(0.1f, 0.0f, 0.0f);
-		//if (InputManager::GetKeyIsPressed('S')) m_Camera.MoveRelative(-0.1f, 0.0f, 0.0f);
-		//if (InputManager::GetKeyIsPressed('A')) m_Camera.MoveRelative(0.0f, 0.0f, 0.1f);
-		//if (InputManager::GetKeyIsPressed('E')) m_Camera.MoveRelative(0.0f, 0.0f, -0.1f);
-	}
-
 	// UPDATE DU JEU
+	UpdateTimer();
 	UpdatePhysics();
 }
+
+void InitDirect3DApp::UpdateTimer()
+{
+	DWORD currentTime = timeGetTime();
+	m_deltaTime = (currentTime - m_lastTime) / 1000.0f; // conversion en secondes
+	m_lastTime = currentTime;
+}
+
+void InitDirect3DApp::UpdatePhysics()
+{
+	// UPDATE SCENE
+	if (m_entityManager->GetNbEntity() > 0 && m_entityManager->GetEntityTab()[0] != nullptr)
+	{
+		// Update (En gros gestion des input)
+		m_scene->OnUpdate();
+
+		// Ennemies
+		m_ennemyManager->Update();
+
+		// MovementSystem
+		m_movementManager->Update(); 
+
+		// CollisionsSystem
+		m_colliderManager->Update();
+
+		// cameraSystem
+		m_cameraManager->Update(); 
+
+		// attacksystem
+		m_attackSystem->Update(m_deltaTime);
+
+		// HealthSystem
+		m_healthSystem->Update(m_deltaTime); 
+	}
+
+	// DESTROY ENTITIES
+	for (auto& entityToDestroy : m_entityManager->GetToDestroyTab())
+	{
+		m_entityManager->DestroyEntity(entityToDestroy);
+	}
+	m_entityManager->GetToDestroyTab().clear();
+
+	// ADD ENTITIES
+	for (auto& entityToAdd : m_entityManager->GetEntityToAddTab())
+	{
+		m_entityManager->AddEntityToTab(entityToAdd, m_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
+	}
+	m_entityManager->GetEntityToAddTab().clear();
+	m_entityManager->GetComponentToAddTab().clear();
+	m_entityManager->ResetEntitiesToAdd();
+}
+
 
 void InitDirect3DApp::Render()
 {
@@ -171,14 +264,14 @@ void InitDirect3DApp::Render()
 		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		DirectX::XMMATRIX view = m_mainView->cameraView;
+		DirectX::XMMATRIX view = m_cameraManager->GetViewMatrix();
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : m_entityManager->GetEntityTab())
 		{
 			// Check si l'entity dans la table est null
-			if (entity == nullptr) 
+			if (entity == nullptr)
 			{
 				continue;
 			}
@@ -261,14 +354,14 @@ void InitDirect3DApp::CreatePipelineState()
 
 	ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	ComPtr<ID3DBlob> error = nullptr;
-	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1,&serializedRootSig, &error);
+	HRESULT hr = D3D12SerializeRootSignature(&rootSigDesc, D3D_ROOT_SIGNATURE_VERSION_1, &serializedRootSig, &error);
 	if (FAILED(hr))
 	{
 		if (error) MessageBoxA(0, (char*)error->GetBufferPointer(), "RootSignature Error", MB_OK);
 		return;
 	}
 
-	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(),serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
+	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"CreateRootSignature failed!", L"Error", MB_OK);
@@ -337,38 +430,6 @@ void InitDirect3DApp::CreatePipelineState()
 	}
 }
 
-void InitDirect3DApp::UpdatePhysics()
-{
-
-	if (m_entityManager->GetNbEntity() > 0 && m_entityManager->GetEntityTab()[0] != nullptr)
-	{
-		// Update
-		mScene->OnUpdate();
-
-		// update transform of entites
-
-
-		// COLLISIONS a ajouter
-
-	}
-
-
-	// DESTROY ENTITIES
-	for (auto& entityToDestroy : m_entityManager->GetToDestroyTab())
-	{
-		m_entityManager->DestroyEntity(entityToDestroy);
-	}
-	m_entityManager->GetToDestroyTab().clear();
-
-	// ADD ENTITIES
-	for (auto& entityToAdd : m_entityManager->GetEntityToAddTab())
-	{
-		m_entityManager->AddEntityToTab(entityToAdd, m_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
-	}
-	m_entityManager->GetEntityToAddTab().clear();
-	m_entityManager->GetComponentToAddTab().clear();
-	m_entityManager->ResetEntitiesToAdd();
-}
 
 void InitDirect3DApp::Draw()
 {

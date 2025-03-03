@@ -87,7 +87,7 @@ int WindowDX::Run()
 {
     MSG msg = { 0 };
 
-    //SetDeltaTime(mDeltaTime); // AJOUTER SYSTEME DE TIMER
+    //SetDeltaTime(m_deltaTime); // AJOUTER SYSTEME DE TIMER
     while (msg.message != WM_QUIT)
     {
         // If there are Window messages then process them.

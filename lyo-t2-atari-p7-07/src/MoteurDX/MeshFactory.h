@@ -29,14 +29,18 @@ public:
 	MeshFactory();
 
 	// Init meshFactory
-	void InitMeshFactory(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx);
+	void Initialize(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx);
 
 	// Create mesh
 	Mesh* CreateCube();
 
+	Mesh* CreateSkyBoxCube();
+
 private:
 	// Type of mesh geometry
 	void CreateCubeModel(Mesh* cube);
+
+	void CreateCubeModelForSkyBox(Mesh* cube);
 
 	// Alloue et configure le constant buffer pour un cube
 	void CreateCubeConstantBuffer(Mesh* cube);

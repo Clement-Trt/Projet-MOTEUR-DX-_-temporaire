@@ -8,6 +8,8 @@
 
 #include "d3dx12.h"
 
+class Entity;
+
 using namespace Microsoft::WRL;
 
 using ComponentMask = uint32_t;
@@ -19,10 +21,11 @@ enum ComponentType {
 	COMPONENT_TRANSFORM = 1 << 2,
 	COMPONENT_VELOCITY = 1 << 3,
 	COMPONENT_HEALTH = 1 << 4,
-
-	COMPONENT_HEAL = 1 << 5,		// Exemple
-
-	TOTALCOMPONENT
+	COMPONENT_ATTACK = 1 << 5,
+	COMPONENT_COLLIDER = 1 << 6,
+	COMPONENT_PARTICLE = 1 << 7,
+	COMPONENT_ENNEMY = 1 << 8,
+	COMPONENT_PLAYER = 1 << 9,
 };
 
 enum ComponentIndex
@@ -32,8 +35,27 @@ enum ComponentIndex
 	Transform_index,
 	Velocity_index,
 	Health_index,
+	Attack_index,
+	Collider_index,
+	Particle_index,
+	Ennemy_index,
+	Player_index,
+};
 
-	Heal_index		// Exemple
+enum ComponentID
+{
+	Camera_ID,
+	Mesh_ID,
+	Transform_ID,
+	Velocity_ID,
+	Health_ID,
+	Attack_ID,
+	Collider_ID,
+	Particle_ID,
+	Ennemy_ID,
+	Player_ID,
+
+	TotalComponentsNumber
 };
 
 struct GeometryMesh
@@ -62,16 +84,6 @@ struct Mesh
 	void* m_mappedData = nullptr;
 };
 
-enum ComponentID
-{
-	Camera_ID,
-	Mesh_ID,
-	Transform_ID,
-	Velocity_ID,
-	Health_ID,
-
-	Heal_ID		// Exemple
-};
 
 struct Component
 {
@@ -83,9 +95,8 @@ struct Component
 struct CameraComponent : public Component
 {
 	CameraComponent() : Component(Camera_ID, COMPONENT_CAMERA) {}
-	Camera m_camera;
-
-	DirectX::XMMATRIX cameraView;
+	Transform m_cameraTransform;
+	DirectX::XMMATRIX m_cameraView;
 };
 
 struct MeshComponent : public Component
@@ -95,12 +106,38 @@ struct MeshComponent : public Component
 	std::wstring textureID = L""; // identifiant de texture
 };
 
+struct ColliderComponent : public Component
+{
+	ColliderComponent() : Component(Collider_ID, COMPONENT_COLLIDER) {}
+	bool m_isColliding = false;
+	bool m_isSolid = false;
+	bool m_isDynamic = false;
+	bool m_destructable = false;
+	bool m_isDestructable = false;
+	bool m_isDestroyed = false;
+};
+
+struct ParticleComponent : public Component 
+{
+	ParticleComponent() : Component(Particle_ID, COMPONENT_PARTICLE) {}
+	float m_lifeTime = 0.0f;
+};
+
+struct EnnemyComponent : public Component
+{
+	EnnemyComponent() : Component(Ennemy_ID, COMPONENT_ENNEMY) {}
+};
+
+struct PlayerComponent : public Component
+{
+	PlayerComponent() : Component(Player_ID, COMPONENT_PLAYER) {}
+};
+
 struct TransformComponent : public Component
 {
 	TransformComponent() : Component(Transform_ID, COMPONENT_TRANSFORM) {}
 	Transform m_transform;	
 };
-
 
 struct VelocityComponent : public Component
 {
@@ -110,7 +147,19 @@ struct VelocityComponent : public Component
 	float vy = 0.0f;
 };
 
+struct HealthComponent : public Component
+{
+	HealthComponent() : Component(Health_ID, COMPONENT_HEALTH) {}
+	int maxHealth = 100;
+	int currentHealth = maxHealth;
+};
 
-//class PositionComponent : public Component
-//{
-//};
+struct AttackComponent : public Component
+{
+	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
+	int damage = 10;
+	float attackCooldown = 1;
+	float timeSinceLastAttack = 0.0f; 
+	bool attackRequested = false;     
+	Entity* targetEntity = nullptr;   
+};

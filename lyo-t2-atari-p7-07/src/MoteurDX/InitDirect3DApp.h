@@ -1,56 +1,75 @@
 #pragma once
 
 #include "WindowDX.h";
-//#include "Camera.h";
 #include "Scene.h";
 
-//class GameManager;
 class MeshFactory;
 class Camera;
+class ColliderManager;
+class ParticleManager;
+class EnnemyManager;
+class MovementManager;
+class CameraSystem;
+class Attackystem;
+class HealthSystem;
 
 class TextureManager;
 
 class InitDirect3DApp : public WindowDX
 {
 public:
-    InitDirect3DApp(HINSTANCE hInstance);
-    bool Initialize();
-    bool InitTexture();
-    void Update() override;
-    void UpdatePhysics();
-    void Draw() override;
+	InitDirect3DApp(HINSTANCE hInstance);
+	~InitDirect3DApp();
 
-    // __ Game loop __ 
-    
-    //void HandleInput();
+	bool Initialize();
+	bool InitTexture();
+	void Update() override;
+	void UpdatePhysics();
+	void UpdateTimer();
+	void Draw() override;
 
-    void Render();
-    void CreatePipelineState();
 
-    void SetDeltaTime(float deltaTime) { mDeltaTime = deltaTime; }
-    void SetScene(Scene* scene) { mScene = scene; }
-    //void SetCamera(Camera* camView) { m_Camera = camView; }
+	void Render();
+	void CreatePipelineState();
 
-    EntityManager* GetEntityManager() { return m_entityManager; }
-    MeshFactory* GetFactory() { return m_meshFactory; }
+	void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
+	void SetScene(Scene* scene) { m_scene = scene; }
 
-    CameraComponent* GetMainView() { return m_mainView; }
 
-    friend class Scene;
+	EntityManager* GetEntityManager() { return m_entityManager; }
+	MeshFactory* GetFactory() { return m_meshFactory; }
+	ParticleManager* GetParticleManager() { return m_particleManager; }
+	CameraSystem* GetCameraSystem() { return m_cameraManager; }
+	EnnemyManager* GetEnnemyManager() { return m_ennemyManager; }
+
+	//CameraComponent* GetMainView() { return m_mainView; }
+
+	friend class Scene;
 
 private:
-    D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
+	D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
 
-    CameraComponent* m_mainView;
+	MeshFactory* m_meshFactory;
 
-    MeshFactory* m_meshFactory;
-    EntityManager* m_entityManager;
-    TextureManager* m_textureManager;
+	EntityManager* m_entityManager;
+	//CameraComponent* m_mainView;
 
-    Scene* mScene;
+	ColliderManager* m_colliderManager;
+	EnnemyManager* m_ennemyManager;
+	ParticleManager* m_particleManager;
+	TextureManager* m_textureManager;
+	MovementManager* m_movementManager;
 
-    float mDeltaTime; //    /!\/!\/!\/!\    A UTILISER DANS LA BOUCLE DE JEU    /!\/!\/!\/!\/
+	HealthSystem* m_healthSystem;
+	AttackSystem* m_attackSystem;
+	CameraSystem* m_cameraManager;
 
-    // Textures:
-    ComPtr<ID3D12Resource> m_texture;
+	Scene* m_scene;
+
+	float m_deltaTime = 0.0f; //   PAS UTILISE ?
+	DWORD m_lastTime = 0;
+
+	// Textures:
+	ComPtr<ID3D12Resource> m_texture;
 };
+

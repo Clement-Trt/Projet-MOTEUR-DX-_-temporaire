@@ -15,7 +15,8 @@ public:
 	static int GetMouseDeltaY();
 
 private:
-	static inline bool wasKeyPressed = false;
+	//256 pour couvrir toutes les touches
+	static inline bool wasKeyPressed[256] = { false };
 
 	static inline POINT s_LastMousePos = { 0, 0 };
 	static inline POINT s_MouseDelta = { 0, 0 };

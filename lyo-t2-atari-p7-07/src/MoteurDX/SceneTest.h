@@ -6,6 +6,7 @@ class SceneTest : public Scene
 {
 public:
 
+	void CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
 
 	void OnInitialize() override;
 
@@ -18,5 +19,8 @@ protected:
 	int compteur;
 	int compteur2;
 
+	Entity* playerEntity = nullptr;
+	Entity* iceBlockEntity = nullptr;
+	Entity* ennemyEntity = nullptr;
 };
 
