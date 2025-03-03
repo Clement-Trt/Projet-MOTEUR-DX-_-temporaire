@@ -55,6 +55,8 @@ void SceneTest::OnInitialize()
 	mpEntityManager->AddComponent<ColliderComponent>(player);
 	mpEntityManager->AddComponent<PlayerComponent>(player);
 
+	mpEntityManager->AddComponent<HealthComponent>(player);
+
 	for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[player->tab_index]->vec_components)
 	{
 		if (component->ID == Mesh_ID)
@@ -89,6 +91,12 @@ void SceneTest::OnInitialize()
 			attack->projectileSizeX = 0.2f; // 0.2f
 			attack->projectileSizeY = 0.2f; // 0.2f
 			attack->projectileSizeZ = 1.0f; // 1.0f
+		}
+		if (component->ID == Health_ID)
+		{
+			HealthComponent* health = static_cast<HealthComponent*>(component);
+			health->currentHealth = 100;
+			health->maxHealth = 100;
 		}
 	}
 	playerEntity = player;
