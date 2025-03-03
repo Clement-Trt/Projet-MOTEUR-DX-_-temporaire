@@ -136,7 +136,7 @@ bool InitDirect3DApp::Initialize()
 	m_scene->Initialize(this);
 	m_scene->OnInitialize();
 
-
+	m_gameIsPaused = true;
 	return true;
 }
 
@@ -189,9 +189,28 @@ bool InitDirect3DApp::InitTexture()
 
 void InitDirect3DApp::Update()
 {
-	// UPDATE DU JEU
-	UpdateTimer();
-	UpdatePhysics();
+	if (m_gameIsPaused == true)
+	{
+		if (InputManager::GetKeyDown(VK_ESCAPE))
+		{
+			m_gameIsPaused = false;
+			ShowCursor(FALSE);
+			InputManager::SetCursorLockedAndInvisible(true);
+		}
+	}
+	else
+	{
+		if (InputManager::GetKeyDown(VK_ESCAPE))
+		{
+			m_gameIsPaused = true;
+			ShowCursor(TRUE);
+			InputManager::SetCursorLockedAndInvisible(false);
+		}
+
+		// UPDATE DU JEU
+		UpdateTimer();
+		UpdatePhysics();
+	}
 }
 
 void InitDirect3DApp::UpdateTimer()
