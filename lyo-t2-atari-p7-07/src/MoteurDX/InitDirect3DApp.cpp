@@ -19,6 +19,7 @@
 #include "ParticleManager.h"
 #include "EnnemyManager.h"
 #include "MovementManager.h"
+#include "LifeTimeManager.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
@@ -37,6 +38,7 @@ InitDirect3DApp::~InitDirect3DApp()
 	delete m_particleManager;
 	delete m_ennemyManager;
 	delete m_movementManager;
+	delete m_lifeTimeManager;
 	delete m_cameraManager;
 	delete m_scene;
 }
@@ -130,9 +132,13 @@ bool InitDirect3DApp::Initialize()
 	m_cameraManager = new CameraSystem;
 	m_cameraManager->Initialize(this);
 
+	// LifeTimeManager
+	m_lifeTimeManager = new LifeTimeManager;
+	m_lifeTimeManager->Initialize(this);
+
 	// Scene
-	SceneTest* scene = new SceneTest;
-	//GameScene* scene = new GameScene;
+	//SceneTest* scene = new SceneTest;
+	GameScene* scene = new GameScene;
 	SetScene(scene);
 	m_scene->Initialize(this);
 	m_scene->OnInitialize();
@@ -147,7 +153,7 @@ bool InitDirect3DApp::InitTexture()
 	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
 	// On cree un heap pour le nombre total de textures (ici 3)
 	// On cree un heap pour le nombre total de textures
-	m_textureManager->CreateDescriptorHeap(7);
+	m_textureManager->CreateDescriptorHeap(10);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
 	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
@@ -180,6 +186,21 @@ bool InitDirect3DApp::InitTexture()
 		return false;
 	}
 	if (!m_textureManager->LoadTexture(L"SkyBox", L"../../../src/MoteurDX/SkyBoxTexture.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"DefaultTexture", L"../../../src/MoteurDX/defaultTexture.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"BlueBeamTexture", L"../../../src/MoteurDX/blueBeam.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"RedBeamTexture", L"../../../src/MoteurDX/redBeam.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
 		return false;
@@ -227,6 +248,9 @@ void InitDirect3DApp::UpdatePhysics()
 
 		// HealthSystem
 		m_healthSystem->Update(m_deltaTime); 
+
+		// LifeTimeSystem
+		m_lifeTimeManager->Update(m_deltaTime);
 	}
 
 	// DESTROY ENTITIES

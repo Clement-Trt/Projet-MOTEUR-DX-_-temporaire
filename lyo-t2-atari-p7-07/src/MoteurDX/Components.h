@@ -26,6 +26,7 @@ enum ComponentType {
 	COMPONENT_PARTICLE = 1 << 7,
 	COMPONENT_ENNEMY = 1 << 8,
 	COMPONENT_PLAYER = 1 << 9,
+	COMPONENT_LIFETIME = 1 << 10,
 };
 
 enum ComponentIndex
@@ -40,6 +41,7 @@ enum ComponentIndex
 	Particle_index,
 	Ennemy_index,
 	Player_index,
+	LifeTime_index,
 };
 
 enum ComponentID
@@ -54,6 +56,7 @@ enum ComponentID
 	Particle_ID,
 	Ennemy_ID,
 	Player_ID,
+	LifeTime_ID,
 
 	TotalComponentsNumber
 };
@@ -133,6 +136,12 @@ struct PlayerComponent : public Component
 	PlayerComponent() : Component(Player_ID, COMPONENT_PLAYER) {}
 };
 
+struct LifeTimeComponent : public Component
+{
+	LifeTimeComponent() : Component(LifeTime_ID, COMPONENT_LIFETIME) {}
+	float lifeTime = 0.f;
+};
+
 struct TransformComponent : public Component
 {
 	TransformComponent() : Component(Transform_ID, COMPONENT_TRANSFORM) {}
@@ -157,9 +166,16 @@ struct HealthComponent : public Component
 struct AttackComponent : public Component
 {
 	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
-	int damage = 10;
-	float attackCooldown = 1;
-	float timeSinceLastAttack = 0.0f; 
-	bool attackRequested = false;     
-	Entity* targetEntity = nullptr;   
+	
+	int damage = 0; // 10
+	float attackCooldown = 0.f; // 1
+	float timeSinceLastAttack = 0.0f; // 0.0
+	bool attackRequested = false; // false
+
+	float projectileSpeed = 0.f; // 1
+	float projectileSizeX = 0.f; // 0.2f
+	float projectileSizeY = 0.f; // 0.2f
+	float projectileSizeZ = 0.f; // 1.0f
+
+	std::wstring projectileTexture = L"DefaultTexture"; // identifiant de texture  = L"TextureName"
 };

@@ -12,6 +12,7 @@ class MovementManager;
 class CameraSystem;
 class Attackystem;
 class HealthSystem;
+class LifeTimeManager;
 
 class TextureManager;
 
@@ -59,6 +60,7 @@ private:
 	ParticleManager* m_particleManager;
 	TextureManager* m_textureManager;
 	MovementManager* m_movementManager;
+	LifeTimeManager* m_lifeTimeManager;
 
 	HealthSystem* m_healthSystem;
 	AttackSystem* m_attackSystem;
