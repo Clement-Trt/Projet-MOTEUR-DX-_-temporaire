@@ -46,7 +46,10 @@ void SceneTest::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 void SceneTest::OnInitialize()
 {
 	// Sound
-	AssetManager::AddMusic("beam", "C:\\Users\\psolat\\Documents\\GitHub\\lyo-t2-atari-p7-07\\lyo-t2-atari-p7-07\\res\\bubblebeam.wav");
+	std::string basePath = AssetManager::GetExecutablePath();
+
+	std::string beamPath = basePath + "res\\bubblebeam.wav";
+	AssetManager::AddSound("beam", beamPath);
 
 	// Player
 	Entity* player = mpEntityManager->CreateEntity();
@@ -270,8 +273,8 @@ void SceneTest::OnUpdate()
 		{
 			// Declencher l'attaque en definissant le flag et en indiquant la cible
 			attack->attackRequested = true;
-			//AssetManager::PlayLocalSound("beam");
-			AssetManager::GetSound("beam");
+			AssetManager::PlayLocalSound("beam");
+			//AssetManager::GetSound("beam");
 			//attack->targetEntity = ennemyEntity;
 		}
 	}

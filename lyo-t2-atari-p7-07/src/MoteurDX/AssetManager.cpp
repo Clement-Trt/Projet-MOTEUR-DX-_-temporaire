@@ -70,16 +70,38 @@ bool AssetManager::AddSound(const std::string& soundName, const std::string& sou
 	sf::SoundBuffer* soundBuffer = new sf::SoundBuffer();
 	if (!soundBuffer->loadFromFile(soundPath))
 	{
-		std::cout << "Sound " << soundName << " failed to load" << std::endl;
+		wchar_t debugBuffer[512];
+		// Affiche le chemin du fichier et un message d'echec
+		swprintf_s(debugBuffer, 512, L"LoadFromFile failed for path: %hs\n", soundPath.c_str());
+		OutputDebugString(debugBuffer);
+
+		std::cout << "Sound " << soundName << " failed to load from " << soundPath << std::endl;
 		delete soundBuffer;
 		return false;
 	}
-	std::cout << "Sound " << soundName << " loaded successfully" << std::endl;
+	else
+	{
+		wchar_t debugBuffer[512];
+		// Affiche le chemin du fichier et un message de succes
+		swprintf_s(debugBuffer, 512, L"LoadFromFile succeeded for path: %hs\n", soundPath.c_str());
+		OutputDebugString(debugBuffer);
+
+		std::cout << "Sound " << soundName << " loaded successfully from " << soundPath << std::endl;
+	}
 
 	mSoundBufferList.emplace(soundName, std::move(soundBuffer));
 
 	sf::Sound* sound = new sf::Sound();
-	sound->setBuffer(*mSoundBufferList[soundName]); 
+	// S'assurer que la soundBuffer existe bien
+	if (mSoundBufferList.find(soundName) == mSoundBufferList.end())
+	{
+		std::cout << "SoundBuffer not found for " << soundName << std::endl;
+		OutputDebugString(L"SoundBuffer not found\n");
+		delete sound;
+		return false;
+	}
+
+	sound->setBuffer(*mSoundBufferList[soundName]);
 	mSoundList.emplace(soundName, sound);
 	return true;
 }
@@ -97,7 +119,29 @@ const sf::Sound& AssetManager::GetSound(const std::string& soundName)
 
 void AssetManager::PlayLocalSound(const std::string& soundName)
 {
-	mSoundList[soundName]->play();
+	auto it = mSoundBufferList.find(soundName);
+	if (it == mSoundBufferList.end() || it->second == nullptr)
+	{
+		OutputDebugString(L"PlayLocalSound: SoundBuffer not found or null.\n");
+		return;
+	}
+
+	// Cree dynamiquement un nouvel objet sf::Sound
+	sf::Sound* newSound = new sf::Sound();
+	newSound->setBuffer(*it->second);
+	newSound->play();
+
+	// Stocke le son dans une liste pour eviter qu'il soit supprime immediatement
+	mActiveSounds.push_back(newSound);
+
+	// Nettoie les sons termines
+	mActiveSounds.remove_if([](sf::Sound* sound) {
+		if (sound->getStatus() == sf::Sound::Stopped) {
+			delete sound;  // Libere la memoire
+			return true;    // Supprime de la liste
+		}
+		return false;
+		});
 }
 
 
@@ -153,4 +197,14 @@ void AssetManager::ReleaseAll()
 	mMusicList.clear();
 
 	std::cout << "All assets have been released." << std::endl;
+}
+
+std::string AssetManager::GetExecutablePath()
+{//lyo-t2-atari-p7-07
+	std::string currentFile = __FILE__;           // Recupere le chemin complet du fichier actuel
+	size_t pos = currentFile.find("\\src\\MoteurDX");       // Trouve "/src/" dans le chemin
+	if (pos != std::string::npos) {
+		return currentFile.substr(0, pos) + "\\";  // Garde la partie avant "/src/"
+	}
+	return "";
 }

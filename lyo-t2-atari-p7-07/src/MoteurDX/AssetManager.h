@@ -16,6 +16,7 @@ protected:
 	inline static std::unordered_map<std::string, sf::SoundBuffer*> mSoundBufferList;
 	inline static std::unordered_map<std::string, sf::Sound*> mSoundList;
 	inline static sf::Sound* mErrorSound;
+	inline static std::list<sf::Sound*> mActiveSounds;  // Garde les sons en cours
 
 	// __ Musics __ 
 	inline static std::unordered_map<std::string, sf::Music*> mMusicList;
@@ -43,5 +44,7 @@ public:
 	
 	// __ Release memory __ 
 	static void ReleaseAll();
+
+	static std::string GetExecutablePath();
 };
 
