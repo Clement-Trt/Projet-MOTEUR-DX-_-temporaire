@@ -1,0 +1,10 @@
+Bonjour,
+Afin d'ajouter des sons dans ce projet DirectX12 nous avons inclus SFML sound.
+Cependant pour une raison inconnue certain PC on une erreur de OpenAl32.dll introuvable et d'autres non !
+
+C'est pour cela que je demande à utiliser le "make.bat" que j'ai crée ici(à l'emplacement de ce Readme) dans lequel j'ai ajouté une commande qui copie automatiquement
+le dll dans release et debug.
+ 
+(Car sinon vous aurez probablement l'erreur "OpenAl32.dll introuvable" et la solution ne ce lancera pas)
+
+Cordialement.
