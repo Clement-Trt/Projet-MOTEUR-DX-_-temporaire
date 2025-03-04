@@ -7,53 +7,14 @@ struct Vertex2D {
     XMFLOAT2 texcoord; // u, v
 };
 
-class UIManager
-{
-public:
-    // Constructeur qui reçoit la taille de la fenêtre
-    UIManager();
-    ~UIManager();
-
-    // Initialisation des ressources UI (vertex buffer, shaders, etc.)
-    void Initialize(ID3D12Device* device);
-
-    void AddUIElement(UIElement* element);
-
-    // Mettre à jour la taille de l'écran (si nécessaire)
-    void UpdateScreenSize(/*UINT screenWidth, UINT screenHeight*/);
-
-    ID3D12Resource* CreateVertexBuffer(ID3D12Device* device, void* vertexData, UINT bufferSize);
-
-
-
-private:
-
-    // Rendu de l'UI
-    void Render(ID3D12GraphicsCommandList* commandList);
-
-    void InitializeUIPipeline(ID3D12Device* device);
-
-    std::vector<UIElement*> m_elements;
-    // Matrice orthographique pour le rendu 2D
-    XMMATRIX m_orthoMatrix;
-
-    ComPtr<ID3D12PipelineState> m_pipelineState;
-    // Ici, tu peux stocker d'autres ressources, par exemple :
-    // - Vertex buffer pour le quad de l'UI
-    // - Pipeline state object (PSO) spécifique à l'UI
-    // - Root signature pour l'UI
-    // - Textures ou autres ressources
-};
-
-
 class UIElement {
 public:
     // Constructeur avec la taille de l'élément (largeur et hauteur)
-    UIElement(float width, float height);
+    UIElement();
     ~UIElement();
 
     // Initialise l'élément UI (création du vertex buffer, etc.)
-    HRESULT Initialize(ID3D12Device* device);
+    HRESULT Initialize(ID3D12Device* device, float posX, float posY, float width, float height);
 
     // Définit la position (translation) de l'élément sur l'écran
     void SetPosition(float x, float y);
@@ -79,3 +40,46 @@ private:
     // Matrice de transformation (ici pour la translation)
     DirectX::XMMATRIX m_transform;
 };
+
+class UIManager
+{
+public:
+    // Constructeur qui reçoit la taille de la fenêtre
+    UIManager();
+    ~UIManager();
+
+    // Initialisation des ressources UI (vertex buffer, shaders, etc.)
+    void Initialize(ID3D12Device* device, ID3D12RootSignature* rootSignature);
+
+    void AddUIElement(float posX, float posY, float width, float height);
+
+    // Mettre à jour la taille de l'écran (si nécessaire)
+    void UpdateScreenSize(/*UINT screenWidth, UINT screenHeight*/);
+
+    ID3D12Resource* CreateVertexBuffer(ID3D12Device* device, void* vertexData, UINT bufferSize);
+
+    // Rendu de l'UI
+    void Render(ID3D12GraphicsCommandList* commandList, ID3D12RootSignature* rootSignature);
+
+
+private:
+
+    void InitializeUIPipeline(ID3D12Device* device);
+
+    std::vector<UIElement*> m_elements;
+    // Matrice orthographique pour le rendu 2D
+    XMMATRIX m_orthoMatrix;
+
+    ComPtr<ID3D12PipelineState> m_pipelineState;
+
+    // App
+    ComPtr<ID3D12Device> m_device;
+    ComPtr<ID3D12RootSignature> m_rootSignature;
+
+    // Ici, tu peux stocker d'autres ressources, par exemple :
+    // - Vertex buffer pour le quad de l'UI
+    // - Pipeline state object (PSO) spécifique à l'UI
+    // - Root signature pour l'UI
+    // - Textures ou autres ressources
+};
+

@@ -4,6 +4,7 @@
 #include "Scene.h";
 
 class MeshFactory;
+class UIManager;
 class Camera;
 class ColliderManager;
 class ParticleManager;
@@ -50,10 +51,9 @@ private:
 	D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
 
 	MeshFactory* m_meshFactory;
+	UIManager* m_UIManager;
 
 	EntityManager* m_entityManager;
-	//CameraComponent* m_mainView;
-
 	ColliderManager* m_colliderManager;
 	EnnemyManager* m_ennemyManager;
 	ParticleManager* m_particleManager;

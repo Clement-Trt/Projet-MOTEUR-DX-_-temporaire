@@ -19,6 +19,7 @@
 #include "ParticleManager.h"
 #include "EnnemyManager.h"
 #include "MovementManager.h"
+#include "UIManager.h"
 
 InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 {
@@ -95,6 +96,11 @@ bool InitDirect3DApp::Initialize()
 
 	// Initialisation Game Manager et Scene (ECS)
 	m_entityManager = new EntityManager();
+
+	// UIManager
+	m_UIManager = new UIManager;
+	m_UIManager->Initialize(mD3DDevice.Get(), mRootSignature.Get());
+	m_UIManager->AddUIElement(0,0,100,100);
 
 	// MeshFactory
 	m_meshFactory = new MeshFactory;
@@ -226,6 +232,8 @@ void InitDirect3DApp::UpdatePhysics()
 
 		// HealthSystem
 		m_healthSystem->Update(m_deltaTime); 
+
+		//m_UIManager->UpdateScreenSize();
 	}
 
 	// DESTROY ENTITIES
@@ -471,6 +479,8 @@ void InitDirect3DApp::Draw()
 
 	// Appeler le renderer des objets
 	Render();
+
+	m_UIManager->Render(mCommandList.Get(), mRootSignature.Get());
 
 	// Transitionner le back buffer de RENDER_TARGET a PRESENT pour la presentation.
 	CD3DX12_RESOURCE_BARRIER barrierStop = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);

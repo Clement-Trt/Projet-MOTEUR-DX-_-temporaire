@@ -21,6 +21,7 @@ PixelInput main(VertexInput input)
     
     // Transformation en espace homogène
     output.position = mul(float4(input.position, 1.0f), orthoMatrix);
+    //output.position = float4(input.position, 1.0f);
     
     // Passer les coordonnées UV
     output.uv = input.uv;
