@@ -135,13 +135,15 @@ void AssetManager::PlayLocalSound(const std::string& soundName)
 	mActiveSounds.push_back(newSound);
 
 	// Nettoie les sons termines
-	mActiveSounds.remove_if([](sf::Sound* sound) {
-		if (sound->getStatus() == sf::Sound::Stopped) {
+	mActiveSounds.remove_if([](sf::Sound* sound) 
+	{
+		if (sound->getStatus() == sf::Sound::Stopped) 
+		{
 			delete sound;  // Libere la memoire
 			return true;    // Supprime de la liste
 		}
 		return false;
-		});
+	});
 }
 
 
