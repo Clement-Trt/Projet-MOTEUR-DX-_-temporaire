@@ -70,14 +70,15 @@ protected:
 	D3D12_RECT mScissorRect;
 
 	UINT64 mFenceValue = 0;
-	ComPtr<ID3D12Fence> mFence;
-	ComPtr<ID3D12CommandAllocator> mCommandAllocator;
-	ComPtr<ID3D12Device>           mD3DDevice;
-	ComPtr<ID3D12GraphicsCommandList> mCommandList;
-	ComPtr<ID3D12CommandQueue>     mCommandQueue;
-	ComPtr<IDXGISwapChain3>        mSwapChain;
-	ComPtr<ID3D12DescriptorHeap>   mRtvHeap;
-	ComPtr<ID3D12DescriptorHeap>   mDsvHeap;
+	ComPtr<ID3D12Fence>					mFence;
+	ComPtr<ID3D12CommandAllocator>		mCommandAllocator;
+	ComPtr<ID3D12Device>				mD3DDevice;
+	ComPtr<ID3D12GraphicsCommandList>	mCommandList;
+	ComPtr<ID3D12CommandQueue>			mCommandQueue;
+	ComPtr<IDXGISwapChain3>				mSwapChain;
+	ComPtr<ID3D12DescriptorHeap>		mRtvHeap;
+	ComPtr<ID3D12DescriptorHeap>		mDsvHeap;
+
 	static const int			   SwapChainBufferCount = 2; // Double buffering
 	int mCurrBackBuffer = 0;
 	ComPtr<ID3D12Resource>         mRenderTargets[SwapChainBufferCount];

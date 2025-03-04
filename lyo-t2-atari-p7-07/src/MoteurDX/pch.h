@@ -21,6 +21,9 @@
 #include "MeshFactory.h"
 #include "EntityManager.h"
 
+using namespace DirectX;
+using namespace Microsoft::WRL;
+
 //#ifdef _DEBUG
 //#include <crtdbg.h>
 //#define DEBUG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
