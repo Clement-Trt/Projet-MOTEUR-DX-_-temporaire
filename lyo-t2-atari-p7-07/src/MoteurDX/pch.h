@@ -1,16 +1,20 @@
 #pragma once
 
 // Mettre include generaux en premier
+#include <cstdlib>
+#include <filesystem>
 #include <iostream>
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <string>
 #include <memory>
 #include <windows.h>
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <wrl.h>
-#include <string>
 #include <d3dcompiler.h>
 #include <vector>
+#include <unordered_map>
 #include <DirectXMath.h>
 
 // Debug

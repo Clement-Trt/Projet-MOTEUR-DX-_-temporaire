@@ -137,8 +137,8 @@ bool InitDirect3DApp::Initialize()
 	m_lifeTimeManager->Initialize(this);
 
 	// Scene
-	//SceneTest* scene = new SceneTest;
-	GameScene* scene = new GameScene;
+	SceneTest* scene = new SceneTest;
+	//GameScene* scene = new GameScene;
 	SetScene(scene);
 	m_scene->Initialize(this);
 	m_scene->OnInitialize();

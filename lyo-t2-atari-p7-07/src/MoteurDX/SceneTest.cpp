@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "InputManager.h"
 #include "CameraSystem.h"
+#include "AssetManager.h"
 
 
 void SceneTest::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ)
@@ -44,6 +45,9 @@ void SceneTest::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 
 void SceneTest::OnInitialize()
 {
+	// Sound
+	AssetManager::AddMusic("beam", "C:\\Users\\psolat\\Documents\\GitHub\\lyo-t2-atari-p7-07\\lyo-t2-atari-p7-07\\res\\bubblebeam.wav");
+
 	// Player
 	Entity* player = mpEntityManager->CreateEntity();
 
@@ -266,6 +270,8 @@ void SceneTest::OnUpdate()
 		{
 			// Declencher l'attaque en definissant le flag et en indiquant la cible
 			attack->attackRequested = true;
+			//AssetManager::PlayLocalSound("beam");
+			AssetManager::GetSound("beam");
 			//attack->targetEntity = ennemyEntity;
 		}
 	}
