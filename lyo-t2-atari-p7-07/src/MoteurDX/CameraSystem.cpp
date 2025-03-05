@@ -4,25 +4,24 @@
 
 void CameraSystem::Initialize(InitDirect3DApp* gameManager)
 {
-	m_gameManager = gameManager;
+	mp_gameManager = gameManager;
 	m_viewMatrix = DefaultView();
 }
 
 void CameraSystem::Update()
 {
-	for (Entity* entity : m_gameManager->GetEntityManager()->GetEntityTab())
+	for (Entity* entity : mp_gameManager->GetEntityManager()->GetEntityTab())
 	{
 		if (!entity)
 			continue;
-		//if (!m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_PLAYER)) // COMPONENT_PLAYER ou COMPONENT_CAMERA ?
-		if (!m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_CAMERA)) // COMPONENT_PLAYER ou COMPONENT_CAMERA ?
+		if (!mp_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_CAMERA))
 			continue;
 
 		TransformComponent* transformComponent = nullptr;
 		CameraComponent* camComponent = nullptr;
 
 
-		for (auto* component : m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
+		for (auto* component : mp_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
 		{
 			if (component->ID == Transform_ID)
 			{
@@ -44,21 +43,17 @@ void CameraSystem::Update()
 				SetViewMatrix(&camComponent->m_cameraTransform);
 			}
 		}
+
 		if (TPS)
 		{
-			
+			float distanceBehind = transformComponent->m_transform.vScale.z * 4.0f;
+			float distanceUp = transformComponent->m_transform.vScale.z;
 
-			float distanceBehind = transformComponent->m_transform.vScale.z * 4.0f; // Distance derriere le cube
-			float distanceUp = transformComponent->m_transform.vScale.z; // Distance derriere le cube
-
-			float fdistanceBehind = 10 * 4.0f; // Distance derriere le cube
-			float fdistanceUp = 10; // Distance derriere le cube
+			float fdistanceBehind = 10 * 4.0f;
+			float fdistanceUp = 10;
 
 			DirectX::XMVECTOR localOffset;
-
-
 			DirectX::XMVECTOR cubePos = DirectX::XMLoadFloat3(&transformComponent->m_transform.vPosition);
-
 			DirectX::XMVECTOR eyePos;
 			DirectX::XMVECTOR upDir;
 
@@ -77,7 +72,6 @@ void CameraSystem::Update()
 			}
 
 			DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(eyePos, cubePos, upDir);
-
 
 			SetViewMatrix(viewMatrix);
 		}

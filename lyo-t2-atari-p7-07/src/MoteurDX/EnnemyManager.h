@@ -25,10 +25,10 @@ public:
 
 private:
 
-	EntityManager* m_entityManager;
-	InitDirect3DApp* m_gameManager;
-	TransformComponent* m_playerTransform;
-	Entity* m_player;
+	EntityManager* mp_entityManager;
+	InitDirect3DApp* mp_gameManager;
+	TransformComponent* mp_playerTransform;
+	Entity* mp_player;
 
 	bool m_gameStart;
 	bool m_startNextWave;

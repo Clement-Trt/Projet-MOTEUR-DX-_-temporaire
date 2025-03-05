@@ -21,8 +21,8 @@ public:
 
 private:
 
-	EntityManager* m_entityManager;
-	InitDirect3DApp* m_gameManager;
+	EntityManager* mp_entityManager;
+	InitDirect3DApp* mp_gameManager;
 
 };
 

@@ -34,16 +34,10 @@ void AttackSystem::Update(float deltaTime)
 			}
 			if (attack)
 			{
-				// Toujours incr�menter le temps �coul�E
 				attack->timeSinceLastAttack += deltaTime;
 
-				// Si une attaque est demand�e et que le cooldown est respect�E
 				if (attack->attackRequested && attack->timeSinceLastAttack >= attack->attackCooldown)
 				{
-
-					//MessageBox(0, L"Attaque du joueur !", 0, 0);
-
-					// Projectile
 					Entity* newBullet = entityManager->CreateEntity();
 
 					entityManager->AddComponent<TransformComponent>(newBullet);
@@ -58,7 +52,7 @@ void AttackSystem::Update(float deltaTime)
 					VelocityComponent* vel = nullptr;
 					ColliderComponent* collider = nullptr;
 					AttackComponent* bulletProperty = nullptr;
-					LifeTimeComponent* lifetime = nullptr;
+					LifeTimeComponent* p_lifeTime = nullptr;
 
 					for (auto* component : entityManager->GetComponentToAddTab()[newBullet->tab_index]->vec_components)
 					{
@@ -66,7 +60,7 @@ void AttackSystem::Update(float deltaTime)
 						{
 							mesh = static_cast<MeshComponent*>(component);
 							mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-							mesh->textureID = attack->projectileTexture; // On assigne la texture
+							mesh->m_textureID = attack->projectileTexture;
 						}
 						if (component->ID == Transform_ID)
 						{
@@ -94,11 +88,10 @@ void AttackSystem::Update(float deltaTime)
 						}
 						if (component->ID == LifeTime_ID)
 						{
-							lifetime = static_cast<LifeTimeComponent*>(component);
-							lifetime->lifeTime = 1.5f;
+							p_lifeTime = static_cast<LifeTimeComponent*>(component);
+							p_lifeTime->m_lifeTime = 1.5f;
 						}
 					}
-					// Reinitialiser le cooldown et le flag d'attaque
 					attack->timeSinceLastAttack = 0.0f;
 					attack->attackRequested = false;
 				}

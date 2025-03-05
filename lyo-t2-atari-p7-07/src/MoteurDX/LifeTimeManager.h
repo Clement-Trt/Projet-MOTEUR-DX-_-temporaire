@@ -11,7 +11,7 @@ public:
 	void Update(float deltaTime);
 
 private:
-	InitDirect3DApp* mGM;
+	InitDirect3DApp* mp_gameManager;
 
 };
 

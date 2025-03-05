@@ -7,55 +7,52 @@ ParticleManager::ParticleManager()
 
 ParticleManager::~ParticleManager()
 {
-	delete m_entityManager;
-	delete m_gameManager;
+	delete mp_entityManager;
+	delete mp_gameManager;
 }
 
 void ParticleManager::Initialize(InitDirect3DApp* app)
 {
-	m_gameManager = app;
-	m_entityManager = app->GetEntityManager();
+	mp_gameManager = app;
+	mp_entityManager = app->GetEntityManager();
 }
 
 void ParticleManager::Update()
 {
-	for (auto& entity : m_entityManager->GetEntityTab())
+	for (auto& entity : mp_entityManager->GetEntityTab())
 	{
 		if (entity == nullptr)
-			continue;// Msg d'erreur ?
+			continue;
 
-		// Transform & Collider Components
 		TransformComponent* transform1 = nullptr;
 		ColliderComponent* collider1 = nullptr;
 		HealthComponent* health1 = nullptr;
 		AttackComponent* attack1 = nullptr;
-		for (auto* component : m_entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
+		for (auto* component : mp_entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
 		{
 			if (component->ID == Particle_ID)
 			{
 			}
 		}
 	}
-	// Gere les particule creer dans la liste
-	// Update les mouvements et gere les deletes
 }
 
 void ParticleManager::CreateParticle(float startPosX, float startPosY, float startPosZ, float size,  float speedX, float speedY, float speedZ, std::wstring textureName)
 {
-	Entity* newIceBlock = m_entityManager->CreateEntity();
-	m_entityManager->AddComponent<TransformComponent>(newIceBlock);
-	m_entityManager->AddComponent<MeshComponent>(newIceBlock);
-	m_entityManager->AddComponent<ParticleComponent>(newIceBlock);
-	m_entityManager->AddComponent<VelocityComponent>(newIceBlock);
-	m_entityManager->AddComponent<LifeTimeComponent>(newIceBlock);
+	Entity* newIceBlock = mp_entityManager->CreateEntity();
+	mp_entityManager->AddComponent<TransformComponent>(newIceBlock);
+	mp_entityManager->AddComponent<MeshComponent>(newIceBlock);
+	mp_entityManager->AddComponent<ParticleComponent>(newIceBlock);
+	mp_entityManager->AddComponent<VelocityComponent>(newIceBlock);
+	mp_entityManager->AddComponent<LifeTimeComponent>(newIceBlock);
 
-	for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
+	for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
 		if (comp->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-			mesh->textureID = textureName;
+			mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateCube();
+			mesh->m_textureID = textureName;
 		}
 		if (comp->ID == Transform_ID)
 		{
@@ -77,8 +74,8 @@ void ParticleManager::CreateParticle(float startPosX, float startPosY, float sta
 		}
 		if (comp->ID == LifeTime_ID)
 		{
-			LifeTimeComponent* lifeTime = static_cast<LifeTimeComponent*>(comp);
-			lifeTime->lifeTime = 0.8f;
+			LifeTimeComponent* p_lifeTime = static_cast<LifeTimeComponent*>(comp);
+			p_lifeTime->m_lifeTime = 0.8f;
 		}
 	}
 }
@@ -100,11 +97,5 @@ void ParticleManager::MakeEffect(float startPosX, float startPosY, float startPo
 		float randSpeedZ = _minSpeed + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (_maxSpeed - _minSpeed);
 
 		CreateParticle(startPosX, startPosY, startPosZ, randSize, randSpeedX, randSpeedY, randSpeedZ, textureName);
-		/*swprintf_s(buffer, 256, L"NewParticle speedx: %d\r\n", randSpeedX); ne prend pas en compte les float
-		OutputDebugString(buffer);*/
 	}
-
-	
-	/*swprintf_s(buffer, 256, L"NB new Particles: %d\r\n", randSplashNb);
-	OutputDebugString(buffer);*/
 }
