@@ -9,7 +9,7 @@
 #include "Camera.h"
 #include "InputManager.h"
 #include "CameraSystem.h"
-
+#include "AssetManager.h"
 
 void GameScene::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health)
 {
@@ -72,11 +72,19 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 		}
 }
 
-
-
-
 void GameScene::OnInitialize()
 {
+	// Music
+	std::string basePath = AssetManager::GetExecutablePath();
+
+	std::string electroPath = basePath + "res\\ElectroMusic.wav";
+	std::string albatorPath = basePath + "res\\AlbatorOST.wav";
+	AssetManager::AddMusic("electro", electroPath);
+	AssetManager::AddMusic("albator", albatorPath);
+
+	AssetManager::GetMusic("electro").play();
+	AssetManager::GetMusic("electro").setVolume(20);
+
 	// Entity 1 = player
 	{
 		Entity* entity1 = mpEntityManager->CreateEntity();
@@ -153,7 +161,7 @@ void GameScene::OnInitialize()
 			if (comp->ID == Transform_ID)
 			{
 				TransformComponent* transform = static_cast<TransformComponent*>(comp);
-				transform->m_transform.Scale(300, 300, 300);
+				transform->m_transform.Scale(1000, 1000, 1000);
 				transform->m_transform.Move(0, 0, 0);
 			}
 		}

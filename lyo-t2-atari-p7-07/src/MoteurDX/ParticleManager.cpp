@@ -7,8 +7,6 @@ ParticleManager::ParticleManager()
 
 ParticleManager::~ParticleManager()
 {
-	delete m_entityManager;
-	delete m_gameManager;
 }
 
 void ParticleManager::Initialize(InitDirect3DApp* app)
@@ -85,7 +83,7 @@ void ParticleManager::CreateParticle(float startPosX, float startPosY, float sta
 
 void ParticleManager::Explosion(float startPosX, float startPosY, float startPosZ)
 {
-	MakeEffect(startPosX, startPosY, startPosZ, 5, 10, -1, 1, 0.3f, 1, L"FireTexture");
+	MakeEffect(startPosX, startPosY, startPosZ, 3, 5, -1, 1, 0.3f, 1, L"FireTexture");
 }
 
 void ParticleManager::MakeEffect(float startPosX, float startPosY, float startPosZ, int _minNbPart, int _maxNbPart, int _minSpeed, int _maxSpeed, int minSize, int maxSize, std::wstring textureName)

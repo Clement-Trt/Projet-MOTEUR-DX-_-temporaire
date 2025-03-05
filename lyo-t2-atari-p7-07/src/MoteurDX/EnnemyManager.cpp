@@ -113,8 +113,11 @@ void EnnemyManager::EnnemyAttackSystem()
             if (attack)
             {
                 // Declencher l'attaque en definissant le flag et en indiquant la cible
+                float minAtkCooldown = 0.1f;
+                float maxAtkCooldown = 0.2f;
+
                 attack->attackRequested = true;
-                attack->attackCooldown = 0.9f;
+                attack->attackCooldown = minAtkCooldown + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (maxAtkCooldown - minAtkCooldown);
                 attack->damage = 2;
 
                 attack->projectileSpeed = 1; // 1

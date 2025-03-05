@@ -3,11 +3,20 @@
 #include "InitDirect3DApp.h"
 #include "Components.h" // Pour HealthComponent
 #include "EnnemyManager.h"
+#include "AssetManager.h"
+#include "ParticleManager.h"
 
 // void HealthSystem::Update(EntityManager* entityManager, EnnemyManager* ennemyManager, float deltaTime)
 void HealthSystem::Initialize(InitDirect3DApp* gameManager)
 {
     m_gameManager = gameManager;
+
+    // Sound
+    std::string basePath = AssetManager::GetExecutablePath();
+
+    std::string explosionPath = basePath + "res\\Explosion.wav";
+    AssetManager::AddSound("explosion", explosionPath);
+    AssetManager::GetSound("explosion");
 }
 
 void HealthSystem::Update(float deltaTime)
@@ -26,6 +35,7 @@ void HealthSystem::Update(float deltaTime)
         {
             HealthComponent* health = nullptr;
             EnnemyComponent* ennemy = nullptr;
+            TransformComponent* transform = nullptr;
             auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
             for (auto* comp : compTab)
             {
@@ -39,6 +49,10 @@ void HealthSystem::Update(float deltaTime)
                     ennemy = static_cast<EnnemyComponent*>(comp);
                     //break;
                 }
+                if (comp->ID == Transform_ID)
+                {
+                    transform = static_cast<TransformComponent*>(comp);
+                }
             }
             if (health)
             {
@@ -49,6 +63,8 @@ void HealthSystem::Update(float deltaTime)
                     if (ennemy != nullptr) 
                     {
                         ennemyManager->SetNbEnnemy(ennemyManager->GetNbEnnemy() - 1);
+                        m_gameManager->GetParticleManager()->Explosion(transform->m_transform.GetPositionX(), transform->m_transform.GetPositionY(), transform->m_transform.GetPositionZ());
+                        AssetManager::PlayLocalSound("explosion");
                     }
                     entityManager->ToDestroy(entity);
                 }
