@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "AttackSystem.h"
 #include "InitDirect3DApp.h"
-#include "Components.h" // Pour AttackComponent
+#include "Components.h"
 
 void AttackSystem::Initialize(InitDirect3DApp* gameManager)
 {
