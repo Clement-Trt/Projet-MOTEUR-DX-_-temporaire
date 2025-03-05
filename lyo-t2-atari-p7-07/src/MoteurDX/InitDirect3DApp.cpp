@@ -253,16 +253,17 @@ void InitDirect3DApp::Update()
 		if (InputManager::GetKeyDown(VK_ESCAPE))
 		{
 			m_gameIsPaused = false;
-			ShowCursor(FALSE);
+			//ShowCursor(FALSE);
 			InputManager::SetCursorLockedAndInvisible(true);
 		}
 	}
 	else
 	{
+		SetCursor(LoadCursor(NULL, IDC_CROSS));
 		if (InputManager::GetKeyDown(VK_ESCAPE))
 		{
 			m_gameIsPaused = true;
-			ShowCursor(TRUE);
+			// ShowCursor(TRUE);
 			InputManager::SetCursorLockedAndInvisible(false);
 		}
 
