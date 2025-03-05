@@ -1,4 +1,15 @@
-Lancement du make
+@echo off
+
+echo Lancement du make
+
+SolutionGenerator.exe -make lyo-t2-atari-p7-07
+
+setlocal
+
+set Build_DIR=%CD%\lyo-t2-atari-p7-07\ide\vs\MoteurDX\Build\
+
+mkdir "%Build_DIR%\Debug"
+mkdir "%Build_DIR%\Release"
 
 set DEBUG_DIR=%CD%\lyo-t2-atari-p7-07\ide\vs\MoteurDX\Build\Debug\
 set RELEASE_DIR=%CD%\lyo-t2-atari-p7-07\ide\vs\MoteurDX\Build\Release\
@@ -15,5 +26,5 @@ copy "%DLL_PATH%" "%DEBUG_DIR%" /y
 echo Copie de openal32.dll dans Release...
 copy "%DLL_PATH%" "%RELEASE_DIR%" /y
 
-SolutionGenerator.exe -make lyo-t2-atari-p7-07
+echo Make Completed !
 pause
