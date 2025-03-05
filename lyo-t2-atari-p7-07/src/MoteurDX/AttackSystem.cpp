@@ -65,7 +65,7 @@ void AttackSystem::Update(float deltaTime)
 						if (component->ID == Mesh_ID)
 						{
 							mesh = static_cast<MeshComponent*>(component);
-							mesh->m_cubeMesh = mGM->GetFactory()->CreateCube();
+							mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 							mesh->textureID = attack->projectileTexture; // On assigne la texture
 						}
 						if (component->ID == Transform_ID)
