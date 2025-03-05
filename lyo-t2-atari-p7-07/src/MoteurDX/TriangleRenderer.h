@@ -1,6 +1,6 @@
 #pragma once
 
-#include "d3dx12.h"
+
 #include "Camera.h"
 
 #include "InputManager.h"

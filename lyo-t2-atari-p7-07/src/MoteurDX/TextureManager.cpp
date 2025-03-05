@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "TextureManager.h"
-#include "TextureLoaderDuLivre.h" 
 
 bool TextureManager::LoadTexture(const std::wstring& id, const std::wstring& filename)
 {

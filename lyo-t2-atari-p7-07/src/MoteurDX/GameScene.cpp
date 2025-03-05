@@ -48,7 +48,7 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
 	if (health != 0)
-		mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
+		//mpEntityManager->AddComponent<HealthComponent>(newIceBlock);
 
 		for (auto& comp : mpEntityManager->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 		{
@@ -120,10 +120,17 @@ void GameScene::OnInitialize()
 				CameraComponent* cam = static_cast<CameraComponent*>(component);
 				cam->m_cameraTransform.Scale(1.0f, 1.0f, 1.0f);
 			}
-			if (component->ID == Attack_ID)
+			if (component->ID == Attack_ID) 
 			{
 				AttackComponent* attack = static_cast<AttackComponent*>(component);
-				attack->attackCooldown = 0.15;
+				attack->projectileTexture = L"BlueBeamTexture";
+				attack->attackCooldown = 0.1f;
+				attack->damage = 2;
+
+				attack->projectileSpeed = 1; // 1
+				attack->projectileSizeX = 0.2f; // 0.2f
+				attack->projectileSizeY = 0.2f; // 0.2f
+				attack->projectileSizeZ = 1.0f; // 1.0f
 			}
 		}
 		playerEntity = entity1;

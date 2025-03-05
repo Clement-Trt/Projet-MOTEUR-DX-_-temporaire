@@ -2,7 +2,6 @@
 
 #include "MeshFactory.h"
 // #include "TextureLoader.h"
-#include "TextureLoaderDuLivre.h"
 
 MeshFactory::MeshFactory()
 {
@@ -275,6 +274,65 @@ void MeshFactory::CreateCubeModelForSkyBox(Mesh* cube)
 	cubeIndexView.Format = DXGI_FORMAT_R16_UINT;
 	cubeIndexView.SizeInBytes = iSize;
 }
+
+//Mesh* MeshFactory::CreateSphere(int latitudeBands, int longitudeBands)
+//{
+//	Mesh* newMesh = new Mesh;
+//
+//	std::vector<VertexMesh> vertices;
+//	std::vector<uint16_t> indices;
+//
+//	float radius = 0.5f;
+//	for (int lat = 0; lat <= latitudeBands; lat++) {
+//		float theta = lat * DirectX::XM_PI / latitudeBands;
+//		float sinTheta = sinf(theta);
+//		float cosTheta = cosf(theta);
+//
+//		for (int lon = 0; lon <= longitudeBands; lon++) {
+//			float phi = lon * 2 * DirectX::XM_PI / longitudeBands;
+//			float sinPhi = sinf(phi);
+//			float cosPhi = cosf(phi);
+//
+//			DirectX::XMFLOAT3 position(
+//				radius * cosPhi * sinTheta,
+//				radius * cosTheta,
+//				radius * sinPhi * sinTheta
+//			);
+//			DirectX::XMFLOAT2 texCoord(
+//				1.0f - ((float)lon / longitudeBands),
+//				1.0f - ((float)lat / latitudeBands)
+//			);
+//			DirectX::XMFLOAT4 color(1, 1, 1, 1);
+//
+//			vertices.push_back({ position, color, texCoord });
+//		}
+//	}
+//
+//	for (int lat = 0; lat < latitudeBands; lat++) {
+//		for (int lon = 0; lon < longitudeBands; lon++) {
+//			int first = (lat * (longitudeBands + 1)) + lon;
+//			int second = first + longitudeBands + 1;
+//
+//			indices.push_back(first);
+//			indices.push_back(second);
+//			indices.push_back(first + 1);
+//
+//			indices.push_back(second);
+//			indices.push_back(second + 1);
+//			indices.push_back(first + 1);
+//		}
+//	}
+//
+//	newMesh->m_geometryMesh.m_meshIndex = static_cast<UINT>(indices.size());
+//
+//	CreateBuffer(newMesh, vertices.data(), sizeof(VertexMesh) * vertices.size(), indices.data(), sizeof(uint16_t) * indices.size());
+//
+//	CD3DX12_RANGE readRange(0, 0);
+//	newMesh->m_constantBuffer->Map(0, &readRange, &newMesh->m_mappedData);
+//
+//	return newMesh;
+//}
+
 
 void MeshFactory::CreateCubeConstantBuffer(Mesh* cube)
 {

@@ -9,9 +9,9 @@
     "dependencies": [],
     "configuration": [
         {
-            "additional_dependencies": "%(AdditionalDependencies)",
-            "additional_include_directories": "",
-            "additional_library_directories": "",
+            "additional_dependencies": "$(SolutionDir)..\\..\\res\\sfml\\lib\\sfml-graphics-s-d.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\sfml-window-s-d.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\sfml-system-s-d.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\sfml-audio-s-d.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\openal32.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\flac.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\vorbisenc.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\vorbisfile.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\vorbis.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\ogg.lib;opengl32.lib;%(AdditionalDependencies)",
+            "additional_include_directories": "$(SolutionDir)..\\..\\res\\sfml\\include;$(SolutionDir)..\\..\\res\\openal\\include",
+            "additional_library_directories": "$(SolutionDir)..\\..\\res\\sfml\\lib;$(SolutionDir)..\\..\\res\\openal\\lib",
             "character_set": "Unicode",
             "conformance_mode": "true",
             "generate_debug_information": "true",
@@ -22,7 +22,7 @@
             "platform_toolset": "v143",
             "precompiled_header": "Use",
             "precompiled_header_file": "pch.h",
-            "preprocessor_definitions": "_DEBUG;_WINDOWS;%(PreprocessorDefinitions)",
+            "preprocessor_definitions": "SFML_STATIC;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)",
             "sdl_check": "true",
             "subsystem": "Windows",
             "type": "Application",
@@ -31,9 +31,9 @@
             "warning_level": "Level3"
         },
         {
-            "additional_dependencies": "%(AdditionalDependencies)",
-            "additional_include_directories": "",
-            "additional_library_directories": "",
+            "additional_dependencies": "$(SolutionDir)..\\..\\res\\sfml\\lib\\sfml-graphics-s.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\sfml-window-s.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\sfml-system-s.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\sfml-audio-s.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\openal32.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\flac.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\vorbisenc.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\vorbisfile.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\vorbis.lib;$(SolutionDir)..\\..\\res\\sfml\\lib\\ogg.lib;opengl32.lib;%(AdditionalDependencies)",
+            "additional_include_directories": "$(SolutionDir)..\\..\\res\\sfml\\include",
+            "additional_library_directories": "$(SolutionDir)..\\..\\res\\sfml\\lib",
             "character_set": "Unicode",
             "conformance_mode": "true",
             "generate_debug_information": "false",
@@ -44,7 +44,7 @@
             "platform_toolset": "v143",
             "precompiled_header": "Use",
             "precompiled_header_file": "pch.h",
-            "preprocessor_definitions": "NDEBUG;_WINDOWS;%(PreprocessorDefinitions)",
+            "preprocessor_definitions": "SFML_STATIC;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)",
             "sdl_check": "true",
             "subsystem": "Windows",
             "type": "Application",

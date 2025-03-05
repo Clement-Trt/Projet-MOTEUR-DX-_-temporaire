@@ -5,6 +5,12 @@ ParticleManager::ParticleManager()
 {
 }
 
+ParticleManager::~ParticleManager()
+{
+	delete m_entityManager;
+	delete m_gameManager;
+}
+
 void ParticleManager::Initialize(InitDirect3DApp* app)
 {
 	m_gameManager = app;
@@ -34,13 +40,14 @@ void ParticleManager::Update()
 	// Update les mouvements et gere les deletes
 }
 
-void ParticleManager::CreateDefaultBlock(float startPosX, float startPosY, float startPosZ, float size,  float speedX, float speedY, float speedZ)
+void ParticleManager::CreateParticle(float startPosX, float startPosY, float startPosZ, float size,  float speedX, float speedY, float speedZ, std::wstring textureName)
 {
 	Entity* newIceBlock = m_entityManager->CreateEntity();
 	m_entityManager->AddComponent<TransformComponent>(newIceBlock);
 	m_entityManager->AddComponent<MeshComponent>(newIceBlock);
 	m_entityManager->AddComponent<ParticleComponent>(newIceBlock);
 	m_entityManager->AddComponent<VelocityComponent>(newIceBlock);
+	m_entityManager->AddComponent<LifeTimeComponent>(newIceBlock);
 
 	for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
@@ -48,13 +55,14 @@ void ParticleManager::CreateDefaultBlock(float startPosX, float startPosY, float
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
 			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-			mesh->textureID = L"FireTexture";
+			mesh->textureID = textureName;
 		}
 		if (comp->ID == Transform_ID)
 		{
 			TransformComponent* transform = static_cast<TransformComponent*>(comp);
 			transform->m_transform.Scale(size, size, size);
 			transform->m_transform.Move(startPosZ, startPosX, startPosY);
+			transform->m_transform.Rotation(startPosZ, startPosX, startPosY);
 		}
 		if (comp->ID == Particle_ID)
 		{
@@ -67,15 +75,20 @@ void ParticleManager::CreateDefaultBlock(float startPosX, float startPosY, float
 			vel->vy = speedY;
 			vel->vz = speedZ;
 		}
+		if (comp->ID == LifeTime_ID)
+		{
+			LifeTimeComponent* lifeTime = static_cast<LifeTimeComponent*>(comp);
+			lifeTime->lifeTime = 0.8f;
+		}
 	}
 }
 
 void ParticleManager::Explosion(float startPosX, float startPosY, float startPosZ)
 {
-	MakeEffect(startPosX, startPosY, startPosZ, 5, 10, -1, 1, 2, 5);
+	MakeEffect(startPosX, startPosY, startPosZ, 5, 10, -1, 1, 0.3f, 1, L"FireTexture");
 }
 
-void ParticleManager::MakeEffect(float startPosX, float startPosY, float startPosZ, int _minNbPart, int _maxNbPart, int _minSpeed, int _maxSpeed, int minSize, int maxSize)
+void ParticleManager::MakeEffect(float startPosX, float startPosY, float startPosZ, int _minNbPart, int _maxNbPart, int _minSpeed, int _maxSpeed, int minSize, int maxSize, std::wstring textureName)
 {
 	int randSplashNb = std::rand() % (_maxNbPart - _minNbPart + 1) + _minNbPart;
 	wchar_t buffer[256];
@@ -86,7 +99,7 @@ void ParticleManager::MakeEffect(float startPosX, float startPosY, float startPo
 		float randSpeedY = _minSpeed + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (_maxSpeed - _minSpeed);
 		float randSpeedZ = _minSpeed + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (_maxSpeed - _minSpeed);
 
-		CreateDefaultBlock(startPosX, startPosY, startPosZ, randSize, randSpeedX, randSpeedY, randSpeedZ);
+		CreateParticle(startPosX, startPosY, startPosZ, randSize, randSpeedX, randSpeedY, randSpeedZ, textureName);
 		/*swprintf_s(buffer, 256, L"NewParticle speedx: %d\r\n", randSpeedX); ne prend pas en compte les float
 		OutputDebugString(buffer);*/
 	}
@@ -94,10 +107,4 @@ void ParticleManager::MakeEffect(float startPosX, float startPosY, float startPo
 	
 	/*swprintf_s(buffer, 256, L"NB new Particles: %d\r\n", randSplashNb);
 	OutputDebugString(buffer);*/
-}
-
-void ParticleManager::CreateParticle(float size, float speed)
-{
-	//Particle* newParticle = new Particle(_radius, _position.x, _position.y, _speed, _spritePath);
-	//particleList.push_back(newParticle);
 }

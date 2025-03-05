@@ -106,6 +106,7 @@ void EnnemyManager::EnnemyAttackSystem()
                 if (component->ID == Attack_ID)
                 {
                     attack = static_cast<AttackComponent*>(component);
+                    attack->projectileTexture = L"RedBeamTexture";
                     break;
                 }
             }
@@ -113,7 +114,13 @@ void EnnemyManager::EnnemyAttackSystem()
             {
                 // Declencher l'attaque en definissant le flag et en indiquant la cible
                 attack->attackRequested = true;
-                attack->targetEntity = m_player;
+                attack->attackCooldown = 0.9f;
+                attack->damage = 2;
+
+                attack->projectileSpeed = 1; // 1
+                attack->projectileSizeX = 0.2f; // 0.2f
+                attack->projectileSizeY = 0.2f; // 0.2f
+                attack->projectileSizeZ = 1.0f; // 1.0f
             }
         }
     }

@@ -4,7 +4,7 @@
 #include <wrl.h>
 #include <cstdint>
 
-#include "d3dx12.h"
+
 
 namespace TextureLoader
 {
