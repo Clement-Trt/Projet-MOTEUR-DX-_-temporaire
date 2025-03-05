@@ -10,7 +10,7 @@ class MovementManager
 {
 protected:
 
-	InitDirect3DApp* mGM;
+	InitDirect3DApp* m_gameManager;
 
 public:
 

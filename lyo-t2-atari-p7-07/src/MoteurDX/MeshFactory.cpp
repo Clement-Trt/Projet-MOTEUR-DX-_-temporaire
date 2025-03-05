@@ -61,40 +61,40 @@ void MeshFactory::CreateCubeModel(Mesh* cube)
 	VertexMesh vertices[24] =
 	{
 		// Front face (z = +halfSize)
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Back face (z = -halfSize)
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {0.0f, 0.0f, -1.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {0.0f, 0.0f, -1.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {0.0f, 0.0f, -1.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {0.0f, 0.0f, -1.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Left face (x = -halfSize)
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {-1.0f, 0.0f, 0.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {-1.0f, 0.0f, 0.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {-1.0f, 0.0f, 0.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {-1.0f, 0.0f, 0.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Right face (x = +halfSize)
-		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1.0f, 0.0f, 0.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1.0f, 0.0f, 0.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1.0f, 0.0f, 0.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1.0f, 0.0f, 0.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Top face (y = +halfSize)
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {0.0f, 1.0f, 0.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {0.0f, 1.0f, 0.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {0.0f, 1.0f, 0.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {0.0f, 1.0f, 0.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Bottom face (y = -halfSize)
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {0.0f, -1.0f, 0.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {0.0f, -1.0f, 0.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {0.0f, -1.0f, 0.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {0.0f, -1.0f, 0.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 	};
 
 	// Indices : 6 faces * 2 triangles par face * 3 indices par triangle = 36 indices
@@ -173,40 +173,40 @@ void MeshFactory::CreateCubeModelForSkyBox(Mesh* cube)
 	VertexMesh vertices[24] =
 	{
 		// Front face (z = +halfSize)
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {0.0f, 0.0f, 1.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Back face (z = -halfSize)
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {0.0f, 0.0f, -1.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {0.0f, 0.0f, -1.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {0.0f, 0.0f, -1.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {0.0f, 0.0f, -1.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Left face (x = -halfSize)
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {-1.0f, 0.0f, 0.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {-1.0f, 0.0f, 0.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {-1.0f, 0.0f, 0.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {-1.0f, 0.0f, 0.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Right face (x = +halfSize)
-		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1.0f, 0.0f, 0.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1.0f, 0.0f, 0.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1.0f, 0.0f, 0.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1.0f, 0.0f, 0.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Top face (y = +halfSize)
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize,  halfSize), {0.0f, 1.0f, 0.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize,  halfSize), {0.0f, 1.0f, 0.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize,  halfSize, -halfSize), {0.0f, 1.0f, 0.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize,  halfSize, -halfSize), {0.0f, 1.0f, 0.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 
 		// Bottom face (y = -halfSize)
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {1,1,1,1}, {0.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {1,1,1,1}, {1.0f, 1.0f} },
-		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {1,1,1,1}, {1.0f, 0.0f} },
-		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {1,1,1,1}, {0.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize, -halfSize), {0.0f, -1.0f, 0.0f}, {1,1,1,1}, {0.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize, -halfSize), {0.0f, -1.0f, 0.0f}, {1,1,1,1}, {1.0f, 1.0f} },
+		{ DirectX::XMFLOAT3(halfSize, -halfSize,  halfSize), {0.0f, -1.0f, 0.0f}, {1,1,1,1}, {1.0f, 0.0f} },
+		{ DirectX::XMFLOAT3(-halfSize, -halfSize,  halfSize), {0.0f, -1.0f, 0.0f}, {1,1,1,1}, {0.0f, 0.0f} },
 	};
 
 	// Indices : 6 faces * 2 triangles par face * 3 indices par triangle = 36 indices

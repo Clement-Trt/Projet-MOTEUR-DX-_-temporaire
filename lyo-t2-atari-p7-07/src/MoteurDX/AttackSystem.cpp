@@ -5,12 +5,12 @@
 
 void AttackSystem::Initialize(InitDirect3DApp* gameManager)
 {
-    mGM = gameManager;
+    m_gameManager = gameManager;
 }
 
 void AttackSystem::Update(float deltaTime)
 {
-    EntityManager* entityManager = mGM->GetEntityManager();
+    EntityManager* entityManager = m_gameManager->GetEntityManager();
     for (Entity* entity : entityManager->GetEntityTab())
     {
         if (!entity)
@@ -58,7 +58,7 @@ void AttackSystem::Update(float deltaTime)
                             if (component->ID == Mesh_ID)
                             {
                                 MeshComponent* mesh = static_cast<MeshComponent*>(component);
-                                mesh->m_cubeMesh = mGM->GetFactory()->CreateCube();
+                                mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
                                 mesh->textureID = L"IceTexture"; // On assigne la texture
                             }
                             if (component->ID == Transform_ID)

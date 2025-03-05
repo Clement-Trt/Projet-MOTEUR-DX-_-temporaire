@@ -77,11 +77,6 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 
 void GameScene::OnInitialize()
 {
-
-
-
-
-
 	// Entity 1 = player
 	{
 		Entity* entity1 = mpEntityManager->CreateEntity();
@@ -93,6 +88,8 @@ void GameScene::OnInitialize()
 		mpEntityManager->AddComponent<CameraComponent>(entity1);
 		mpEntityManager->AddComponent<AttackComponent>(entity1);
 		mpEntityManager->AddComponent<ColliderComponent>(entity1);
+		mpEntityManager->AddComponent<LightComponent>(entity1);
+
 
 		for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
 		{
@@ -101,6 +98,16 @@ void GameScene::OnInitialize()
 				MeshComponent* mesh = static_cast<MeshComponent*>(component);
 				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 				mesh->textureID = L"PlayerTexture"; // On assigne la texture
+			}
+			if (component->ID == Light_ID)
+			{
+				LightComponent* light = static_cast<LightComponent*>(component);
+				light->type = LightType::Point;
+				light->Position = { 0.0f, 0.0f, 0.0f };
+				light->Color = { 10.0f, 10.0f, 10.0f };
+				light->ConstantAtt = 1.0f;
+				light->LinearAtt = 0.09f;
+				light->QuadraticAtt = 0.032f;
 			}
 			if (component->ID == Transform_ID)
 			{
@@ -134,7 +141,7 @@ void GameScene::OnInitialize()
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
 				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateSkyBoxCube();
-				mesh->textureID = L"BoxTexture";
+				mesh->textureID = L"SkyBox2";
 			}
 			if (comp->ID == Transform_ID)
 			{
@@ -198,6 +205,59 @@ void GameScene::OnInitialize()
 		CreateWallBlock(10, 15, 6, 5, 10, -30, 10);
 	}
 
+	// Test lumiere :
+	//{
+	//	Entity* omniLightEntity = mpEntityManager->CreateEntity();
+
+	//	mpEntityManager->AddComponent<TransformComponent>(omniLightEntity);
+	//	// mpEntityManager->AddComponent<LightComponent>(omniLightEntity);
+	//	mpEntityManager->AddComponent<MeshComponent>(omniLightEntity);
+
+	//	for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[omniLightEntity->tab_index]->vec_components)
+	//	{
+	//		if (component->ID == Mesh_ID)
+	//		{
+	//			MeshComponent* mesh = static_cast<MeshComponent*>(component);
+	//			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
+	//			mesh->textureID = L"PlayerTexture";
+	//		}
+	//		/*if (component->ID == Light_ID)
+	//		{
+	//			LightComponent* light = static_cast<LightComponent*>(component);
+	//			light->type = LightType::Point;
+	//			light->Position = { 4000.0f, 5000.0f, 0.0f };
+	//			light->Color = { 20.0f, 20.0f, 20.0f };
+	//			light->ConstantAtt = 1.0f;
+	//			light->LinearAtt = 0.09f;
+	//			light->QuadraticAtt = 0.032f;
+	//		}*/
+	//		if (component->ID == Transform_ID)
+	//		{
+	//			TransformComponent* transform = static_cast<TransformComponent*>(component);
+	//			transform->m_transform.Scale(15.0f, 3.0f, 3.0f);
+	//			transform->m_transform.Move(-20, -20, 10);
+	//		}
+	//	}
+	//}
+
+	// Lumiere directionnel : 
+	//{
+	//	Entity* sunEntity = mpEntityManager->CreateEntity();
+	//	mpEntityManager->AddComponent<LightComponent>(sunEntity);
+
+	//	for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[sunEntity->tab_index]->vec_components)
+	//	{
+	//		if (component->ID == Light_ID)
+	//		{
+	//			LightComponent* light = static_cast<LightComponent*>(component);
+	//			light->type = LightType::Directional;
+	//			light->Direction = { 0.57735f, -0.57735f, 0.57735f };
+	//			light->Color = { 1.0f, 1.0f, 0.95f };
+	//		}
+	//	}
+
+	//}
+		
 	m_camera->SetFPS();
 
 }

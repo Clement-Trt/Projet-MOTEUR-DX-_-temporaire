@@ -2,6 +2,7 @@
 
 #include "WindowDX.h";
 #include "Scene.h";
+#include "LightSystem.h"
 
 class MeshFactory;
 class Camera;
@@ -63,6 +64,7 @@ private:
 	HealthSystem* m_healthSystem;
 	AttackSystem* m_attackSystem;
 	CameraSystem* m_cameraManager;
+	LightSystem* m_lightSystem;
 
 	Scene* m_scene;
 
@@ -73,5 +75,8 @@ private:
 	ComPtr<ID3D12Resource> m_texture;
 
 	bool m_gameIsPaused;
+
+	ComPtr<ID3D12Resource> m_passConstantBuffer;
+	PassConstants* m_mappedPassCB = nullptr;
 };
 
