@@ -2,8 +2,6 @@
 
 class InitDirect3DApp;
 
-// const int MAX_POINT_LIGHTS = 8;
-
 struct DirectionalLight {
     DirectX::XMFLOAT3 Direction;
     float pad1;
