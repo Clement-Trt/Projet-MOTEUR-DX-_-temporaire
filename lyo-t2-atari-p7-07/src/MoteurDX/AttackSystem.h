@@ -7,7 +7,7 @@ class AttackSystem
 {
 protected:
 
-    InitDirect3DApp* mGM;
+    InitDirect3DApp* m_gameManager;
 
 public:
     void Initialize(InitDirect3DApp* gameManager);

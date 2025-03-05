@@ -26,6 +26,7 @@ enum ComponentType {
 	COMPONENT_PARTICLE = 1 << 7,
 	COMPONENT_ENNEMY = 1 << 8,
 	COMPONENT_PLAYER = 1 << 9,
+	COMPONENT_LIGHT = 1 << 10,
 };
 
 enum ComponentIndex
@@ -40,6 +41,7 @@ enum ComponentIndex
 	Particle_index,
 	Ennemy_index,
 	Player_index,
+	Light_index,
 };
 
 enum ComponentID
@@ -54,6 +56,7 @@ enum ComponentID
 	Particle_ID,
 	Ennemy_ID,
 	Player_ID,
+	Light_ID,
 
 	TotalComponentsNumber
 };
@@ -162,4 +165,22 @@ struct AttackComponent : public Component
 	float timeSinceLastAttack = 0.0f; 
 	bool attackRequested = false;     
 	Entity* targetEntity = nullptr;   
+};
+
+enum class LightType {
+	Point,
+	Directional
+};
+struct LightComponent : public Component {
+	LightComponent() : Component(Light_ID, COMPONENT_LIGHT) {}
+	LightType type;
+	// Pour la lumiere directionnelle
+	DirectX::XMFLOAT3 Direction;
+	// Pour la lumiere point (omnidirectionnelle)
+	DirectX::XMFLOAT3 Position;
+	DirectX::XMFLOAT3 Color;
+	// Parametres d'attenuation pour une lumiere point
+	float ConstantAtt;
+	float LinearAtt;
+	float QuadraticAtt;
 };

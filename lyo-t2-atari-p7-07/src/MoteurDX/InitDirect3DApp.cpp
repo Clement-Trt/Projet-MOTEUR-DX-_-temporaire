@@ -7,6 +7,7 @@
 #include "EntityManager.h"
 #include "HealthSystem.h"
 #include "AttackSystem.h"
+#include "LightSystem.h"
 
 #include "Scene.h"
 #include "SceneTest.h"
@@ -117,6 +118,10 @@ bool InitDirect3DApp::Initialize()
 	m_attackSystem = new AttackSystem;
 	m_attackSystem->Initialize(this);
 
+	// LightSystem
+	m_lightSystem = new LightSystem;
+	m_lightSystem->Initialize(this);
+
 	// HealthManager
 	m_healthSystem = new HealthSystem;
 	m_healthSystem->Initialize(this);
@@ -136,6 +141,37 @@ bool InitDirect3DApp::Initialize()
 	m_scene->Initialize(this);
 	m_scene->OnInitialize();
 
+	// Pour la lumiere :
+	// Calculez la taille necessaire pour le constant buffer
+	UINT passCBSize = (sizeof(PassConstants) + 255) & ~255;
+
+	// Creez un resource upload buffer pour le constant buffer
+	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
+	CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(passCBSize);
+
+	hr = mD3DDevice->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&bufferDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&m_passConstantBuffer)
+	);
+	if (FAILED(hr))
+	{
+		// Gestion d'erreur
+	}
+
+	// Mappez le constant buffer et obtenez un pointeur qui y est associe
+	hr = m_passConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&m_mappedPassCB));
+	if (FAILED(hr))
+	{
+		// Gestion d'erreur
+	}
+
+	// Optionnel : initialisez le buffer à zéro
+	memset(m_mappedPassCB, 0, passCBSize);
+
 	m_gameIsPaused = true;
 	return true;
 }
@@ -144,9 +180,8 @@ bool InitDirect3DApp::InitTexture()
 {
 	// Creation du TextureManager
 	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
-	// On cree un heap pour le nombre total de textures (ici 3)
 	// On cree un heap pour le nombre total de textures
-	m_textureManager->CreateDescriptorHeap(7);
+	m_textureManager->CreateDescriptorHeap(8);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
 	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
@@ -181,6 +216,11 @@ bool InitDirect3DApp::InitTexture()
 	if (!m_textureManager->LoadTexture(L"SkyBox", L"../../../src/MoteurDX/SkyBoxTexture.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"SkyBox2", L"../../../src/MoteurDX/SkyBox2.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture SkyBox2.", L"Erreur", MB_OK);
 		return false;
 	}
 
@@ -245,6 +285,9 @@ void InitDirect3DApp::UpdatePhysics()
 
 		// HealthSystem
 		m_healthSystem->Update(m_deltaTime); 
+
+		// LightSystem
+		m_lightSystem->Update(m_deltaTime);
 	}
 
 	// DESTROY ENTITIES
@@ -282,6 +325,10 @@ void InitDirect3DApp::Render()
 		/*mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
 		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		PassConstants passConstants = m_lightSystem->GetPassConstants();
+		memcpy(m_mappedPassCB, &passConstants, sizeof(PassConstants));
+		mCommandList->SetGraphicsRootConstantBufferView(2, m_passConstantBuffer->GetGPUVirtualAddress());
 
 		DirectX::XMMATRIX view = m_cameraManager->GetViewMatrix();
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
@@ -324,6 +371,7 @@ void InitDirect3DApp::Render()
 			DirectX::XMMATRIX world = XMLoadFloat4x4(&entityTransform->m_transform.GetMatrix());
 			DirectX::XMMATRIX wvp = world * view * proj;
 			TransformConstants objConstants;
+			XMStoreFloat4x4(&objConstants.World, DirectX::XMMatrixTranspose(world));
 			XMStoreFloat4x4(&objConstants.WorldViewProj, DirectX::XMMatrixTranspose(wvp));
 
 			// Mise a jour du constant buffer via le mapping persistant (m_mappedData)
@@ -353,13 +401,15 @@ void InitDirect3DApp::Render()
 void InitDirect3DApp::CreatePipelineState()
 {
 	// Definition d'un parametre root pour un Constant Buffer (CBV)
-	CD3DX12_ROOT_PARAMETER slotRootParameter[2]; // 2 parametres au lieu de 1 pour la texture
+	CD3DX12_ROOT_PARAMETER slotRootParameter[3]; // 2 parametres au lieu de 1 pour la texture
 	// Parametre 0 : constant buffer (transformation)
 	slotRootParameter[0].InitAsConstantBufferView(0);
 	// Parametre 1 : table de descripteurs pour la texture (register t0)
 	CD3DX12_DESCRIPTOR_RANGE texTable;
 	texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 	slotRootParameter[1].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
+	// Parametre 2 : Pour l'eclairage (PassConstants)
+	slotRootParameter[2].InitAsConstantBufferView(1);
 
 	// Declarez le static sampler pour register(s0) 
 	CD3DX12_STATIC_SAMPLER_DESC samplerDesc(0); // register s0
@@ -369,7 +419,7 @@ void InitDirect3DApp::CreatePipelineState()
 	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
 	// Creation de la Root Signature
-	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(3, slotRootParameter, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	ComPtr<ID3DBlob> error = nullptr;
@@ -415,8 +465,9 @@ void InitDirect3DApp::CreatePipelineState()
 	// Define the input layout
 	D3D12_INPUT_ELEMENT_DESC inputLayout[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 28, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
 
 	// Create the pipeline state object

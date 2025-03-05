@@ -13,6 +13,7 @@ using namespace Microsoft::WRL;
 struct VertexMesh
 {
 	DirectX::XMFLOAT3 Position;
+	DirectX::XMFLOAT3 Normal;
 	DirectX::XMFLOAT4 Color;
 	DirectX::XMFLOAT2 TexCoord;
 };
@@ -20,6 +21,7 @@ struct VertexMesh
 // Structure pour les constantes (matrice WorldViewProj)
 struct TransformConstants
 {
+	DirectX::XMFLOAT4X4 World;
 	DirectX::XMFLOAT4X4 WorldViewProj;
 };
 
