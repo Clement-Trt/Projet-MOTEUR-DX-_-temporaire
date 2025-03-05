@@ -160,7 +160,7 @@ void ColliderManager::Update()
 				if (collider1->m_isDestructable && entity1)
 				{
 					//collider1->m_isDestroyed = true;
-					m_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
+					//m_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
 					//m_entityManager->DestroyEntity(entity1);
 				}
 

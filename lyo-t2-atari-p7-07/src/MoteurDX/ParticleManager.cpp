@@ -7,8 +7,6 @@ ParticleManager::ParticleManager()
 
 ParticleManager::~ParticleManager()
 {
-	delete m_entityManager;
-	delete m_gameManager;
 }
 
 void ParticleManager::Initialize(InitDirect3DApp* app)

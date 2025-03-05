@@ -39,6 +39,7 @@ InitDirect3DApp::~InitDirect3DApp()
 	delete m_movementManager;
 	delete m_lifeTimeManager;
 	delete m_cameraManager;
+	delete m_lightSystem;
 	delete m_scene;
 }
 

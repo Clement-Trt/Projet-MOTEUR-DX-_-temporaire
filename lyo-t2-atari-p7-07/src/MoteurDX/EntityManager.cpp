@@ -3,19 +3,28 @@
 #include "EntityManager.h"
 
 EntityManager::~EntityManager()
-{	 
+{
 	for (auto& entity : tab_entity)
 	{
 		delete entity;
 		entity = nullptr;
 	}
-	
-	for (auto& entity : tab_Components)
+
+	for (auto& entityComponents : tab_Components)
 	{
-		delete entity;
-		entity = nullptr;
+		if (entityComponents)
+		{
+			for (auto* component : tab_Components[entityComponents->tab_index]->vec_components)
+			{
+				delete component;
+			}
+			tab_Components[entityComponents->tab_index]->vec_components.clear();
+
+			delete entityComponents;
+			entityComponents = nullptr;
+		}
 	}
-	
+
 	for (auto& entity : tab_toDestroy)
 	{
 		delete entity;
@@ -29,7 +38,7 @@ EntityManager::~EntityManager()
 		entity = nullptr;
 	}
 	tab_entitiesToAdd.clear();
-	for (auto& component :tab_compToAdd)
+	for (auto& component : tab_compToAdd)
 	{
 		delete component;
 		component = nullptr;
@@ -41,7 +50,11 @@ Entity* EntityManager::CreateEntity() {
 
 	Entity* entity = new Entity;
 
+	int newid = entitiesToAddIndex * -1;
+	if (newid > 64000)
+		return nullptr;
 	entity->tab_index = entitiesToAddIndex * -1;
+
 	entity->id = entitiesToAddIndex - 1;
 	tab_entitiesToAdd.push_back(entity);
 
@@ -82,16 +95,34 @@ void EntityManager::DestroyEntity(Entity* entity) {
 	tab_Components[lastIndex]->tab_index = index;
 	*tab_Components[index] = *tab_Components[lastIndex];
 
-	tab_entity[lastIndex] = nullptr;
-	delete tab_entity[lastIndex];
 
-	tab_Components[lastIndex] = nullptr;
+	delete tab_entity[lastIndex];
+	tab_entity[lastIndex] = nullptr;
+
+	for (auto* component : tab_Components[lastIndex]->vec_components)
+	{
+		if (component)
+			delete component;
+	}
+	tab_Components[lastIndex]->vec_components.clear();
+
 	delete tab_Components[lastIndex];
-	int newEntityToPointAt = --entityNb;
+	tab_Components[lastIndex] = nullptr;
+	--entityNb;
 }
 
 void EntityManager::ToDestroy(Entity* entity)
 {
+	for (auto& entityInTab : tab_toDestroy)
+	{
+		if (entityInTab == entity)
+		{
+			wchar_t buffer[256];
+			swprintf_s(buffer, 256, L"Entity to destroy is already in to destroy list\r\n");
+			OutputDebugString(buffer);
+			return;
+		}
+	}
 	tab_toDestroy.push_back(entity);
 }
 

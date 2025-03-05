@@ -20,8 +20,8 @@ void LifeTimeManager::Update(float deltaTime)
 		if (entityManager->HasComponent(entity, COMPONENT_LIFETIME))
 		{
 			LifeTimeComponent* lifeTime = nullptr;
-			auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
-			for (auto* comp : compTab)
+			//auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
+			for (auto* comp : entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
 			{
 				if (comp->ID == LifeTime_ID)
 				{
