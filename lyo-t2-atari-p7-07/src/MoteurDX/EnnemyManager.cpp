@@ -106,15 +106,15 @@ void EnnemyManager::EnnemyAttackSystem()
                 if (component->ID == Attack_ID)
                 {
                     attack = static_cast<AttackComponent*>(component);
-                    attack->projectileTexture = L"RedBeamTexture";
+                    attack->projectileTexture = L"EnnemyBeamTexture";
                     break;
                 }
             }
             if (attack)
             {
                 // Declencher l'attaque en definissant le flag et en indiquant la cible
-                float minAtkCooldown = 0.1f;
-                float maxAtkCooldown = 0.2f;
+                float minAtkCooldown = 0.5f;
+                float maxAtkCooldown = 1.f;
 
                 attack->attackRequested = true;
                 attack->attackCooldown = minAtkCooldown + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (maxAtkCooldown - minAtkCooldown);
@@ -188,8 +188,8 @@ void EnnemyManager::SpawnEnnemyBoss(float posX, float posY, float posZ)
         if (comp->ID == Health_ID)
         {
             HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
-            healthComp->maxHealth = 100;
-            healthComp->currentHealth = 100;
+            healthComp->maxHealth = 200;
+            healthComp->currentHealth = 200;
         }
     }
 }

@@ -186,7 +186,7 @@ bool InitDirect3DApp::InitTexture()
 	// Creation du TextureManager
 	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
 	// On cree un heap pour le nombre total de textures
-	m_textureManager->CreateDescriptorHeap(11);
+	m_textureManager->CreateDescriptorHeap(14);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
 	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
@@ -231,20 +231,34 @@ bool InitDirect3DApp::InitTexture()
 	}
 	if (!m_textureManager->LoadTexture(L"DefaultTexture", L"../../../src/MoteurDX/defaultTexture.dds"))
 	{
-		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		MessageBox(0, L"echec du chargement de la texture DefaultTexture.", L"Erreur", MB_OK);
 		return false;
 	}
 	if (!m_textureManager->LoadTexture(L"BlueBeamTexture", L"../../../src/MoteurDX/blueBeam.dds"))
 	{
-		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		MessageBox(0, L"echec du chargement de la texture BlueBeamTexture.", L"Erreur", MB_OK);
 		return false;
 	}
 	if (!m_textureManager->LoadTexture(L"RedBeamTexture", L"../../../src/MoteurDX/redBeam.dds"))
 	{
-		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		MessageBox(0, L"echec du chargement de la texture RedBeamTexture.", L"Erreur", MB_OK);
 		return false;
 	}
-
+	if (!m_textureManager->LoadTexture(L"PlayerBeamTexture", L"../../../src/MoteurDX/BeamPlayerV2.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture PlayerBeamTexture.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"EnnemyBeamTexture", L"../../../src/MoteurDX/BeamEnnemyV2.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture EnnemyBeamTexture.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!m_textureManager->LoadTexture(L"MeteorTexture", L"../../../src/MoteurDX/meteor.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture MeteorTexture.", L"Erreur", MB_OK);
+		return false;
+	}
 	return true;
 }
 

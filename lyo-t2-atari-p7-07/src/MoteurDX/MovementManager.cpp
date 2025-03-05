@@ -6,6 +6,8 @@
 void MovementManager::Initialize(InitDirect3DApp* gameManager)
 {
 	m_gameManager = gameManager;
+	m_limitPosMin = -220; //-145
+	m_limitPosMax = 220; //145
 }
 
 void MovementManager::Update()
@@ -53,38 +55,38 @@ void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, Tran
 
 	if (entity->id != 1) // Si ce n'est pas le joueur
 	{
-		if (transformComponent->m_transform.GetPositionX() > 145 || transformComponent->m_transform.GetPositionX() < -145
-			|| transformComponent->m_transform.GetPositionY() > 145 || transformComponent->m_transform.GetPositionY() < -145
-			|| transformComponent->m_transform.GetPositionZ() > 145 || transformComponent->m_transform.GetPositionZ() < -145)
+		if (transformComponent->m_transform.GetPositionX() > m_limitPosMax || transformComponent->m_transform.GetPositionX() < m_limitPosMin
+			|| transformComponent->m_transform.GetPositionY() > m_limitPosMax || transformComponent->m_transform.GetPositionY() < m_limitPosMin
+			|| transformComponent->m_transform.GetPositionZ() > m_limitPosMax || transformComponent->m_transform.GetPositionZ() < m_limitPosMin)
 		{
 			m_gameManager->GetEntityManager()->ToDestroy(entity);
 		}
 	}
 	else // Si c'est le joueur
 	{
-		if (transformComponent->m_transform.GetPositionX() > 145)
+		if (transformComponent->m_transform.GetPositionX() > m_limitPosMax)
 		{
-			transformComponent->m_transform.vPosition.x = 145;
+			transformComponent->m_transform.vPosition.x = m_limitPosMax;
 		}
-		else if (transformComponent->m_transform.GetPositionX() < -145)
+		else if (transformComponent->m_transform.GetPositionX() < m_limitPosMin)
 		{
-			transformComponent->m_transform.vPosition.x = -145;
+			transformComponent->m_transform.vPosition.x = m_limitPosMin;
 		}
-		if (transformComponent->m_transform.GetPositionY() > 145)
+		if (transformComponent->m_transform.GetPositionY() > m_limitPosMax)
 		{
-			transformComponent->m_transform.vPosition.y = 145;
+			transformComponent->m_transform.vPosition.y = m_limitPosMax;
 		}
-		else if (transformComponent->m_transform.GetPositionY() < -145)
+		else if (transformComponent->m_transform.GetPositionY() < m_limitPosMin)
 		{
-			transformComponent->m_transform.vPosition.y = -145;
+			transformComponent->m_transform.vPosition.y = m_limitPosMin;
 		}
-		if (transformComponent->m_transform.GetPositionZ() > 145)
+		if (transformComponent->m_transform.GetPositionZ() > m_limitPosMax)
 		{
-			transformComponent->m_transform.vPosition.z = 145;
+			transformComponent->m_transform.vPosition.z = m_limitPosMax;
 		}
-		else if (transformComponent->m_transform.GetPositionZ() < -145)
+		else if (transformComponent->m_transform.GetPositionZ() < m_limitPosMin)
 		{
-			transformComponent->m_transform.vPosition.z = -145;
+			transformComponent->m_transform.vPosition.z = m_limitPosMin;
 		}
 		SetVelocity(velComponent, 0, 0, 0);
 	}

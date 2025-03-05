@@ -28,6 +28,7 @@ enum ComponentType {
 	COMPONENT_PLAYER = 1 << 9,
 	COMPONENT_LIGHT = 1 << 10,
 	COMPONENT_LIFETIME = 1 << 11,
+	COMPONENT_SCENEOBJECT = 1 << 12,
 };
 
 enum ComponentIndex
@@ -44,6 +45,7 @@ enum ComponentIndex
 	Player_index,
 	Light_index,
 	LifeTime_index,
+	SceneObject_index,
 };
 
 enum ComponentID
@@ -60,6 +62,7 @@ enum ComponentID
 	Player_ID,
 	Light_ID,
 	LifeTime_ID,
+	SceneObject_ID,
 
 	TotalComponentsNumber
 };
@@ -143,6 +146,14 @@ struct LifeTimeComponent : public Component
 {
 	LifeTimeComponent() : Component(LifeTime_ID, COMPONENT_LIFETIME) {}
 	float lifeTime = 0.f;
+};
+
+struct SceneObjectComponent : public Component
+{
+	SceneObjectComponent() : Component(SceneObject_ID, COMPONENT_SCENEOBJECT) {}
+	float speedRotX = 0.f;
+	float speedRotY = 0.f;
+	float speedRotZ = 0.f;
 };
 
 struct TransformComponent : public Component
