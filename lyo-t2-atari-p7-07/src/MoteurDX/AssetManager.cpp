@@ -10,7 +10,7 @@ void AssetManager::LoadErrorResponses()
 
 bool AssetManager::AddTexture(const std::string& textureName, const std::string& texturePath, const sf::IntRect& area)
 {
-	if (mTextureList.find(textureName) != mTextureList.end())
+	if (m_textureList.find(textureName) != m_textureList.end())
 	{
 		std::cout << "Texture " << textureName << " already exists" << std::endl;
 		return false;
@@ -41,17 +41,17 @@ bool AssetManager::AddTexture(const std::string& textureName, const std::string&
 			std::cout << "Texture " << textureName << " (All) loaded succesfully" << std::endl;
 	}
 
-	mTextureList.emplace(textureName, texture);
+	m_textureList.emplace(textureName, texture);
 	return true;
 }
 
 const sf::Texture& AssetManager::GetTexture(const std::string& textureName, const sf::IntRect& area)
 {
-	auto textureItr = mTextureList.find(textureName);
-	if (textureItr == mTextureList.end())
+	auto textureItr = m_textureList.find(textureName);
+	if (textureItr == m_textureList.end())
 	{
 		std::cout << "Texture '" << textureName << "' cannot be found" << std::endl;
-		return *mTextureList["error"];
+		return *m_textureList["error"];
 	}
 
 	return *textureItr->second;
@@ -61,7 +61,7 @@ const sf::Texture& AssetManager::GetTexture(const std::string& textureName, cons
 
 bool AssetManager::AddSound(const std::string& soundName, const std::string& soundPath)
 {
-	if (mSoundBufferList.find(soundName) != mSoundBufferList.end())
+	if (m_soundBufferList.find(soundName) != m_soundBufferList.end())
 	{
 		std::cout << "Sound " << soundName << " already exists" << std::endl;
 		return false;
@@ -89,11 +89,11 @@ bool AssetManager::AddSound(const std::string& soundName, const std::string& sou
 		std::cout << "Sound " << soundName << " loaded successfully from " << soundPath << std::endl;
 	}
 
-	mSoundBufferList.emplace(soundName, std::move(soundBuffer));
+	m_soundBufferList.emplace(soundName, std::move(soundBuffer));
 
 	sf::Sound* sound = new sf::Sound();
 	// S'assurer que la soundBuffer existe bien
-	if (mSoundBufferList.find(soundName) == mSoundBufferList.end())
+	if (m_soundBufferList.find(soundName) == m_soundBufferList.end())
 	{
 		std::cout << "SoundBuffer not found for " << soundName << std::endl;
 		OutputDebugString(L"SoundBuffer not found\n");
@@ -101,26 +101,26 @@ bool AssetManager::AddSound(const std::string& soundName, const std::string& sou
 		return false;
 	}
 
-	sound->setBuffer(*mSoundBufferList[soundName]);
-	mSoundList.emplace(soundName, sound);
+	sound->setBuffer(*m_soundBufferList[soundName]);
+	m_soundList.emplace(soundName, sound);
 	return true;
 }
 
 const sf::Sound& AssetManager::GetSound(const std::string& soundName)
 {
-	auto soundItr = mSoundList.find(soundName);
-	if (soundItr == mSoundList.end())
+	auto soundItr = m_soundList.find(soundName);
+	if (soundItr == m_soundList.end())
 	{
 		std::cout << "Sound '" << soundName << "' cannot be found" << std::endl;
-		return *mSoundList["error"];
+		return *m_soundList["error"];
 	}
 	return *soundItr->second;
 }
 
 void AssetManager::PlayLocalSound(const std::string& soundName)
 {
-	auto it = mSoundBufferList.find(soundName);
-	if (it == mSoundBufferList.end() || it->second == nullptr)
+	auto it = m_soundBufferList.find(soundName);
+	if (it == m_soundBufferList.end() || it->second == nullptr)
 	{
 		OutputDebugString(L"PlayLocalSound: SoundBuffer not found or null.\n");
 		return;
@@ -132,10 +132,10 @@ void AssetManager::PlayLocalSound(const std::string& soundName)
 	newSound->play();
 
 	// Stocke le son dans une liste pour eviter qu'il soit supprime immediatement
-	mActiveSounds.push_back(newSound);
+	m_activeSounds.push_back(newSound);
 
 	// Nettoie les sons termines
-	mActiveSounds.remove_if([](sf::Sound* sound) 
+	m_activeSounds.remove_if([](sf::Sound* sound) 
 	{
 		if (sound->getStatus() == sf::Sound::Stopped) 
 		{
@@ -150,7 +150,7 @@ void AssetManager::PlayLocalSound(const std::string& soundName)
 
 bool AssetManager::AddMusic(const std::string& musicName, const std::string& musicPath)
 {
-	if (mMusicList.find(musicName) != mMusicList.end())
+	if (m_musicList.find(musicName) != m_musicList.end())
 	{
 		std::cout << "Music " << musicName << " already exists" << std::endl;
 		return false;
@@ -165,7 +165,7 @@ bool AssetManager::AddMusic(const std::string& musicName, const std::string& mus
 	}
 	std::cout << "Music " << musicName << " loaded successfully" << std::endl;
 
-	mMusicList.emplace(musicName, music);
+	m_musicList.emplace(musicName, music);
 
 	return true;
 }
@@ -173,30 +173,30 @@ bool AssetManager::AddMusic(const std::string& musicName, const std::string& mus
 
 sf::Music& AssetManager::GetMusic(const std::string& musicName)
 {
-	return *mMusicList.at(musicName);
+	return *m_musicList.at(musicName);
 }
 
 void AssetManager::ReleaseAll()
 {
-	for (auto& pair : mTextureList) {
+	for (auto& pair : m_textureList) {
 		delete pair.second;
 	}
-	mTextureList.clear();
+	m_textureList.clear();
 
-	for (auto& pair : mSoundBufferList) {
+	for (auto& pair : m_soundBufferList) {
 		delete pair.second;
 	}
-	mSoundBufferList.clear();
+	m_soundBufferList.clear();
 
-	for (auto& pair : mSoundList) {
+	for (auto& pair : m_soundList) {
 		delete pair.second;
 	}
-	mSoundList.clear();
+	m_soundList.clear();
 
-	for (auto& pair : mMusicList) {
+	for (auto& pair : m_musicList) {
 		delete pair.second;
 	}
-	mMusicList.clear();
+	m_musicList.clear();
 
 	std::cout << "All assets have been released." << std::endl;
 }

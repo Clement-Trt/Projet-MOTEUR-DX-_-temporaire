@@ -10,16 +10,16 @@ class AssetManager
 protected:
 
 	// __ Textures __
-	inline static std::unordered_map<std::string, sf::Texture*> mTextureList;
+	inline static std::unordered_map<std::string, sf::Texture*> m_textureList;
 
 	// __ Sound effects __ 
-	inline static std::unordered_map<std::string, sf::SoundBuffer*> mSoundBufferList;
-	inline static std::unordered_map<std::string, sf::Sound*> mSoundList;
-	inline static sf::Sound* mErrorSound;
-	inline static std::list<sf::Sound*> mActiveSounds;  // Garde les sons en cours
+	inline static std::unordered_map<std::string, sf::SoundBuffer*> m_soundBufferList;
+	inline static std::unordered_map<std::string, sf::Sound*> m_soundList;
+	inline static sf::Sound* m_errorSound;
+	inline static std::list<sf::Sound*> m_activeSounds;  // Garde les sons en cours
 
 	// __ Musics __ 
-	inline static std::unordered_map<std::string, sf::Music*> mMusicList;
+	inline static std::unordered_map<std::string, sf::Music*> m_musicList;
 
 
 public:
