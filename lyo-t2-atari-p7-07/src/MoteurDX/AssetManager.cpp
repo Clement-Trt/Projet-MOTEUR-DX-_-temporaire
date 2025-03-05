@@ -57,8 +57,6 @@ const sf::Texture& AssetManager::GetTexture(const std::string& textureName, cons
 	return *textureItr->second;
 }
 
-
-
 bool AssetManager::AddSound(const std::string& soundName, const std::string& soundPath)
 {
 	if (m_soundBufferList.find(soundName) != m_soundBufferList.end())
@@ -71,7 +69,6 @@ bool AssetManager::AddSound(const std::string& soundName, const std::string& sou
 	if (!soundBuffer->loadFromFile(soundPath))
 	{
 		wchar_t debugBuffer[512];
-		// Affiche le chemin du fichier et un message d'echec
 		swprintf_s(debugBuffer, 512, L"LoadFromFile failed for path: %hs\n", soundPath.c_str());
 		OutputDebugString(debugBuffer);
 
@@ -82,7 +79,6 @@ bool AssetManager::AddSound(const std::string& soundName, const std::string& sou
 	else
 	{
 		wchar_t debugBuffer[512];
-		// Affiche le chemin du fichier et un message de succes
 		swprintf_s(debugBuffer, 512, L"LoadFromFile succeeded for path: %hs\n", soundPath.c_str());
 		OutputDebugString(debugBuffer);
 
@@ -92,7 +88,6 @@ bool AssetManager::AddSound(const std::string& soundName, const std::string& sou
 	m_soundBufferList.emplace(soundName, std::move(soundBuffer));
 
 	sf::Sound* sound = new sf::Sound();
-	// S'assurer que la soundBuffer existe bien
 	if (m_soundBufferList.find(soundName) == m_soundBufferList.end())
 	{
 		std::cout << "SoundBuffer not found for " << soundName << std::endl;

@@ -30,21 +30,17 @@ public:
 	void UpdateTimer();
 	void Draw() override;
 
-
 	void Render();
 	void CreatePipelineState();
 
 	void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
 	void SetScene(Scene* scene) { mp_scene = scene; }
 
-
 	EntityManager* GetEntityManager() { return mp_entityManager; }
 	MeshFactory* GetFactory() { return mp_meshFactory; }
 	ParticleManager* GetParticleManager() { return mp_particleManager; }
 	CameraSystem* GetCameraSystem() { return mp_cameraManager; }
 	EnnemyManager* GetEnnemyManager() { return mp_ennemyManager; }
-
-	//CameraComponent* GetMainView() { return m_mainView; }
 
 	friend class Scene;
 
@@ -54,8 +50,6 @@ private:
 	MeshFactory* mp_meshFactory;
 
 	EntityManager* mp_entityManager;
-	//CameraComponent* m_mainView;
-
 	ColliderManager* mp_colliderManager;
 	EnnemyManager* mp_ennemyManager;
 	ParticleManager* mp_particleManager;
@@ -70,10 +64,9 @@ private:
 
 	Scene* mp_scene;
 
-	float m_deltaTime = 0.0f; //   PAS UTILISE ?
+	float m_deltaTime = 0.0f;
 	DWORD m_lastTime = 0;
 
-	// Textures:
 	ComPtr<ID3D12Resource> m_texture;
 
 	bool m_gameIsPaused;

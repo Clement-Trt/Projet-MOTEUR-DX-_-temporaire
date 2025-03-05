@@ -29,7 +29,7 @@ bool TextureManager::LoadTexture(const std::wstring& id, const std::wstring& fil
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = texture->GetDesc().MipLevels;
 
-    // Calculer l'offset ÅEutiliser : on prend le prochain slot libre dans le heap
+    // Calculer l'offset Åa utiliser : on prend le prochain slot libre dans le heap
     UINT offset = static_cast<UINT>(m_textureOffsets.size());
     CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_srvHeap->GetCPUDescriptorHandleForHeapStart(), offset, m_descriptorSize);
     mp_device->CreateShaderResourceView(texture.Get(), &srvDesc, handle);

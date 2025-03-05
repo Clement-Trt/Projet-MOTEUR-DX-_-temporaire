@@ -49,7 +49,7 @@ bool InitDirect3DApp::Initialize()
 
 	FlushCommandQueue();
 
-	m_currentFence = 0; // Initialisation de la valeur du fence
+	m_currentFence = 0;
 
 	HRESULT hr = m_d3DDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
 	if (FAILED(hr))
@@ -101,7 +101,6 @@ bool InitDirect3DApp::Initialize()
 	// MeshFactory
 	mp_meshFactory = new MeshFactory;
 	mp_meshFactory->Initialize(m_d3DDevice.Get(), mp_entityManager, this);
-	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
 
 	// Particles
 	mp_particleManager = new ParticleManager;
@@ -140,7 +139,6 @@ bool InitDirect3DApp::Initialize()
 	mp_lifeTimeManager->Initialize(this);
 
 	// Scene
-	//SceneTest* scene = new SceneTest;
 	GameScene* scene = new GameScene;
 	SetScene(scene);
 	mp_scene->Initialize(this);
@@ -174,7 +172,7 @@ bool InitDirect3DApp::Initialize()
 		// Gestion d'erreur
 	}
 
-	// Optionnel : initialisez le buffer � z�ro
+	// Optionnel : initialiser le buffer a zero
 	memset(mp_mappedPassCB, 0, passCBSize);
 
 	m_gameIsPaused = true;
@@ -345,9 +343,6 @@ void InitDirect3DApp::Render()
 		ID3D12DescriptorHeap* descriptorHeaps[] = { mp_textureManager->GetSrvHeap() };
 		m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-		// Definit les vertex et index buffers communs
-		/*m_commandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
-		m_commandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
 		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		PassConstants passConstants = mp_lightSystem->GetPassConstants();
@@ -381,14 +376,12 @@ void InitDirect3DApp::Render()
 				}
 				if (entityMesh && entityTransform)
 				{
-					break; // On arrive la boucle d qu'on a trouve les deux composants
+					break; // On arrive la boucle des qu'on a trouve les deux composants
 				}
 			}
 			if (!entityMesh || !entityTransform)
 			{
-				// Gerer l'erreur (afficher un message, ignorer le rendu, etc.)
 				continue;
-				// return;
 			}
 
 			// Calculer la matrice World-View-Projection
@@ -425,7 +418,7 @@ void InitDirect3DApp::Render()
 void InitDirect3DApp::CreatePipelineState()
 {
 	// Definition d'un parametre root pour un Constant Buffer (CBV)
-	CD3DX12_ROOT_PARAMETER slotRootParameter[3]; // 2 parametres au lieu de 1 pour la texture
+	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
 	// Parametre 0 : constant buffer (transformation)
 	slotRootParameter[0].InitAsConstantBufferView(0);
 	// Parametre 1 : table de descripteurs pour la texture (register t0)
@@ -502,19 +495,15 @@ void InitDirect3DApp::CreatePipelineState()
 	psoDesc.PS = { pixelShader->GetBufferPointer(), pixelShader->GetBufferSize() };
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-
-	// psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = m_depthStencilDesc;
-	//psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.SampleDesc.Quality = 0;
-	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;  // Ajout du format Depth/Stencil
-	psoDesc.DepthStencilState = m_depthStencilDesc; // Utilisation de la valeur stockee
+	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT; 
+	psoDesc.DepthStencilState = m_depthStencilDesc;
 
 	hr = m_d3DDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState));
 	if (FAILED(hr))
@@ -597,11 +586,4 @@ void InitDirect3DApp::Draw()
 	}
 
 	DWORD dt = timeGetTime() - t;
-
-
-	// Affichage du lag meter
-
-	/*wchar_t title[256];
-	swprintf_s(title, 256, L"lag meters: %d", (int)dt);
-	SetWindowText(GetActiveWindow(), title);*/
 }

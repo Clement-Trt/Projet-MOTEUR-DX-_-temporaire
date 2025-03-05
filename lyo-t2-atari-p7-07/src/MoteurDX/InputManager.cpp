@@ -21,8 +21,6 @@ bool InputManager::GetKeyDown(char key)
 	return false;
 }
 
-
-// Cette fonction doit etre appelee chaque frame (avant de recuperer le delta)
 void InputManager::UpdateMouse(HWND hWnd)
 {
 	if (ms_cursorLockedAndInvisible == true)

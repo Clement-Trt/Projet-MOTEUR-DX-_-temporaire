@@ -22,9 +22,8 @@ void ParticleManager::Update()
 	for (auto& entity : mp_entityManager->GetEntityTab())
 	{
 		if (entity == nullptr)
-			continue;// Msg d'erreur ?
+			continue;
 
-		// Transform & Collider Components
 		TransformComponent* transform1 = nullptr;
 		ColliderComponent* collider1 = nullptr;
 		HealthComponent* health1 = nullptr;
@@ -36,8 +35,6 @@ void ParticleManager::Update()
 			}
 		}
 	}
-	// Gere les particule creer dans la liste
-	// Update les mouvements et gere les deletes
 }
 
 void ParticleManager::CreateParticle(float startPosX, float startPosY, float startPosZ, float size,  float speedX, float speedY, float speedZ, std::wstring textureName)
@@ -100,11 +97,5 @@ void ParticleManager::MakeEffect(float startPosX, float startPosY, float startPo
 		float randSpeedZ = _minSpeed + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (_maxSpeed - _minSpeed);
 
 		CreateParticle(startPosX, startPosY, startPosZ, randSize, randSpeedX, randSpeedY, randSpeedZ, textureName);
-		/*swprintf_s(buffer, 256, L"NewParticle speedx: %d\r\n", randSpeedX); ne prend pas en compte les float
-		OutputDebugString(buffer);*/
 	}
-
-	
-	/*swprintf_s(buffer, 256, L"NB new Particles: %d\r\n", randSplashNb);
-	OutputDebugString(buffer);*/
 }

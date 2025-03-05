@@ -11,25 +11,19 @@ struct DirectionalLight {
 
 struct PointLight {
     DirectX::XMFLOAT3 Position;
-    float pad1; // alignement
+    float pad1;
     DirectX::XMFLOAT3 Color;
     float pad2;
     float ConstantAtt;
     float LinearAtt;
     float QuadraticAtt;
-    float pad3; // alignement pour 16 octets
+    float pad3;
 };
-
-// const int MAX_POINT_LIGHTS = 64;
 
 struct PassConstants {
     DirectX::XMFLOAT4 AmbientLight;
     DirectionalLight DirLight;
     PointLight PtLight;
-
-    /*int NumPointLights;
-    int pad[3];
-    PointLight PtLights[MAX_POINT_LIGHTS];*/
 };
 
 class LightSystem {

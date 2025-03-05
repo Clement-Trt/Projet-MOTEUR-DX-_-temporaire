@@ -8,7 +8,7 @@ TriangleRenderer::TriangleRenderer()
 
 }
 
-bool TriangleRenderer::Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera)
+bool TriangleRenderer::Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc)
 {
     m_Device = device;
     m_CommandQueue = commandQueue;
@@ -20,7 +20,6 @@ bool TriangleRenderer::Initialize(ID3D12Device* device, ID3D12CommandQueue* comm
     m_Size = size;
     m_Color = color;
     m_DepthStencilDesc = depthStencilDesc;
-    m_Camera = camera;
     
     CreatePipelineState();
     CreateVertexBuffer(m_Size, m_Color);
@@ -30,19 +29,16 @@ bool TriangleRenderer::Initialize(ID3D12Device* device, ID3D12CommandQueue* comm
 
 void TriangleRenderer::Update()
 {
-    // Update logic (if needed)
-    
     UpdateTransform();
 
     //test input
     if (InputManager::GetKeyDown('A'))
     {
-        //MessageBox(0, L"Touche A pressed !", L"Debug Input", MB_OK);
-        m_Transform.Move(0.1f,0.0f,0.0f); // Avance
+        m_Transform.Move(0.1f,0.0f,0.0f);
     }
     if (InputManager::GetKeyDown('Z'))
     {
-        m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(5.0f), 0.0f); // Rotation
+        m_Transform.Rotation(0.0f, DirectX::XMConvertToRadians(5.0f), 0.0f);
     }
     if (InputManager::GetKeyDown('Q'))
     {
@@ -63,12 +59,12 @@ void TriangleRenderer::UpdateTransform()
 {
     m_Transform.UpdateMatrix();
 
-    DirectX::XMMATRIX view = m_Camera->GetViewMatrix();
+    //DirectX::XMMATRIX view = m_Camera->GetViewMatrix();
 
     DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
-    DirectX::XMMATRIX worldViewProj = XMLoadFloat4x4(&m_Transform.GetMatrix()) * view * proj;
-    XMStoreFloat4x4(&m_ObjectConstants.WorldViewProj, DirectX::XMMatrixTranspose(worldViewProj));
+    //DirectX::XMMATRIX worldViewProj = XMLoadFloat4x4(&m_Transform.GetMatrix()) * view * proj;
+    //XMStoreFloat4x4(&m_ObjectConstants.WorldViewProj, DirectX::XMMatrixTranspose(worldViewProj));
 
     void* pData;
     CD3DX12_RANGE readRange(0, 0);
@@ -94,9 +90,6 @@ void TriangleRenderer::Render()
     m_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // Draw the triangle
-    // emettre l'appel de dessin : 36 indices pour dessiner le cube.
-    // m_CommandList->DrawInstanced(36, 1, 0, 0);
-    // Nb de vertices | InstanceCount | StartIndexLocation | BaseVertexLocation | StartInstanceLocation
     m_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 }
 
@@ -305,8 +298,8 @@ void TriangleRenderer::CreatePipelineState()
     psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
     psoDesc.SampleDesc.Count = 1;
     psoDesc.SampleDesc.Quality = 0;
-    psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;  // Ajout du format Depth/Stencil
-    psoDesc.DepthStencilState = m_DepthStencilDesc; // Utilisation de la valeur stockee
+    psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    psoDesc.DepthStencilState = m_DepthStencilDesc;
 
     hr = m_Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_PipelineState));
     if (FAILED(hr))

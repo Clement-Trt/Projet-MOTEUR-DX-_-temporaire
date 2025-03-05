@@ -14,30 +14,16 @@ void LightSystem::Initialize(InitDirect3DApp* gameManager)
     m_passConstants.DirLight.Direction = { 0.57735f, -0.57735f, 0.57735f };
     m_passConstants.DirLight.Color = { 0.6f, 0.6f, 0.6f };
 
-   // m_passConstants.NumPointLights = 0;
-
     // Lumiere point (omnidirectionnelle)
     m_passConstants.PtLight.Position = { 0.0f, 0.0f, 0.0f };
     m_passConstants.PtLight.Color = { 0.8f, 0.8f, 0.8f };
     m_passConstants.PtLight.ConstantAtt = 1.0f;
     m_passConstants.PtLight.LinearAtt = 0.09f;
     m_passConstants.PtLight.QuadraticAtt = 0.032f;
-
-    //for (int i = 0; i < MAX_POINT_LIGHTS; ++i)
-    //{
-    //    m_passConstants.PtLights[i].Position = { 0.0f, 0.0f, 0.0f };
-    //    m_passConstants.PtLights[i].Color = { 0.0f, 0.0f, 0.0f }; 
-    //    m_passConstants.PtLights[i].ConstantAtt = 1.0f;
-    //    m_passConstants.PtLights[i].LinearAtt = 0.0f;
-    //    m_passConstants.PtLights[i].QuadraticAtt = 0.0f;
-    //}
 }
 
 void LightSystem::Update(float deltaTime)
 {
-    // Reinitialiser le compteur de lumieres ponctuelles
-    //m_passConstants.NumPointLights = 0;
-
     EntityManager* entityManager = mp_gameManager->GetEntityManager();
 
     bool hasDirectionalLight = false;
@@ -103,17 +89,6 @@ void LightSystem::Update(float deltaTime)
                     m_passConstants.PtLight.ConstantAtt = light->ConstantAtt;
                     m_passConstants.PtLight.LinearAtt = light->LinearAtt;
                     m_passConstants.PtLight.QuadraticAtt = light->QuadraticAtt;
-                    // Verifier que l'on ne depasse pas le maximum
-                    /*int index = m_passConstants.NumPointLights;
-                    if (index < MAX_POINT_LIGHTS)
-                    {
-                        m_passConstants.PtLights[index].Position = light->Position;
-                        m_passConstants.PtLights[index].Color = light->Color;
-                        m_passConstants.PtLights[index].ConstantAtt = light->ConstantAtt;
-                        m_passConstants.PtLights[index].LinearAtt = light->LinearAtt;
-                        m_passConstants.PtLights[index].QuadraticAtt = light->QuadraticAtt;
-                        m_passConstants.NumPointLights++;
-                    }*/
                 }
                 else if (light->type == LightType::Directional)
                 {

@@ -13,7 +13,6 @@ void EnnemyManager::Initialize(InitDirect3DApp* app)
     m_waveNb = 1;
     m_startNextWave = true;
     m_gameStart = false;
-    //SpawnEnnemy(20,20,20);
 	mp_entityManager = app->GetEntityManager();
 }
 
@@ -21,7 +20,6 @@ void EnnemyManager::Update()
 {
     if (!m_gameStart) 
     {
-        // VK_key pour les touches comme enter ou shift
         if (InputManager::GetKeyIsPressed(VK_RETURN)) { m_gameStart = true; };
 
         // Skip wave at start
@@ -51,13 +49,11 @@ void EnnemyManager::EnnemyAttackSystem()
             if (comp->ID == Player_ID)
             {
                 mp_player = entity;
-                // Trouver la transform dans les composants de cette entite
                 for (auto* pcomp : components)
                 {
                     if (pcomp->ID == Transform_ID)
                     {
                         mp_playerTransform = static_cast<TransformComponent*>(pcomp);
-                        //OutputDebugString(L"PlayerTransformFound !\n");
                         break;
                     }
                 }
@@ -117,10 +113,10 @@ void EnnemyManager::EnnemyAttackSystem()
                 attack->attackCooldown = 0.9f;
                 attack->damage = 2;
 
-                attack->projectileSpeed = 1; // 1
-                attack->projectileSizeX = 0.2f; // 0.2f
-                attack->projectileSizeY = 0.2f; // 0.2f
-                attack->projectileSizeZ = 1.0f; // 1.0f
+                attack->projectileSpeed = 1;
+                attack->projectileSizeX = 0.2f;
+                attack->projectileSizeY = 0.2f;
+                attack->projectileSizeZ = 1.0f;
             }
         }
     }

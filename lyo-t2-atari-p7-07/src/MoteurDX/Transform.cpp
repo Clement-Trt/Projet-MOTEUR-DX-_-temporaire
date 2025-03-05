@@ -18,7 +18,7 @@ void Transform::UpdateMatrix()
 	// ordre important ! (Scale * Rotation * Position)
 	DirectX::XMMATRIX newMatrice;
 
-	newMatrice = matriceScale; // ne pas *= directement il faut initialisÅEΩEune valeur de base !
+	newMatrice = matriceScale; // ne pas *= directement il faut initialisÅe a une valeur de base !
 	newMatrice *= matriceRotation;
 	newMatrice *= matricePosition;
 
@@ -60,8 +60,8 @@ void Transform::ResetRotation()
 	DirectX::XMVECTOR forwardProj = DirectX::XMVectorSet(DirectX::XMVectorGetX(currentForward), DirectX::XMVectorGetY(currentForward), DirectX::XMVectorGetZ(currentForward), 0.f);
 	forwardProj = DirectX::XMVector3Normalize(forwardProj);
 
-	// 3. Calculer le yaw ÅEΩ partir de forwardProj
-	// Note : atan2 prend (y, x) mais ici on utilise (x, z) pour obtenir l'angle par rapport ÅEΩ l'axe Z.
+	// 3. Calculer le yaw Åa partir de forwardProj
+	// Note : atan2 prend (y, x) mais ici on utilise (x, z) pour obtenir l'angle par rapport Åa l'axe Z.
 	float yaw = atan2f(DirectX::XMVectorGetX(forwardProj), DirectX::XMVectorGetZ(forwardProj));
 
 	// 4. RecrÅEΩer un quaternion avec yaw, et avec pitch = roll = 0
@@ -75,13 +75,9 @@ void Transform::ResetRotation()
 	if (t > 1.0f) t = 1.0f;
 
 	// Interpolation entre la rotation actuelle et la rotation cible
-	//qRotation = DirectX::XMQuaternionSlerp(XMLoadFloat4(&qRotation), newQuat, t);
 	DirectX::XMStoreFloat4(&qRotation, DirectX::XMQuaternionSlerp(XMLoadFloat4(&qRotation), newQuat, t));
 
-
-
-
-	// Pour mettre ÅEΩ jour la matrice de rotation si nÅEΩcessaire:
+	// Pour mettre Åa jour la matrice de rotation si necessaire:
 	DirectX::XMMATRIX mRotation = DirectX::XMMatrixRotationQuaternion(XMLoadFloat4(&qRotation));
 
 	UpdateMatrix();
@@ -110,7 +106,7 @@ void Transform::ResetRoll()
 	DirectX::XMVECTOR newQuat = DirectX::XMQuaternionRotationMatrix(rotationMat);
 
 	// Optionnel : si tu souhaites une transition en douceur, interpole avec le quaternion actuel
-	float deltaTime = 1.0f; // Remplacer par le delta time reel
+	float deltaTime = 1.0f;
 	const float rotationSpeed = 0.04f;
 	float t = rotationSpeed * deltaTime;
 	if (t > 1.0f) t = 1.0f;
@@ -250,11 +246,3 @@ void Transform::AddToGlobalPosZ(float deltaZ)
 	vPosition.z += deltaZ; 
 	UpdateMatrix();
 }
-
-//DirectX::XMMATRIX& Transform::GetXMMatrix()
-//{
-//    DirectX::XMMATRIX m = DirectX::XMLoadFloat4x4(&matrix);
-//    return m;
-//    // TODO: insÅEΩrer une instruction return ici
-//}
-

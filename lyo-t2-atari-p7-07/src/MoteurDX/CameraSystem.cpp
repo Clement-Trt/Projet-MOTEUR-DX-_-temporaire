@@ -14,8 +14,7 @@ void CameraSystem::Update()
 	{
 		if (!entity)
 			continue;
-		//if (!m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_PLAYER)) // COMPONENT_PLAYER ou COMPONENT_CAMERA ?
-		if (!mp_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_CAMERA)) // COMPONENT_PLAYER ou COMPONENT_CAMERA ?
+		if (!mp_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_CAMERA))
 			continue;
 
 		TransformComponent* transformComponent = nullptr;
@@ -44,21 +43,17 @@ void CameraSystem::Update()
 				SetViewMatrix(&camComponent->m_cameraTransform);
 			}
 		}
+
 		if (TPS)
 		{
-			
+			float distanceBehind = transformComponent->m_transform.vScale.z * 4.0f;
+			float distanceUp = transformComponent->m_transform.vScale.z;
 
-			float distanceBehind = transformComponent->m_transform.vScale.z * 4.0f; // Distance derriere le cube
-			float distanceUp = transformComponent->m_transform.vScale.z; // Distance derriere le cube
-
-			float fdistanceBehind = 10 * 4.0f; // Distance derriere le cube
-			float fdistanceUp = 10; // Distance derriere le cube
+			float fdistanceBehind = 10 * 4.0f;
+			float fdistanceUp = 10;
 
 			DirectX::XMVECTOR localOffset;
-
-
 			DirectX::XMVECTOR cubePos = DirectX::XMLoadFloat3(&transformComponent->m_transform.vPosition);
-
 			DirectX::XMVECTOR eyePos;
 			DirectX::XMVECTOR upDir;
 
@@ -77,7 +72,6 @@ void CameraSystem::Update()
 			}
 
 			DirectX::XMMATRIX viewMatrix = DirectX::XMMatrixLookAtLH(eyePos, cubePos, upDir);
-
 
 			SetViewMatrix(viewMatrix);
 		}

@@ -45,14 +45,11 @@ public:
 
 	uint32_t GetNbEntity() { return entityNb; }
 
-	// Cree une entite et retourne son ID
 	Entity* CreateEntity();
 
-	// Detruit une entite (supprime sa signature de composants)
 	void ToDestroy(Entity* entity);
 	void DestroyEntity(Entity* entity);
 
-	// Verifie si l'entite possede le(s) composant(s) indique(s)
 	bool HasComponent(Entity* entity, ComponentMask componentMask) const;
 
 	void ResetEntitiesToAdd() { entitiesToAddIndex = 0; }

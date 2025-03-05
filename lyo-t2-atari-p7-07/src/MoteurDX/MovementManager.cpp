@@ -40,7 +40,7 @@ void MovementManager::Update()
 	}
 }
 
-void MovementManager::SetVelocity(/*Entity* entity, */VelocityComponent* velComponent, float velFront, float velRight, float velUp)
+void MovementManager::SetVelocity(VelocityComponent* velComponent, float velFront, float velRight, float velUp)
 {
 	velComponent->vz = velFront;
 	velComponent->vx = velRight;

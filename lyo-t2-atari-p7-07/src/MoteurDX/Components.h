@@ -1,12 +1,7 @@
 #pragma once
 
 #include "Transform.h"
-
 #include "MeshFactory.h"
-
-#include "Camera.h"
-
-
 
 class Entity;
 
@@ -66,11 +61,9 @@ enum ComponentID
 
 struct GeometryMesh
 {
-	// Vertex Buffer
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 
-	// Index Buffer
 	ComPtr<ID3D12Resource> m_indexBuffer;
 	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 
@@ -86,7 +79,6 @@ struct Mesh
 	// Buffer de constantes (matrices, couleurs, etc.)
 	ComPtr<ID3D12Resource> m_constantBuffer;
 
-	// Map
 	void* m_mappedData = nullptr;
 };
 
@@ -109,7 +101,7 @@ struct MeshComponent : public Component
 {
 	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
 	Mesh* m_cubeMesh;
-	std::wstring m_textureID = L""; // identifiant de texture
+	std::wstring m_textureID = L"";
 };
 
 struct ColliderComponent : public Component
@@ -170,17 +162,17 @@ struct AttackComponent : public Component
 {
 	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
 	
-	int damage = 0; // 10
-	float attackCooldown = 0.f; // 1
-	float timeSinceLastAttack = 0.0f; // 0.0
-	bool attackRequested = false; // false
+	int damage = 0; 
+	float attackCooldown = 0.f; 
+	float timeSinceLastAttack = 0.0f;
+	bool attackRequested = false;
 
-	float projectileSpeed = 0.f; // 1
-	float projectileSizeX = 0.f; // 0.2f
-	float projectileSizeY = 0.f; // 0.2f
-	float projectileSizeZ = 0.f; // 1.0f
+	float projectileSpeed = 0.f;
+	float projectileSizeX = 0.f;
+	float projectileSizeY = 0.f;
+	float projectileSizeZ = 0.f;
 
-	std::wstring projectileTexture = L"DefaultTexture"; // identifiant de texture  = L"TextureName"
+	std::wstring projectileTexture = L"DefaultTexture";
 };
 
 enum class LightType {

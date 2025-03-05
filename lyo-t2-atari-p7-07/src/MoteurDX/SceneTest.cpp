@@ -2,11 +2,8 @@
 
 #include "SceneTest.h"
 
-#include <iostream>
-
 #include "EntityManager.h"
 #include "InitDirect3DApp.h"
-#include "Camera.h"
 #include "InputManager.h"
 #include "CameraSystem.h"
 #include "AssetManager.h"
@@ -105,10 +102,10 @@ void SceneTest::OnInitialize()
 			attack->attackCooldown = 0.1f;
 			attack->damage = 2;
 
-			attack->projectileSpeed = 1; // 1
-			attack->projectileSizeX = 0.2f; // 0.2f
-			attack->projectileSizeY = 0.2f; // 0.2f
-			attack->projectileSizeZ = 1.0f; // 1.0f
+			attack->projectileSpeed = 1;
+			attack->projectileSizeX = 0.2f; 
+			attack->projectileSizeY = 0.2f;
+			attack->projectileSizeZ = 1.0f;
 		}
 		if (component->ID == Health_ID)
 		{
@@ -153,11 +150,11 @@ void SceneTest::OnInitialize()
 	}
 	mp_iceBlockEntity = entityIceBlock;
 
-	Entity* skyBox = mpEntityManager->CreateEntity();
-	mpEntityManager->AddComponent<TransformComponent>(skyBox);
-	mpEntityManager->AddComponent<MeshComponent>(skyBox);
+	Entity* entitySkyBox = mpEntityManager->CreateEntity();
+	mpEntityManager->AddComponent<TransformComponent>(entitySkyBox);
+	mpEntityManager->AddComponent<MeshComponent>(entitySkyBox);
 
-	for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[skyBox->tab_index]->vec_components)
+	for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[entitySkyBox->tab_index]->vec_components)
 	{
 		if (comp->ID == Mesh_ID)
 		{
@@ -234,12 +231,7 @@ void SceneTest::OnUpdate()
 			collider = static_cast<ColliderComponent*>(component);
 		}
 	}
-
-
-	// Mettez a jour la souris en passant le handle de la fenetre
 	InputManager::UpdateMouse(GetActiveWindow());
-
-	// Recuperer le deplacement de la souris
 	int deltaX = InputManager::GetMouseDeltaX();
 	int deltaY = InputManager::GetMouseDeltaY();
 
@@ -272,7 +264,6 @@ void SceneTest::OnUpdate()
 		transform->m_transform.ResetRoll();
 	}
 
-	// Si la touche est presse, on demande une attaque du joueur sur l'IceBlock
 	if (InputManager::GetKeyIsPressed(MK_RBUTTON))
 	{
 		AttackComponent* attack = nullptr;
@@ -287,7 +278,6 @@ void SceneTest::OnUpdate()
 		}
 		if (attack)
 		{
-			// Declencher l'attaque en definissant le flag et en indiquant la cible
 			attack->attackRequested = true;
 			AssetManager::PlayLocalSound("beamPlayer");
 		}
