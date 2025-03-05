@@ -8,5 +8,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     InitDirect3DApp theApp(hInstance);
     if (!theApp.Initialize())
         return 0;
-    return theApp.Run();
+    theApp.Run();
+    _CrtDumpMemoryLeaks();
 }

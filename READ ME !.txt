@@ -7,4 +7,6 @@ le dll dans release et debug.
  
 (Car sinon vous aurez probablement l'erreur "OpenAl32.dll introuvable" et la solution ne ce lancera pas)
 
+Dans tous les cas l'autre Make a aussi été modifié au cas oû.
+
 Cordialement.

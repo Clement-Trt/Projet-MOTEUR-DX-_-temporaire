@@ -7,6 +7,7 @@ class ParticleManager
 {
 public:
 	ParticleManager();
+	~ParticleManager();
 
 	void Initialize(InitDirect3DApp* app);
 

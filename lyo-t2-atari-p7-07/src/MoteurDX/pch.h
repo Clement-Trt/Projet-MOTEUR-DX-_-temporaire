@@ -16,17 +16,28 @@
 #include <vector>
 #include <unordered_map>
 #include <DirectXMath.h>
+#include <assert.h>
+#include <algorithm>
+#include <d3d11_1.h>
+#include <stdint.h>
 
 // Debug
 #include <cassert> 
 #include <timeapi.h>
 
+#include "d3dx12.h"
+
+#include "TextureLoaderDuLivre.h"
 #include "resource.h"
+
+
+
+#ifdef _DEBUG
+#include <crtdbg.h>
+#define DEBUG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define new DEBUG_NEW
+#endif
+
+
 #include "MeshFactory.h"
 #include "EntityManager.h"
-
-//#ifdef _DEBUG
-//#include <crtdbg.h>
-//#define DEBUG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-//#define new DEBUG_NEW
-//#endif

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "WindowDX.h";
-#include "Scene.h";
+#include "WindowDX.h"
+#include "Scene.h"
 
 class MeshFactory;
 class Camera;

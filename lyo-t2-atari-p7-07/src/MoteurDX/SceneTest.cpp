@@ -49,7 +49,18 @@ void SceneTest::OnInitialize()
 	std::string basePath = AssetManager::GetExecutablePath();
 
 	std::string beamPath = basePath + "res\\bubblebeam.wav";
+	std::string beamPlayerPath = basePath + "res\\BeamPlayer.wav";
 	AssetManager::AddSound("beam", beamPath);
+	AssetManager::AddSound("beamPlayer", beamPlayerPath);
+
+	// Music
+	std::string electroPath = basePath + "res\\ElectroMusic.wav";
+	std::string albatorPath = basePath + "res\\AlbatorOST.wav";
+	AssetManager::AddMusic("electro", electroPath);
+	AssetManager::AddMusic("albator", albatorPath);
+
+	AssetManager::GetMusic("electro").play();
+	AssetManager::GetMusic("electro").setVolume(30);
 
 	// Player
 	Entity* player = mpEntityManager->CreateEntity();
@@ -256,6 +267,11 @@ void SceneTest::OnUpdate()
 
 	}
 
+	if (transform)
+	{
+		transform->m_transform.ResetRoll();
+	}
+
 	// Si la touche est presse, on demande une attaque du joueur sur l'IceBlock
 	if (InputManager::GetKeyIsPressed(MK_RBUTTON))
 	{
@@ -273,9 +289,7 @@ void SceneTest::OnUpdate()
 		{
 			// Declencher l'attaque en definissant le flag et en indiquant la cible
 			attack->attackRequested = true;
-			AssetManager::PlayLocalSound("beam");
-			//AssetManager::GetSound("beam");
-			//attack->targetEntity = ennemyEntity;
+			AssetManager::PlayLocalSound("beamPlayer");
 		}
 	}
 	if (InputManager::GetKeyIsPressed('W'))

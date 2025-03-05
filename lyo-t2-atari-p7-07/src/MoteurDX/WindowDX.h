@@ -1,7 +1,7 @@
 #pragma once
 
 // DirectX12
-#include "d3dx12.h"
+
 
 // Link necessary d3d12 libraries.
 #pragma comment(lib,"d3dcompiler.lib")

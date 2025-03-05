@@ -12,7 +12,6 @@
 #include "SceneTest.h"
 #include "GameScene.h"
 
-#include "TextureLoaderDuLivre.h"
 #include "TextureManager.h"
 #include "CameraSystem.h"
 #include "ColliderManager.h"
