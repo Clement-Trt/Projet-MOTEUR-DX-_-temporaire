@@ -9,7 +9,7 @@
 //
 //void GameManager::Initialize(Scene* scene)
 //{
-//	mEM = new EntityManager();
+//	mp_entityManager = new EntityManager();
 //	SetScene(scene);
 //	m_scene->Initialize(this);
 //	m_scene->OnInitialize();
@@ -32,7 +32,7 @@
 //{
 //
 //
-//	//if (mEM->GetEntityTab()[0] != nullptr)
+//	//if (mp_entityManager->GetEntityTab()[0] != nullptr)
 //	//{
 //	//	// Update
 //	//	m_scene->OnUpdate();
@@ -44,20 +44,20 @@
 //
 //
 //	//// DESTROY ENTITIES
-//	//for (auto& entityToDestroy : mEM->GetToDestroyTab())
+//	//for (auto& entityToDestroy : mp_entityManager->GetToDestroyTab())
 //	//{
-//	//	mEM->DestroyEntity(entityToDestroy);
+//	//	mp_entityManager->DestroyEntity(entityToDestroy);
 //	//}
-//	//mEM->GetToDestroyTab().clear();
+//	//mp_entityManager->GetToDestroyTab().clear();
 //
 //	//// ADD ENTITIES
-//	//for (auto& entityToAdd : mEM->GetEntityToAddTab())
+//	//for (auto& entityToAdd : mp_entityManager->GetEntityToAddTab())
 //	//{
-//	//	mEM->AddEntityToTab(entityToAdd, mEM->GetComponentToAddTab()[entityToAdd->tab_index]);
+//	//	mp_entityManager->AddEntityToTab(entityToAdd, mp_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
 //	//}
-//	//mEM->GetEntityToAddTab().clear();
-//	//mEM->GetComponentToAddTab().clear();
-//	//mEM->ResetEntitiesToAdd();
+//	//mp_entityManager->GetEntityToAddTab().clear();
+//	//mp_entityManager->GetComponentToAddTab().clear();
+//	//mp_entityManager->ResetEntitiesToAdd();
 //
 //}
 //

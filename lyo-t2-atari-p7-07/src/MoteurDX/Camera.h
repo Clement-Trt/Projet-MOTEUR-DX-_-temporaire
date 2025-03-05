@@ -18,14 +18,14 @@ public:
 
     DirectX::XMMATRIX GetViewMatrixT() const;
 
-    void SetViewMatrixT(DirectX::XMFLOAT4X4& transformMatrix) { matrix = transformMatrix; }
-    void SetTransform(Transform* transformComponent) { transform = transformComponent; }
+    void SetViewMatrixT(DirectX::XMFLOAT4X4& transformMatrix) { m_matrix = transformMatrix; }
+    void SetTransform(Transform* transformComponent) { mp_transform = transformComponent; }
 
 private:
-    DirectX::XMFLOAT3 m_Position;
-    float m_Pitch, m_Yaw; // Rotation de la camera
+    DirectX::XMFLOAT3 m_position;
+    float m_pitch, m_yaw; // Rotation de la camera
 
-    DirectX::XMFLOAT4X4 matrix;
+    DirectX::XMFLOAT4X4 m_matrix;
 
-    Transform* transform = nullptr;
+    Transform* mp_transform = nullptr;
 };

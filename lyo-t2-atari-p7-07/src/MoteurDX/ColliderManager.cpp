@@ -3,14 +3,14 @@
 
 void ColliderManager::Initialize(EntityManager* entityManager, ParticleManager* particleManager)
 {
-	m_entityManager = entityManager;
-	m_particleManager = particleManager;
+	mp_entityManager = entityManager;
+	mp_particleManager = particleManager;
 }
 
 void ColliderManager::Update()
 {
 	// Collisions
-	for (auto& entity1 : m_entityManager->GetEntityTab())
+	for (auto& entity1 : mp_entityManager->GetEntityTab())
 	{
 		if (entity1 == nullptr)
 			continue;// Msg d'erreur ?
@@ -21,7 +21,7 @@ void ColliderManager::Update()
 		VelocityComponent* velocity1 = nullptr;
 		HealthComponent* health1 = nullptr;
 		AttackComponent* attack1 = nullptr;
-		for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
+		for (auto* component : mp_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
 		{
 			if (component->ID == Transform_ID)
 			{
@@ -50,7 +50,7 @@ void ColliderManager::Update()
 
 		for (uint32_t entity2Index = entity1->tab_index + 1; entity2Index < 64000; entity2Index++)
 		{
-			auto& entity2 = m_entityManager->GetEntityTab()[entity2Index];
+			auto& entity2 = mp_entityManager->GetEntityTab()[entity2Index];
 			if (!entity2)
 				continue;// Msg d'erreur ?
 
@@ -60,7 +60,7 @@ void ColliderManager::Update()
 			VelocityComponent* velocity2 = nullptr;
 			HealthComponent* health2 = nullptr;
 			AttackComponent* attack2 = nullptr;
-			for (auto* component : m_entityManager->GetComponentsTab()[entity2Index]->vec_components)
+			for (auto* component : mp_entityManager->GetComponentsTab()[entity2Index]->vec_components)
 			{
 				if (component->ID == Transform_ID)
 				{
@@ -160,13 +160,13 @@ void ColliderManager::Update()
 				if (collider1->m_isDestructable && entity1)
 				{
 					//collider1->m_isDestroyed = true;
-					m_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
+					mp_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
 					//m_entityManager->DestroyEntity(entity1);
 				}
 
 				if (collider2->m_isDestructable && entity2)
 				{
-					m_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
+					mp_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
 					//collider2->m_isDestroyed = true;
 					//m_entityManager->DestroyEntity(entity2);
 				}

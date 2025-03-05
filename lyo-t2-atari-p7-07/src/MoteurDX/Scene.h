@@ -12,10 +12,10 @@ class Scene
 protected:
 
 	// Pointeur vers GM
-	InitDirect3DApp* m_gameManager;
+	InitDirect3DApp* mp_gameManager;
 	EntityManager* mpEntityManager;
 
-	CameraSystem* m_camera;
+	CameraSystem* mp_camera;
 
 	// Pointeur vers chaque System
 	//Movement* mMvmt;

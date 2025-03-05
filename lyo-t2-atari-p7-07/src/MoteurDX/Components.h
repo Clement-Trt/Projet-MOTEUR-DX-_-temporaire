@@ -109,7 +109,7 @@ struct MeshComponent : public Component
 {
 	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
 	Mesh* m_cubeMesh;
-	std::wstring textureID = L""; // identifiant de texture
+	std::wstring m_textureID = L""; // identifiant de texture
 };
 
 struct ColliderComponent : public Component
@@ -142,7 +142,7 @@ struct PlayerComponent : public Component
 struct LifeTimeComponent : public Component
 {
 	LifeTimeComponent() : Component(LifeTime_ID, COMPONENT_LIFETIME) {}
-	float lifeTime = 0.f;
+	float m_lifeTime = 0.0f;
 };
 
 struct TransformComponent : public Component

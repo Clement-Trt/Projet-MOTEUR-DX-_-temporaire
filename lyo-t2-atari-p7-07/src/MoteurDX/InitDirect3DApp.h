@@ -35,14 +35,14 @@ public:
 	void CreatePipelineState();
 
 	void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
-	void SetScene(Scene* scene) { m_scene = scene; }
+	void SetScene(Scene* scene) { mp_scene = scene; }
 
 
-	EntityManager* GetEntityManager() { return m_entityManager; }
-	MeshFactory* GetFactory() { return m_meshFactory; }
-	ParticleManager* GetParticleManager() { return m_particleManager; }
-	CameraSystem* GetCameraSystem() { return m_cameraManager; }
-	EnnemyManager* GetEnnemyManager() { return m_ennemyManager; }
+	EntityManager* GetEntityManager() { return mp_entityManager; }
+	MeshFactory* GetFactory() { return mp_meshFactory; }
+	ParticleManager* GetParticleManager() { return mp_particleManager; }
+	CameraSystem* GetCameraSystem() { return mp_cameraManager; }
+	EnnemyManager* GetEnnemyManager() { return mp_ennemyManager; }
 
 	//CameraComponent* GetMainView() { return m_mainView; }
 
@@ -51,24 +51,24 @@ public:
 private:
 	D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
 
-	MeshFactory* m_meshFactory;
+	MeshFactory* mp_meshFactory;
 
-	EntityManager* m_entityManager;
+	EntityManager* mp_entityManager;
 	//CameraComponent* m_mainView;
 
-	ColliderManager* m_colliderManager;
-	EnnemyManager* m_ennemyManager;
-	ParticleManager* m_particleManager;
-	TextureManager* m_textureManager;
-	MovementManager* m_movementManager;
-	LifeTimeManager* m_lifeTimeManager;
+	ColliderManager* mp_colliderManager;
+	EnnemyManager* mp_ennemyManager;
+	ParticleManager* mp_particleManager;
+	TextureManager* mp_textureManager;
+	MovementManager* mp_movementManager;
+	LifeTimeManager* mp_lifeTimeManager;
 
-	HealthSystem* m_healthSystem;
-	AttackSystem* m_attackSystem;
-	CameraSystem* m_cameraManager;
-	LightSystem* m_lightSystem;
+	HealthSystem* mp_healthSystem;
+	AttackSystem* mp_attackSystem;
+	CameraSystem* mp_cameraManager;
+	LightSystem* mp_lightSystem;
 
-	Scene* m_scene;
+	Scene* mp_scene;
 
 	float m_deltaTime = 0.0f; //   PAS UTILISE ?
 	DWORD m_lastTime = 0;
@@ -79,6 +79,6 @@ private:
 	bool m_gameIsPaused;
 
 	ComPtr<ID3D12Resource> m_passConstantBuffer;
-	PassConstants* m_mappedPassCB = nullptr;
+	PassConstants* mp_mappedPassCB = nullptr;
 };
 

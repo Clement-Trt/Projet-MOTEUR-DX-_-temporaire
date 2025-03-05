@@ -5,7 +5,7 @@
 
 void LightSystem::Initialize(InitDirect3DApp* gameManager)
 {
-    m_gameManager = gameManager;
+    mp_gameManager = gameManager;
 
     // Valeurs par defaut globales
     m_passConstants.AmbientLight = { 0.3f, 0.3f, 0.3f, 1.0f };
@@ -38,7 +38,7 @@ void LightSystem::Update(float deltaTime)
     // Reinitialiser le compteur de lumieres ponctuelles
     //m_passConstants.NumPointLights = 0;
 
-    EntityManager* entityManager = m_gameManager->GetEntityManager();
+    EntityManager* entityManager = mp_gameManager->GetEntityManager();
 
     bool hasDirectionalLight = false;
     bool hasPointLight = false;
@@ -68,7 +68,7 @@ void LightSystem::Update(float deltaTime)
             }
             if (light)
             {
-                // Si un TransformComponent est present, mettre à jour la position de la lumiere
+                // Si un TransformComponent est present, mettre a jour la position de la lumiere
                 if (transform)
                 {
                     // Charger la matrice du transform
@@ -87,14 +87,14 @@ void LightSystem::Update(float deltaTime)
                     DirectX::XMFLOAT3 offset;
                     DirectX::XMStoreFloat3(&offset, worldOffset);
 
-                    // Positionner la lumiere en ajoutant l'offset à la position de l'entite
+                    // Positionner la lumiere en ajoutant l'offset a la position de l'entite
                     light->Position = transform->m_transform.vPosition;
                     light->Position.x += offset.x;
                     light->Position.y += offset.y;
                     light->Position.z += offset.z;
                 }
 
-                // Mise à jour des constantes de passage selon le type de lumiere
+                // Mise a jour des constantes de passage selon le type de lumiere
                 if (light->type == LightType::Point)
                 {
                     hasPointLight = true;

@@ -18,10 +18,10 @@ public:
 
 private:
 	//256 pour couvrir toutes les touches
-	static inline bool wasKeyPressed[256] = { false };
+	static inline bool ms_wasKeyPressed[256] = { false };
 
-	static inline POINT s_LastMousePos = { 0, 0 };
-	static inline POINT s_MouseDelta = { 0, 0 };
+	static inline POINT ms_LastMousePos = { 0, 0 };
+	static inline POINT ms_MouseDelta = { 0, 0 };
 
-	static inline bool m_cursorLockedAndInvisible = false;
+	static inline bool ms_cursorLockedAndInvisible = false;
 };

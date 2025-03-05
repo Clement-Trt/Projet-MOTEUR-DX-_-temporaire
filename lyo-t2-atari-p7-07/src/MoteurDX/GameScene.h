@@ -18,7 +18,7 @@ public:
 
 protected:
 
-	Entity* cameraView = nullptr;
-	Entity* playerEntity = nullptr;
+	Entity* mp_cameraView = nullptr;
+	Entity* mp_playerEntity = nullptr;
 };
 

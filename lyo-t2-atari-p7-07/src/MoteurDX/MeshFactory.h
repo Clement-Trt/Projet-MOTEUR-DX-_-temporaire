@@ -47,12 +47,9 @@ private:
 	// Alloue et configure le constant buffer pour un cube
 	void CreateCubeConstantBuffer(Mesh* cube);
 
-	// Window
-	WindowDX* m_windowDx;
-
 	// App
 	ComPtr<ID3D12Device> m_Device;
 
 	// Entity manager
-	EntityManager* m_entityManager;
+	EntityManager* mp_entityManager;
 };

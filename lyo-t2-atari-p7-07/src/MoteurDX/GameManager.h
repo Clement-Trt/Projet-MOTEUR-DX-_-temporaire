@@ -10,7 +10,7 @@ class GameManager
 protected:
 
 	//Movement* mMvmt;
-	EntityManager* mEM;
+	EntityManager* mp_entityManager;
 
 	Scene* m_scene;
 
@@ -31,7 +31,7 @@ public:
 	void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
 	void SetScene(Scene* scene) { m_scene = scene; }
 
-	EntityManager* GetEntityManager() { return mEM; }
+	EntityManager* GetEntityManager() { return mp_entityManager; }
 
 	friend class Scene;
 };

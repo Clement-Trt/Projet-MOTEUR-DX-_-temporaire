@@ -24,8 +24,8 @@ void GameScene::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 		if (comp->ID == Mesh_ID)
 		{
 			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-			mesh->textureID = L"BoxTexture";
+			mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateCube();
+			mesh->m_textureID = L"BoxTexture";
 		}
 		if (comp->ID == Transform_ID)
 		{
@@ -55,8 +55,8 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 			if (comp->ID == Mesh_ID)
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-				mesh->textureID = L"WallTexture";
+				mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateCube();
+				mesh->m_textureID = L"WallTexture";
 			}
 			if (comp->ID == Transform_ID)
 			{
@@ -91,13 +91,13 @@ void GameScene::OnInitialize()
 		mpEntityManager->AddComponent<LightComponent>(entity1);
 
 
-		for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
+		for (auto& component : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[entity1->tab_index]->vec_components)
 		{
 			if (component->ID == Mesh_ID)
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(component);
-				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-				mesh->textureID = L"PlayerTexture"; // On assigne la texture
+				mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateCube();
+				mesh->m_textureID = L"PlayerTexture"; // On assigne la texture
 			}
 			if (component->ID == Light_ID)
 			{
@@ -133,7 +133,7 @@ void GameScene::OnInitialize()
 				attack->projectileSizeZ = 1.0f; // 1.0f
 			}
 		}
-		playerEntity = entity1;
+		mp_playerEntity = entity1;
 	}
 
 	// SkyBox
@@ -142,13 +142,13 @@ void GameScene::OnInitialize()
 		mpEntityManager->AddComponent<TransformComponent>(skyBox);
 		mpEntityManager->AddComponent<MeshComponent>(skyBox);
 
-		for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[skyBox->tab_index]->vec_components)
+		for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[skyBox->tab_index]->vec_components)
 		{
 			if (comp->ID == Mesh_ID)
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateSkyBoxCube();
-				mesh->textureID = L"SkyBox2";
+				mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateSkyBoxCube();
+				mesh->m_textureID = L"SkyBox2";
 			}
 			if (comp->ID == Transform_ID)
 			{
@@ -226,7 +226,7 @@ void GameScene::OnInitialize()
 	//		{
 	//			MeshComponent* mesh = static_cast<MeshComponent*>(component);
 	//			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-	//			mesh->textureID = L"PlayerTexture";
+	//			mesh->m_textureID = L"PlayerTexture";
 	//		}
 	//		/*if (component->ID == Light_ID)
 	//		{
@@ -265,7 +265,7 @@ void GameScene::OnInitialize()
 
 	//}
 		
-	m_camera->SetFPS();
+	mp_camera->SetFPS();
 
 }
 
@@ -275,7 +275,7 @@ void GameScene::OnUpdate()
 	VelocityComponent* velComponent = nullptr;
 
 
-	for (auto* component : mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components)
+	for (auto* component : mpEntityManager->GetComponentsTab()[mp_playerEntity->tab_index]->vec_components)
 	{
 		if (component->ID == Transform_ID)
 		{
@@ -325,7 +325,7 @@ void GameScene::OnUpdate()
 	if (InputManager::GetKeyIsPressed(MK_RBUTTON))
 	{
 		AttackComponent* attack = nullptr;
-		auto& playerComponents = m_gameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
+		auto& playerComponents = mp_gameManager->GetEntityManager()->GetComponentsTab()[mp_playerEntity->tab_index]->vec_components;
 		for (auto* component : playerComponents)
 		{
 			if (component->ID == Attack_ID)
@@ -348,13 +348,13 @@ void GameScene::OnUpdate()
 
 	if (InputManager::GetKeyDown('V'))
 	{
-		m_camera->ChangeView();
+		mp_camera->ChangeView();
 	}
 	if (InputManager::GetKeyIsPressed('N'))
 	{
-		m_camera->SetTPS_Lock(true); 
+		mp_camera->SetTPS_Lock(true); 
 	}
-	else m_camera->SetTPS_Lock(false);
+	else mp_camera->SetTPS_Lock(false);
 
 
 	
@@ -364,5 +364,5 @@ void GameScene::OnUpdate()
 
 void GameScene::OnClose()
 {
-	delete playerEntity;
+	delete mp_playerEntity;
 }

@@ -34,7 +34,7 @@ struct PassConstants {
 
 class LightSystem {
 protected:
-    InitDirect3DApp* m_gameManager;
+    InitDirect3DApp* mp_gameManager;
 
 public:
     void Initialize(InitDirect3DApp* gameManager);

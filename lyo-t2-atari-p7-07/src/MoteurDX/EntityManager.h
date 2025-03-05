@@ -22,7 +22,7 @@ class EntityManager
 private:
 
 	uint32_t entityNb = 0; // Positif, ce sont les entity qui existent actuellement dans le jeu
-	int32_t entitiesToAddIndex = 0; // Negatif pour savoir qu'elles ne sont pas encore ajoutées 
+	int32_t entitiesToAddIndex = 0; // Negatif pour savoir qu'elles ne sont pas encore ajoutees 
 
 	Entity* tab_entity[64000] = { nullptr };
 

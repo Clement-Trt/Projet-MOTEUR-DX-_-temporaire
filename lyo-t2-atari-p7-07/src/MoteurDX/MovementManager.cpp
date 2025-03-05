@@ -5,23 +5,23 @@
 
 void MovementManager::Initialize(InitDirect3DApp* gameManager)
 {
-	m_gameManager = gameManager;
+	mp_gameManager = gameManager;
 }
 
 void MovementManager::Update()
 {
-	for (Entity* entity : m_gameManager->GetEntityManager()->GetEntityTab())
+	for (Entity* entity : mp_gameManager->GetEntityManager()->GetEntityTab())
 	{
 		if (!entity)
 			continue;
 
-		if (m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY))
+		if (mp_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY))
 		{
 			TransformComponent* transform = nullptr;
 			VelocityComponent* velocity = nullptr;
 
 
-			for (auto* component : m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
+			for (auto* component : mp_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
 			{
 				if (component->ID == Transform_ID)
 				{
@@ -57,7 +57,7 @@ void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, Tran
 			|| transformComponent->m_transform.GetPositionY() > 145 || transformComponent->m_transform.GetPositionY() < -145
 			|| transformComponent->m_transform.GetPositionZ() > 145 || transformComponent->m_transform.GetPositionZ() < -145)
 		{
-			m_gameManager->GetEntityManager()->ToDestroy(entity);
+			mp_gameManager->GetEntityManager()->ToDestroy(entity);
 		}
 	}
 	else // Si c'est le joueur

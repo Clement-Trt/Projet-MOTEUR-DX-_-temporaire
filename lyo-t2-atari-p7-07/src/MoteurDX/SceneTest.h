@@ -19,8 +19,8 @@ protected:
 	int compteur;
 	int compteur2;
 
-	Entity* playerEntity = nullptr;
-	Entity* iceBlockEntity = nullptr;
-	Entity* ennemyEntity = nullptr;
+	Entity* mp_playerEntity = nullptr;
+	Entity* mp_iceBlockEntity = nullptr;
+	Entity* mp_ennemyEntity = nullptr;
 };
 
