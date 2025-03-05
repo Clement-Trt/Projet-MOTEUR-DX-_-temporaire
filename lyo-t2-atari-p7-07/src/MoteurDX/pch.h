@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <d3d11_1.h>
 #include <stdint.h>
+#include <array>
 
 // Debug
 #include <cassert> 

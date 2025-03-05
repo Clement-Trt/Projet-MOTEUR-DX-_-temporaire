@@ -21,15 +21,15 @@ void AttackSystem::Update(float deltaTime)
 			AttackComponent* attack = nullptr;
 			TransformComponent* entityTransform = nullptr;
 			auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
-			for (auto* comp : compTab)
+			for (auto& comp : compTab)
 			{
 				if (comp->ID == Attack_ID)
 				{
-					attack = static_cast<AttackComponent*>(comp);
+					attack = static_cast<AttackComponent*>(comp.get());
 				}
 				if (comp->ID == Transform_ID)
 				{
-					entityTransform = static_cast<TransformComponent*>(comp);
+					entityTransform = static_cast<TransformComponent*>(comp.get());
 				}
 			}
 			if (attack)
@@ -53,48 +53,48 @@ void AttackSystem::Update(float deltaTime)
 					entityManager->AddComponent<AttackComponent>(newBullet);
 					entityManager->AddComponent<LifeTimeComponent>(newBullet);
 
-					TransformComponent* transform = nullptr;
+					/*TransformComponent* transform = nullptr;
 					MeshComponent* mesh = nullptr;
 					VelocityComponent* vel = nullptr;
 					ColliderComponent* collider = nullptr;
 					AttackComponent* bulletProperty = nullptr;
-					LifeTimeComponent* lifetime = nullptr;
+					LifeTimeComponent* lifetime = nullptr;*/
 
-					for (auto* component : entityManager->GetComponentToAddTab()[newBullet->tab_index]->vec_components)
+					for (auto& component : entityManager->GetComponentToAddTab()[newBullet->tab_index]->vec_components)
 					{
 						if (component->ID == Mesh_ID)
 						{
-							mesh = static_cast<MeshComponent*>(component);
+							MeshComponent* mesh = static_cast<MeshComponent*>(component.get());
 							mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 							mesh->textureID = attack->projectileTexture; // On assigne la texture
 						}
 						if (component->ID == Transform_ID)
 						{
-							transform = static_cast<TransformComponent*>(component);
+							TransformComponent* transform = static_cast<TransformComponent*>(component.get());
 							transform->m_transform = entityTransform->m_transform;
 							transform->m_transform.Move(2.0f, 0, 0);
 							transform->m_transform.Scale(attack->projectileSizeX, attack->projectileSizeY, attack->projectileSizeZ);
 						}
 						if (component->ID == Velocity_ID)
 						{
-							vel = static_cast<VelocityComponent*>(component);
+							VelocityComponent* vel = static_cast<VelocityComponent*>(component.get());
 							vel->vx = 0.0f;
 							vel->vy = 0.0f;
 							vel->vz = attack->projectileSpeed;
 						}
 						if (component->ID == Collider_ID)
 						{
-							collider = static_cast<ColliderComponent*>(component);
+							ColliderComponent* collider = static_cast<ColliderComponent*>(component.get());
 							collider->m_isDestructable = true;
 						}
 						if (component->ID == Attack_ID)
 						{
-							bulletProperty = static_cast<AttackComponent*>(component);
+							AttackComponent* bulletProperty = static_cast<AttackComponent*>(component.get());
 							bulletProperty->damage = attack->damage;
 						}
 						if (component->ID == LifeTime_ID)
 						{
-							lifetime = static_cast<LifeTimeComponent*>(component);
+							LifeTimeComponent* lifetime = static_cast<LifeTimeComponent*>(component.get());
 							lifetime->lifeTime = 1.5f;
 						}
 					}

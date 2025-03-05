@@ -55,15 +55,15 @@ void LightSystem::Update(float deltaTime)
             LightComponent* light = nullptr;
             TransformComponent* transform = nullptr;
             auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
-            for (auto* comp : compTab)
+            for (auto& comp : compTab)
             {
                 if (comp->ID == Light_ID)
                 {
-                    light = static_cast<LightComponent*>(comp);
+                    light = static_cast<LightComponent*>(comp.get());
                 }
                 else if (comp->ID == Transform_ID)
                 {
-                    transform = static_cast<TransformComponent*>(comp);
+                    transform = static_cast<TransformComponent*>(comp.get());
                 }
             }
             if (light)

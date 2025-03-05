@@ -27,16 +27,16 @@ void HealthSystem::Update(float deltaTime)
             HealthComponent* health = nullptr;
             EnnemyComponent* ennemy = nullptr;
             auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
-            for (auto* comp : compTab)
+            for (auto& comp : compTab)
             {
                 if (comp->ID == Health_ID)
                 {
-                    health = static_cast<HealthComponent*>(comp);
+                    health = static_cast<HealthComponent*>(comp.get());
                     //break;
                 }
                 if (comp->ID == Ennemy_ID)
                 {
-                    ennemy = static_cast<EnnemyComponent*>(comp);
+                    ennemy = static_cast<EnnemyComponent*>(comp.get());
                     //break;
                 }
             }

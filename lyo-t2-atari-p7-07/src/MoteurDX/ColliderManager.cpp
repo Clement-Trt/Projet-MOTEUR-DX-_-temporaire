@@ -21,27 +21,27 @@ void ColliderManager::Update()
 		VelocityComponent* velocity1 = nullptr;
 		HealthComponent* health1 = nullptr;
 		AttackComponent* attack1 = nullptr;
-		for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
+		for (auto& component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
 		{
 			if (component->ID == Transform_ID)
 			{
-				transform1 = static_cast<TransformComponent*>(component);
+				transform1 = static_cast<TransformComponent*>(component.get());
 			}
 			if (component->ID == Collider_ID)
 			{
-				collider1 = static_cast<ColliderComponent*>(component);
+				collider1 = static_cast<ColliderComponent*>(component.get());
 			}
 			if (component->ID == Velocity_ID)
 			{
-				velocity1 = static_cast<VelocityComponent*>(component);
+				velocity1 = static_cast<VelocityComponent*>(component.get());
 			}
 			if (component->ID == Health_ID)
 			{
-				health1 = static_cast<HealthComponent*>(component);
+				health1 = static_cast<HealthComponent*>(component.get());
 			}
 			if (component->ID == Attack_ID)
 			{
-				attack1 = static_cast<AttackComponent*>(component);
+				attack1 = static_cast<AttackComponent*>(component.get());
 			}
 		}
 		if (!transform1 || !collider1)
@@ -60,27 +60,27 @@ void ColliderManager::Update()
 			VelocityComponent* velocity2 = nullptr;
 			HealthComponent* health2 = nullptr;
 			AttackComponent* attack2 = nullptr;
-			for (auto* component : m_entityManager->GetComponentsTab()[entity2Index]->vec_components)
+			for (auto& component : m_entityManager->GetComponentsTab()[entity2Index]->vec_components)
 			{
 				if (component->ID == Transform_ID)
 				{
-					transform2 = static_cast<TransformComponent*>(component);
+					transform2 = static_cast<TransformComponent*>(component.get());
 				}
 				if (component->ID == Collider_ID)
 				{
-					collider2 = static_cast<ColliderComponent*>(component);
+					collider2 = static_cast<ColliderComponent*>(component.get());
 				}
 				if (component->ID == Velocity_ID)
 				{
-					velocity2 = static_cast<VelocityComponent*>(component);
+					velocity2 = static_cast<VelocityComponent*>(component.get());
 				}
 				if (component->ID == Health_ID)
 				{
-					health2 = static_cast<HealthComponent*>(component);
+					health2 = static_cast<HealthComponent*>(component.get());
 				}
 				if (component->ID == Attack_ID)
 				{
-					attack2 = static_cast<AttackComponent*>(component);
+					attack2 = static_cast<AttackComponent*>(component.get());
 				}
 			}
 			if (!transform2 || !collider2)
@@ -168,7 +168,7 @@ void ColliderManager::Update()
 				{
 					m_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
 					//collider2->m_isDestroyed = true;
-					//m_entityManager->DestroyEntity(entity2);
+					m_entityManager->DestroyEntity(entity2);
 				}
 
 				//wchar_t buffer[256];

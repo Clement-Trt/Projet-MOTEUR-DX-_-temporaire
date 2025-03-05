@@ -318,6 +318,7 @@ void InitDirect3DApp::UpdatePhysics()
 	// DESTROY ENTITIES
 	for (auto& entityToDestroy : m_entityManager->GetToDestroyTab())
 	{
+		//m_entityManager->DestroyEntity(entityToDestroy); 
 		m_entityManager->DestroyEntity(entityToDestroy);
 	}
 	m_entityManager->GetToDestroyTab().clear();
@@ -325,7 +326,22 @@ void InitDirect3DApp::UpdatePhysics()
 	// ADD ENTITIES
 	for (auto& entityToAdd : m_entityManager->GetEntityToAddTab())
 	{
-		m_entityManager->AddEntityToTab(entityToAdd, m_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
+		//m_entityManager->AddEntityToTab(entityToAdd, std::move(m_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]));
+
+		auto& componentsTab = m_entityManager->GetComponentToAddTab();
+		size_t index = entityToAdd->tab_index;
+
+		// Vérification avant déplacement
+		if (index >= componentsTab.size() || !componentsTab[index]) {
+			std::cerr << "Erreur : tentative d'accès à un component déjà déplacé ou hors limites !" << std::endl;
+			continue;
+		}
+
+		// Déplacement sécurisé avec std::exchange
+		auto components = std::exchange(componentsTab[index], nullptr);
+
+		// Ajout de l'entité avec ses composants
+		m_entityManager->AddEntityToTab(entityToAdd, std::move(components));
 	}
 	m_entityManager->GetEntityToAddTab().clear();
 	m_entityManager->GetComponentToAddTab().clear();
@@ -374,11 +390,11 @@ void InitDirect3DApp::Render()
 			{
 				if (!entityMesh && component->ID == Mesh_ID)
 				{
-					entityMesh = static_cast<MeshComponent*>(component);
+					entityMesh = static_cast<MeshComponent*>(component.get());
 				}
 				if (!entityTransform && component->ID == Transform_ID)
 				{
-					entityTransform = static_cast<TransformComponent*>(component);
+					entityTransform = static_cast<TransformComponent*>(component.get());
 				}
 				if (entityMesh && entityTransform)
 				{

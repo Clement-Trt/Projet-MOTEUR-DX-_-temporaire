@@ -46,17 +46,17 @@ void EnnemyManager::EnnemyAttackSystem()
             continue;
 
         auto components = m_entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
-        for (auto* comp : components)
+        for (auto& comp : components)
         {
             if (comp->ID == Player_ID)
             {
                 m_player = entity;
                 // Trouver la transform dans les composants de cette entite
-                for (auto* pcomp : components)
+                for (auto& pcomp : components)
                 {
                     if (pcomp->ID == Transform_ID)
                     {
-                        m_playerTransform = static_cast<TransformComponent*>(pcomp);
+                        m_playerTransform = static_cast<TransformComponent*>(pcomp.get());
                         //OutputDebugString(L"PlayerTransformFound !\n");
                         break;
                     }
@@ -85,12 +85,12 @@ void EnnemyManager::EnnemyAttackSystem()
         auto components = m_entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
         bool isEnemy = false;
         TransformComponent* enemyTransform = nullptr;
-        for (auto* comp : components)
+        for (auto& comp : components)
         {
             if (comp->ID == Ennemy_ID)
-                isEnemy = true;
+                isEnemy = true; 
             if (comp->ID == Transform_ID)
-                enemyTransform = static_cast<TransformComponent*>(comp);
+                enemyTransform = static_cast<TransformComponent*>(comp.get());
         }
 
         if (isEnemy && enemyTransform != nullptr)
@@ -101,11 +101,11 @@ void EnnemyManager::EnnemyAttackSystem()
 
             AttackComponent* attack = nullptr;
             auto& playerComponents = m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components;
-            for (auto* component : playerComponents)
+            for (auto& component : playerComponents)
             {
                 if (component->ID == Attack_ID)
                 {
-                    attack = static_cast<AttackComponent*>(component);
+                    attack = static_cast<AttackComponent*>(component.get());
                     attack->projectileTexture = L"RedBeamTexture";
                     break;
                 }
@@ -140,19 +140,19 @@ void EnnemyManager::SpawnEnnemy(float posX, float posY, float posZ)
     {
         if (comp->ID == Mesh_ID)
         {
-            MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+            MeshComponent* mesh = static_cast<MeshComponent*>(comp.get());
             mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
             mesh->textureID = L"DroneTexture";
         }
         if (comp->ID == Transform_ID)
         {
-            TransformComponent* transform = static_cast<TransformComponent*>(comp);
+            TransformComponent* transform = static_cast<TransformComponent*>(comp.get());
             transform->m_transform.Scale(2.f, 2.f, 2.f);
             transform->m_transform.Move(posZ, posX, posY);
         }
         if (comp->ID == Health_ID)
         {
-            HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
+            HealthComponent* healthComp = static_cast<HealthComponent*>(comp.get());
             healthComp->maxHealth = healthComp->currentHealth = 10;
         }
     }
@@ -172,19 +172,19 @@ void EnnemyManager::SpawnEnnemyBoss(float posX, float posY, float posZ)
     {
         if (comp->ID == Mesh_ID)
         {
-            MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+            MeshComponent* mesh = static_cast<MeshComponent*>(comp.get());
             mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
             mesh->textureID = L"DroneTexture";
         }
         if (comp->ID == Transform_ID)
         {
-            TransformComponent* transform = static_cast<TransformComponent*>(comp);
+            TransformComponent* transform = static_cast<TransformComponent*>(comp.get());
             transform->m_transform.Scale(10.f, 10.f, 10.f);
             transform->m_transform.Move(posZ, posX, posY);
         }
         if (comp->ID == Health_ID)
         {
-            HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
+            HealthComponent* healthComp = static_cast<HealthComponent*>(comp.get());
             healthComp->maxHealth = 100;
             healthComp->currentHealth = 100;
         }

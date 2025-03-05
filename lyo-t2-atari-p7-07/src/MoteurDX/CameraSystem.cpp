@@ -22,15 +22,15 @@ void CameraSystem::Update()
 		CameraComponent* camComponent = nullptr;
 
 
-		for (auto* component : m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
+		for (auto& component : m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
 		{
 			if (component->ID == Transform_ID)
 			{
-				transformComponent = static_cast<TransformComponent*>(component);
+				transformComponent = static_cast<TransformComponent*>(component.get());
 			}
 			if (component->ID == Camera_ID)
 			{
-				camComponent = static_cast<CameraComponent*>(component);
+				camComponent = static_cast<CameraComponent*>(component.get());
 			}
 		}
 

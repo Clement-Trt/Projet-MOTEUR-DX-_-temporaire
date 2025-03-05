@@ -93,9 +93,14 @@ struct Mesh
 
 struct Component
 {
+	Component() = default;
+	virtual ~Component() = default;
 	Component(int id, ComponentMask m) : ID(id), mask(m) {}
 	int ID = -1;
 	ComponentMask mask = 0;
+
+	Component(const Component&) = delete;  // Interdit la copie
+	Component& operator=(const Component&) = delete;
 };
 
 struct CameraComponent : public Component
@@ -108,6 +113,7 @@ struct CameraComponent : public Component
 struct MeshComponent : public Component
 {
 	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
+	~MeshComponent() { delete m_cubeMesh; }
 	Mesh* m_cubeMesh;
 	std::wstring textureID = L""; // identifiant de texture
 };
@@ -123,7 +129,7 @@ struct ColliderComponent : public Component
 	bool m_isDestroyed = false;
 };
 
-struct ParticleComponent : public Component 
+struct ParticleComponent : public Component
 {
 	ParticleComponent() : Component(Particle_ID, COMPONENT_PARTICLE) {}
 	float m_lifeTime = 0.0f;
@@ -148,7 +154,7 @@ struct LifeTimeComponent : public Component
 struct TransformComponent : public Component
 {
 	TransformComponent() : Component(Transform_ID, COMPONENT_TRANSFORM) {}
-	Transform m_transform;	
+	Transform m_transform;
 };
 
 struct VelocityComponent : public Component
@@ -169,7 +175,7 @@ struct HealthComponent : public Component
 struct AttackComponent : public Component
 {
 	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
-	
+
 	int damage = 0; // 10
 	float attackCooldown = 0.f; // 1
 	float timeSinceLastAttack = 0.0f; // 0.0

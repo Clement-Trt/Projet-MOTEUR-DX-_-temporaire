@@ -23,19 +23,19 @@ void GameScene::CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float 
 	{
 		if (comp->ID == Mesh_ID)
 		{
-			MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+			MeshComponent* mesh = static_cast<MeshComponent*>(comp.get());
 			mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 			mesh->textureID = L"BoxTexture";
 		}
 		if (comp->ID == Transform_ID)
 		{
-			TransformComponent* transform = static_cast<TransformComponent*>(comp);
+			TransformComponent* transform = static_cast<TransformComponent*>(comp.get());
 			transform->m_transform.Scale(sizeX, sizeY, sizeZ);
 			transform->m_transform.Move(posZ, posX, posY);
 		}
 		if (comp->ID == Health_ID)
 		{
-			HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
+			HealthComponent* healthComp = static_cast<HealthComponent*>(comp.get());
 			healthComp->maxHealth = healthComp->currentHealth = health;
 		}
 	}
@@ -54,19 +54,19 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 		{
 			if (comp->ID == Mesh_ID)
 			{
-				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+				MeshComponent* mesh = static_cast<MeshComponent*>(comp.get());
 				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 				mesh->textureID = L"WallTexture";
 			}
 			if (comp->ID == Transform_ID)
 			{
-				TransformComponent* transform = static_cast<TransformComponent*>(comp);
+				TransformComponent* transform = static_cast<TransformComponent*>(comp.get());
 				transform->m_transform.Scale(sizeX, sizeY, sizeZ);
 				transform->m_transform.Move(posZ, posX, posY);
 			}
 			if (comp->ID == Health_ID)
 			{
-				HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
+				HealthComponent* healthComp = static_cast<HealthComponent*>(comp.get());
 				healthComp->maxHealth = healthComp->currentHealth = health;
 			}
 		}
@@ -95,13 +95,13 @@ void GameScene::OnInitialize()
 		{
 			if (component->ID == Mesh_ID)
 			{
-				MeshComponent* mesh = static_cast<MeshComponent*>(component);
+				MeshComponent* mesh = static_cast<MeshComponent*>(component.get());
 				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
 				mesh->textureID = L"PlayerTexture"; // On assigne la texture
 			}
 			if (component->ID == Light_ID)
 			{
-				LightComponent* light = static_cast<LightComponent*>(component);
+				LightComponent* light = static_cast<LightComponent*>(component.get());
 				light->type = LightType::Point;
 				light->Position = { 0.0f, 0.0f, 0.0f };
 				light->Color = { 15.0f, 15.0f, 15.0f };
@@ -111,20 +111,20 @@ void GameScene::OnInitialize()
 			}
 			if (component->ID == Transform_ID)
 			{
-				TransformComponent* transform = static_cast<TransformComponent*>(component);
+				TransformComponent* transform = static_cast<TransformComponent*>(component.get());
 				transform->m_transform.Scale(3.0f, 3.0f, 3.0f);
 				transform->m_transform.vPosition = { 0.0f , 0.0f, 0.0f };
 			}
 			if (component->ID == Camera_ID)
 			{
-				CameraComponent* cam = static_cast<CameraComponent*>(component);
+				CameraComponent* cam = static_cast<CameraComponent*>(component.get());
 				cam->m_cameraTransform.Scale(1.0f, 1.0f, 1.0f);
 			}
 			if (component->ID == Attack_ID) 
 			{
-				AttackComponent* attack = static_cast<AttackComponent*>(component);
+				AttackComponent* attack = static_cast<AttackComponent*>(component.get());
 				attack->projectileTexture = L"BlueBeamTexture";
-				attack->attackCooldown = 0.1f;
+				attack->attackCooldown = 1.f;
 				attack->damage = 2;
 
 				attack->projectileSpeed = 1; // 1
@@ -146,13 +146,13 @@ void GameScene::OnInitialize()
 		{
 			if (comp->ID == Mesh_ID)
 			{
-				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
+				MeshComponent* mesh = static_cast<MeshComponent*>(comp.get());
 				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateSkyBoxCube();
 				mesh->textureID = L"SkyBox2";
 			}
 			if (comp->ID == Transform_ID)
 			{
-				TransformComponent* transform = static_cast<TransformComponent*>(comp);
+				TransformComponent* transform = static_cast<TransformComponent*>(comp.get());
 				transform->m_transform.Scale(300, 300, 300);
 				transform->m_transform.Move(0, 0, 0);
 			}
@@ -275,15 +275,15 @@ void GameScene::OnUpdate()
 	VelocityComponent* velComponent = nullptr;
 
 
-	for (auto* component : mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components)
+	for (auto& component : mpEntityManager->GetComponentsTab()[playerEntity->tab_index]->vec_components)
 	{
 		if (component->ID == Transform_ID)
 		{
-			transform = static_cast<TransformComponent*>(component);
+			transform = static_cast<TransformComponent*>(component.get());
 		}
 		if (component->ID == Velocity_ID)
 		{
-			velComponent = static_cast<VelocityComponent*>(component);
+			velComponent = static_cast<VelocityComponent*>(component.get());
 		}
 	}
 
@@ -326,11 +326,11 @@ void GameScene::OnUpdate()
 	{
 		AttackComponent* attack = nullptr;
 		auto& playerComponents = m_gameManager->GetEntityManager()->GetComponentsTab()[playerEntity->tab_index]->vec_components;
-		for (auto* component : playerComponents)
+		for (auto& component : playerComponents)
 		{
 			if (component->ID == Attack_ID)
 			{
-				attack = static_cast<AttackComponent*>(component);
+				attack = static_cast<AttackComponent*>(component.get());
 				break;
 			}
 		}

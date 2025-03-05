@@ -21,15 +21,15 @@ void MovementManager::Update()
 			VelocityComponent* velocity = nullptr;
 
 
-			for (auto* component : m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
+			for (auto& component : m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
 			{
 				if (component->ID == Transform_ID)
 				{
-					transform = static_cast<TransformComponent*>(component);
+					transform = static_cast<TransformComponent*>(component.get());
 				}
 				if (component->ID == Velocity_ID)
 				{
-					velocity = static_cast<VelocityComponent*>(component);
+					velocity = static_cast<VelocityComponent*>(component.get());
 				}
 			}
 			if (transform != nullptr && velocity != nullptr)

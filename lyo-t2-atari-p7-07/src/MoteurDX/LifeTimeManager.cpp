@@ -21,11 +21,11 @@ void LifeTimeManager::Update(float deltaTime)
 		{
 			LifeTimeComponent* lifeTime = nullptr;
 			//auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
-			for (auto* comp : entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
+			for (auto& comp : entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
 			{
 				if (comp->ID == LifeTime_ID)
 				{
-					lifeTime = static_cast<LifeTimeComponent*>(comp);
+					lifeTime = static_cast<LifeTimeComponent*>(comp.get());
 
 					if (lifeTime->lifeTime > 0) 
 					{
