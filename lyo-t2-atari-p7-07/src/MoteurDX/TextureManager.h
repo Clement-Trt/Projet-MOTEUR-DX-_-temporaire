@@ -1,8 +1,4 @@
 #pragma once
-#include <unordered_map>
-#include <string>
-#include <wrl.h>
-#include <d3d12.h>
 
 using Microsoft::WRL::ComPtr;
 

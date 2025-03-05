@@ -1,8 +1,6 @@
 #pragma once
 
 class EntityManager;
-//class Movement;
-
 class Scene;
 
 class GameManager

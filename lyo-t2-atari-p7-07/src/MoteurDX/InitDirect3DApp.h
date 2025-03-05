@@ -5,16 +5,16 @@
 #include "LightSystem.h"
 
 class MeshFactory;
-class Camera;
+
+class CameraSystem;
+class Attackystem;
+class HealthSystem;
+
 class ColliderManager;
 class ParticleManager;
 class EnnemyManager;
 class MovementManager;
-class CameraSystem;
-class Attackystem;
-class HealthSystem;
 class LifeTimeManager;
-
 class TextureManager;
 
 class InitDirect3DApp : public WindowDX
