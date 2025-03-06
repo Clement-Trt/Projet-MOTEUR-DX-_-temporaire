@@ -121,10 +121,10 @@ void GameScene::OnInitialize()
 				LightComponent* light = static_cast<LightComponent*>(component);
 				light->type = LightType::Point;
 				light->Position = { 0.0f, 0.0f, 0.0f };
-				light->Color = { 15.0f, 15.0f, 15.0f };
+				light->Color = { 8.0f, 8.0f, 8.0f };
 				light->ConstantAtt = 1.0f;
-				light->LinearAtt = 0.09f;
-				light->QuadraticAtt = 0.032f;
+				light->LinearAtt = 0.02f;
+				light->QuadraticAtt = 0.001f;
 			}
 			if (component->ID == Transform_ID)
 			{
