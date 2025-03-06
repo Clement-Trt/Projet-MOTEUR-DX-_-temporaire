@@ -420,6 +420,21 @@ void InitDirect3DApp::Render()
 			XMStoreFloat4x4(&objConstants.World, DirectX::XMMatrixTranspose(world));
 			XMStoreFloat4x4(&objConstants.WorldViewProj, DirectX::XMMatrixTranspose(wvp));
 
+			objConstants.highlightActive = 0.0f;
+			objConstants.highlightIntensity = 5.0f;
+
+			// Verifier si l'entite possede un composant Highlight
+			for (auto& comp : mp_entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
+			{
+				if (comp->ID == Highlight_ID)
+				{
+					HighlightComponent* highlight = static_cast<HighlightComponent*>(comp);
+					objConstants.highlightActive = highlight->isHighlighted ? 1.0f : 0.0f;
+					objConstants.highlightIntensity = highlight->intensity;
+					break;
+				}
+			}
+
 			// Mise a jour du constant buffer via le mapping persistant (m_mappedData)
 			memcpy(entityMesh->m_cubeMesh->m_mappedData, &objConstants, sizeof(objConstants));
 

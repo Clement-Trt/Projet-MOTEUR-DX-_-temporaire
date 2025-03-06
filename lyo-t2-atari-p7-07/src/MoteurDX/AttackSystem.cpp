@@ -67,6 +67,7 @@ void AttackSystem::Update(float deltaTime)
 					entityManager->AddComponent<ColliderComponent>(newBullet);
 					entityManager->AddComponent<AttackComponent>(newBullet);
 					entityManager->AddComponent<LifeTimeComponent>(newBullet);
+					entityManager->AddComponent<HighlightComponent>(newBullet);
 
 					TransformComponent* transform = nullptr;
 					MeshComponent* mesh = nullptr;
@@ -74,7 +75,7 @@ void AttackSystem::Update(float deltaTime)
 					ColliderComponent* collider = nullptr;
 					AttackComponent* bulletProperty = nullptr;
 					LifeTimeComponent* p_lifeTime = nullptr;
-
+					HighlightComponent* highlight = nullptr;
 					for (auto* component : entityManager->GetComponentToAddTab()[newBullet->tab_index]->vec_components)
 					{
 						if (component->ID == Mesh_ID)
@@ -111,6 +112,12 @@ void AttackSystem::Update(float deltaTime)
 						{
 							p_lifeTime = static_cast<LifeTimeComponent*>(component);
 							p_lifeTime->m_lifeTime = 3.5f;
+						}
+						if (component->ID == Highlight_ID)
+						{
+							highlight = static_cast<HighlightComponent*>(component);
+							highlight->isHighlighted = true;
+							highlight->intensity = 4.0f;
 						}
 
 					}

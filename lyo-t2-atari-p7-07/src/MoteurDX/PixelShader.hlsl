@@ -39,6 +39,8 @@ struct PS_INPUT
     float3 normal : NORMAL;
     float4 color : COLOR;
     float2 tex : TEXCOORD;
+    float highlightActive : TEXCOORD2;
+    float highlightIntensity : TEXCOORD3;
 };
 
 float4 PSMain(PS_INPUT input) : SV_Target // SV_Target est utilise pour le rendu moderne
@@ -62,6 +64,11 @@ float4 PSMain(PS_INPUT input) : SV_Target // SV_Target est utilise pour le rendu
 
     // Combiner ambiant, directionnel et point
     float3 finalLight = AmbientLight.rgb + diffuseDir + diffusePt;
+    
+    if (input.highlightActive > 0.5)
+    {
+        finalLight *= input.highlightIntensity;
+    }
     float3 finalColor = finalLight * input.color.rgb * texColor.rgb;
     
     return float4(finalColor, texColor.a);
