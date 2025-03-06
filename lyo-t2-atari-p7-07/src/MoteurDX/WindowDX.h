@@ -1,7 +1,7 @@
 #pragma once
 
 // DirectX12
-#include "d3dx12.h"
+
 
 // Link necessary d3d12 libraries.
 #pragma comment(lib,"d3dcompiler.lib")
@@ -14,9 +14,9 @@ using Microsoft::WRL::ComPtr;
 
 struct FrameResource
 {
-	ComPtr<ID3D12CommandAllocator> CmdListAlloc;
-	ComPtr<ID3D12Resource> PassCB;  // Buffer constant par frame (optionnel)
-	UINT64 Fence = 0; // Fence de la frame pour la synchronisation
+	ComPtr<ID3D12CommandAllocator> m_cmdListAlloc;
+	ComPtr<ID3D12Resource> m_passCB;  // Buffer constant par frame (optionnel)
+	UINT64 m_fence = 0; // Fence de la frame pour la synchronisation
 };
 
 class WindowDX
@@ -42,7 +42,7 @@ public:
 	void FlushCommandQueue();
 
 private:
-	static WindowDX* m_Application; // ref instance de la classe
+	static WindowDX* mp_Application; // ref instance de la classe
 
 	HINSTANCE m_appInstance = nullptr; // application instance handle
 
@@ -63,40 +63,40 @@ protected:
 
 	// Membres DirectX12
 	//UINT mFrameIndex = 0;
-	D3D12_VIEWPORT mScreenViewport;
-	D3D12_RECT mScissorRect;
+	D3D12_VIEWPORT m_screenViewport;
+	D3D12_RECT m_scissorRect;
 
-	UINT64 mFenceValue = 0;
-	ComPtr<ID3D12Fence> mFence;
-	ComPtr<ID3D12CommandAllocator> mCommandAllocator;
-	ComPtr<ID3D12Device>           mD3DDevice;
-	ComPtr<ID3D12GraphicsCommandList> mCommandList;
-	ComPtr<ID3D12CommandQueue>     mCommandQueue;
-	ComPtr<IDXGISwapChain3>        mSwapChain;
-	ComPtr<ID3D12DescriptorHeap>   mRtvHeap;
-	ComPtr<ID3D12DescriptorHeap>   mDsvHeap;
+	UINT64 m_fenceValue = 0;
+	ComPtr<ID3D12Fence> m_fence;
+	ComPtr<ID3D12CommandAllocator> m_commandAllocator;
+	ComPtr<ID3D12Device>           m_d3DDevice;
+	ComPtr<ID3D12GraphicsCommandList> m_commandList;
+	ComPtr<ID3D12CommandQueue>     m_commandQueue;
+	ComPtr<IDXGISwapChain3>        m_swapChain;
+	ComPtr<ID3D12DescriptorHeap>   m_rtvHeap;
+	ComPtr<ID3D12DescriptorHeap>   m_dsvHeap;
 	static const int			   SwapChainBufferCount = 2; // Double buffering
-	int mCurrBackBuffer = 0;
-	ComPtr<ID3D12Resource>         mRenderTargets[SwapChainBufferCount];
-	UINT                           mRtvDescriptorSize = 0;
+	int m_currBackBuffer = 0;
+	ComPtr<ID3D12Resource>         m_renderTargets[SwapChainBufferCount];
+	UINT                           m_rtvDescriptorSize = 0;
 
-	ComPtr<ID3D12Resource> mDepthStencilBuffer;
+	ComPtr<ID3D12Resource> m_depthStencilBuffer;
 	DXGI_FORMAT mBackBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
-	DXGI_FORMAT mDepthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	// Set true to use 4X MSAA The default is false.
-	bool      m4xMsaaState = false;    // 4X MSAA enabled
-	UINT      m4xMsaaQuality = 0;      // quality level of 4X MSAA
+	bool      m_4xMsaaState = false;    // 4X MSAA enabled
+	UINT      m_4xMsaaQuality = 0;      // quality level of 4X MSAA
 
 	// Init3DApp
-	ComPtr<ID3D12PipelineState> mPipelineState;
-	ComPtr<ID3D12RootSignature> mRootSignature;
+	ComPtr<ID3D12PipelineState> m_pipelineState;
+	ComPtr<ID3D12RootSignature> m_rootSignature;
 
 	//remplace flush
-	const int gNumFrameResources = 3; // Triple buffering
-	std::vector<std::unique_ptr<FrameResource>> mFrameResources;
-	FrameResource* mCurrFrameResource = nullptr;
-	int mCurrFrameIndex = 0;
+	const int gNum_frameResources = 3; // Triple buffering
+	std::vector<std::unique_ptr<FrameResource>> m_frameResources;
+	FrameResource* m_currFrameResource = nullptr;
+	int m_currFrameIndex = 0;
 
-	UINT64 mCurrentFence = 0;
+	UINT64 m_currentFence = 0;
 };
 

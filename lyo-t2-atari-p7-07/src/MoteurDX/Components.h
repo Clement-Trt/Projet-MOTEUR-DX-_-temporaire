@@ -1,12 +1,7 @@
 #pragma once
 
 #include "Transform.h"
-
 #include "MeshFactory.h"
-
-#include "Camera.h"
-
-#include "d3dx12.h"
 
 class Entity;
 
@@ -27,21 +22,9 @@ enum ComponentType {
 	COMPONENT_ENNEMY = 1 << 8,
 	COMPONENT_PLAYER = 1 << 9,
 	COMPONENT_LIGHT = 1 << 10,
-};
-
-enum ComponentIndex
-{
-	Camera_index,
-	Mesh_index,
-	Transform_index,
-	Velocity_index,
-	Health_index,
-	Attack_index,
-	Collider_index,
-	Particle_index,
-	Ennemy_index,
-	Player_index,
-	Light_index,
+	COMPONENT_LIFETIME = 1 << 11,
+	COMPONENT_HIGHLIGHT = 1 << 12,
+	COMPONENT_SCENEOBJECT = 1 << 13,
 };
 
 enum ComponentID
@@ -57,17 +40,18 @@ enum ComponentID
 	Ennemy_ID,
 	Player_ID,
 	Light_ID,
+	LifeTime_ID,
+	Highlight_ID,
+	SceneObject_ID,
 
 	TotalComponentsNumber
 };
 
 struct GeometryMesh
 {
-	// Vertex Buffer
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 
-	// Index Buffer
 	ComPtr<ID3D12Resource> m_indexBuffer;
 	D3D12_INDEX_BUFFER_VIEW m_indexBufferView;
 
@@ -83,10 +67,8 @@ struct Mesh
 	// Buffer de constantes (matrices, couleurs, etc.)
 	ComPtr<ID3D12Resource> m_constantBuffer;
 
-	// Map
 	void* m_mappedData = nullptr;
 };
-
 
 struct Component
 {
@@ -106,7 +88,7 @@ struct MeshComponent : public Component
 {
 	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
 	Mesh* m_cubeMesh;
-	std::wstring textureID = L""; // identifiant de texture
+	std::wstring m_textureID = L"";
 };
 
 struct ColliderComponent : public Component
@@ -136,6 +118,20 @@ struct PlayerComponent : public Component
 	PlayerComponent() : Component(Player_ID, COMPONENT_PLAYER) {}
 };
 
+struct LifeTimeComponent : public Component
+{
+	LifeTimeComponent() : Component(LifeTime_ID, COMPONENT_LIFETIME) {}
+	float m_lifeTime = 0.0f;
+};
+
+struct SceneObjectComponent : public Component
+{
+	SceneObjectComponent() : Component(SceneObject_ID, COMPONENT_SCENEOBJECT) {}
+	float speedRotX = 0.f;
+	float speedRotY = 0.f;
+	float speedRotZ = 0.f;
+};
+
 struct TransformComponent : public Component
 {
 	TransformComponent() : Component(Transform_ID, COMPONENT_TRANSFORM) {}
@@ -160,11 +156,18 @@ struct HealthComponent : public Component
 struct AttackComponent : public Component
 {
 	AttackComponent() : Component(Attack_ID, COMPONENT_ATTACK) {}
-	int damage = 10;
-	float attackCooldown = 1;
-	float timeSinceLastAttack = 0.0f; 
-	bool attackRequested = false;     
-	Entity* targetEntity = nullptr;   
+	
+	int damage = 0; 
+	float attackCooldown = 0.f; 
+	float timeSinceLastAttack = 0.0f;
+	bool attackRequested = false;
+
+	float projectileSpeed = 0.f;
+	float projectileSizeX = 0.f;
+	float projectileSizeY = 0.f;
+	float projectileSizeZ = 0.f;
+
+	std::wstring projectileTexture = L"DefaultTexture";
 };
 
 enum class LightType {
@@ -183,4 +186,11 @@ struct LightComponent : public Component {
 	float ConstantAtt;
 	float LinearAtt;
 	float QuadraticAtt;
+};
+
+struct HighlightComponent : public Component {
+	HighlightComponent() : Component(Highlight_ID, COMPONENT_HIGHLIGHT) {}
+
+	bool isHighlighted;
+	float intensity;
 };

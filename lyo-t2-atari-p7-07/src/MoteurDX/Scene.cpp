@@ -3,14 +3,15 @@
 #include <iostream>
 #include "Scene.h"
 #include "InitDirect3DApp.h"
+#include "AssetManager.h"
 
 void Scene::Initialize(InitDirect3DApp* gameManager)
 {
-	m_gameManager = gameManager;
+	mp_gameManager = gameManager;
 
-	mpEntityManager = m_gameManager->m_entityManager;
+	mpEntityManager = mp_gameManager->mp_entityManager;
 
-	m_camera = m_gameManager->GetCameraSystem();
+	mp_camera = mp_gameManager->GetCameraSystem();
 }
 
 void Scene::Update()
@@ -20,4 +21,5 @@ void Scene::Update()
 
 void Scene::Close()
 {
+	AssetManager::ReleaseAll();
 }

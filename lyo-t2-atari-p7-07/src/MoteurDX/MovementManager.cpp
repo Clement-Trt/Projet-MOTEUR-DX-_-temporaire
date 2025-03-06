@@ -5,23 +5,26 @@
 
 void MovementManager::Initialize(InitDirect3DApp* gameManager)
 {
-	m_gameManager = gameManager;
+	mp_gameManager = gameManager;
+	m_limitPosMin = -500; //-145
+	m_limitPosMax = 500; //145
+
 }
 
-void MovementManager::Update()
+void MovementManager::Update(float deltaTime)
 {
-	for (Entity* entity : m_gameManager->GetEntityManager()->GetEntityTab())
+	for (Entity* entity : mp_gameManager->GetEntityManager()->GetEntityTab())
 	{
 		if (!entity)
 			continue;
 
-		if (m_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY))
+		if (mp_gameManager->GetEntityManager()->HasComponent(entity, COMPONENT_TRANSFORM | COMPONENT_VELOCITY))
 		{
 			TransformComponent* transform = nullptr;
 			VelocityComponent* velocity = nullptr;
 
 
-			for (auto* component : m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
+			for (auto* component : mp_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components)
 			{
 				if (component->ID == Transform_ID)
 				{
@@ -34,57 +37,57 @@ void MovementManager::Update()
 			}
 			if (transform != nullptr && velocity != nullptr)
 			{
-				Move(entity, velocity, transform);
+				Move(entity, velocity, transform, deltaTime);
 			}
 		}
 	}
 }
 
-void MovementManager::SetVelocity(/*Entity* entity, */VelocityComponent* velComponent, float velFront, float velRight, float velUp)
+void MovementManager::SetVelocity(VelocityComponent* velComponent, float velFront, float velRight, float velUp)
 {
 	velComponent->vz = velFront;
 	velComponent->vx = velRight;
 	velComponent->vy = velUp;
 }
 
-void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent)
+void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent, float deltaTime)
 {
-	transformComponent->m_transform.Move(velComponent->vz, velComponent->vx, velComponent->vy);
+	transformComponent->m_transform.Move(velComponent->vz* deltaTime, velComponent->vx * deltaTime, velComponent->vy * deltaTime);
 
 	if (entity->id != 1) // Si ce n'est pas le joueur
 	{
-		if (transformComponent->m_transform.GetPositionX() > 145 || transformComponent->m_transform.GetPositionX() < -145
-			|| transformComponent->m_transform.GetPositionY() > 145 || transformComponent->m_transform.GetPositionY() < -145
-			|| transformComponent->m_transform.GetPositionZ() > 145 || transformComponent->m_transform.GetPositionZ() < -145)
+		if (transformComponent->m_transform.GetPositionX() > m_limitPosMax || transformComponent->m_transform.GetPositionX() < m_limitPosMin
+			|| transformComponent->m_transform.GetPositionY() > m_limitPosMax || transformComponent->m_transform.GetPositionY() < m_limitPosMin
+			|| transformComponent->m_transform.GetPositionZ() > m_limitPosMax || transformComponent->m_transform.GetPositionZ() < m_limitPosMin)
 		{
-			m_gameManager->GetEntityManager()->ToDestroy(entity);
+			mp_gameManager->GetEntityManager()->ToDestroy(entity);
 		}
 	}
 	else // Si c'est le joueur
 	{
-		if (transformComponent->m_transform.GetPositionX() > 145)
+		if (transformComponent->m_transform.GetPositionX() > m_limitPosMax)
 		{
-			transformComponent->m_transform.vPosition.x = 145;
+			transformComponent->m_transform.vPosition.x = m_limitPosMax;
 		}
-		else if (transformComponent->m_transform.GetPositionX() < -145)
+		else if (transformComponent->m_transform.GetPositionX() < m_limitPosMin)
 		{
-			transformComponent->m_transform.vPosition.x = -145;
+			transformComponent->m_transform.vPosition.x = m_limitPosMin;
 		}
-		if (transformComponent->m_transform.GetPositionY() > 145)
+		if (transformComponent->m_transform.GetPositionY() > m_limitPosMax)
 		{
-			transformComponent->m_transform.vPosition.y = 145;
+			transformComponent->m_transform.vPosition.y = m_limitPosMax;
 		}
-		else if (transformComponent->m_transform.GetPositionY() < -145)
+		else if (transformComponent->m_transform.GetPositionY() < m_limitPosMin)
 		{
-			transformComponent->m_transform.vPosition.y = -145;
+			transformComponent->m_transform.vPosition.y = m_limitPosMin;
 		}
-		if (transformComponent->m_transform.GetPositionZ() > 145)
+		if (transformComponent->m_transform.GetPositionZ() > m_limitPosMax)
 		{
-			transformComponent->m_transform.vPosition.z = 145;
+			transformComponent->m_transform.vPosition.z = m_limitPosMax;
 		}
-		else if (transformComponent->m_transform.GetPositionZ() < -145)
+		else if (transformComponent->m_transform.GetPositionZ() < m_limitPosMin)
 		{
-			transformComponent->m_transform.vPosition.z = -145;
+			transformComponent->m_transform.vPosition.z = m_limitPosMin;
 		}
 		SetVelocity(velComponent, 0, 0, 0);
 	}

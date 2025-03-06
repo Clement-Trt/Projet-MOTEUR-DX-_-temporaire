@@ -10,16 +10,17 @@ class MovementManager
 {
 protected:
 
-	InitDirect3DApp* m_gameManager;
+	InitDirect3DApp* mp_gameManager;
 
+	int m_limitPosMin, m_limitPosMax;
 public:
 
 	void Initialize(InitDirect3DApp* gameManager);
 
-	void Update();
+	void Update(float deltaTime);
 
 	void SetVelocity(VelocityComponent* velComponent, float velFront, float velRight, float velUp);
 
-	void Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent);
+	void Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent, float deltaTime);
 };
 

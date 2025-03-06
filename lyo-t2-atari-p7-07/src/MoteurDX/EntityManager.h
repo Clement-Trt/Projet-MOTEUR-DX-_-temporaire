@@ -22,7 +22,7 @@ class EntityManager
 private:
 
 	uint32_t entityNb = 0; // Positif, ce sont les entity qui existent actuellement dans le jeu
-	int32_t entitiesToAddIndex = 0; // Negatif pour savoir qu'elles ne sont pas encore ajoutées 
+	int32_t entitiesToAddIndex = 0; // Negatif pour savoir qu'elles ne sont pas encore ajoutees 
 
 	Entity* tab_entity[64000] = { nullptr };
 
@@ -45,14 +45,11 @@ public:
 
 	uint32_t GetNbEntity() { return entityNb; }
 
-	// Cree une entite et retourne son ID
 	Entity* CreateEntity();
 
-	// Detruit une entite (supprime sa signature de composants)
 	void ToDestroy(Entity* entity);
 	void DestroyEntity(Entity* entity);
 
-	// Verifie si l'entite possede le(s) composant(s) indique(s)
 	bool HasComponent(Entity* entity, ComponentMask componentMask) const;
 
 	void ResetEntitiesToAdd() { entitiesToAddIndex = 0; }
