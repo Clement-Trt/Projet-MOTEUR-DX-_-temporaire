@@ -92,7 +92,7 @@ void GameScene::OnInitialize()
 	AssetManager::AddMusic("albator", albatorPath);
 
 	AssetManager::GetMusic("electro").play();
-	AssetManager::GetMusic("electro").setVolume(20);
+	AssetManager::GetMusic("electro").setVolume(5);
 
 	// Entity 1 = player
 	{
