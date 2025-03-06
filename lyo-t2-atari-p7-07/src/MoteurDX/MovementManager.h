@@ -12,6 +12,7 @@ protected:
 
 	InitDirect3DApp* mp_gameManager;
 
+	int m_limitPosMin, m_limitPosMax;
 public:
 
 	void Initialize(InitDirect3DApp* gameManager);

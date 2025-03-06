@@ -28,6 +28,7 @@ InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 
 InitDirect3DApp::~InitDirect3DApp()
 {
+	mp_scene->OnClose();
 	delete mp_healthSystem;
 	delete mp_attackSystem;
 	delete mp_meshFactory;
@@ -140,6 +141,7 @@ bool InitDirect3DApp::Initialize()
 
 	// Scene
 	GameScene* scene = new GameScene;
+	//SceneTest* scene = new SceneTest;
 	SetScene(scene);
 	mp_scene->Initialize(this);
 	mp_scene->OnInitialize();
@@ -195,7 +197,7 @@ bool InitDirect3DApp::InitTexture()
 	// Creation du TextureManager
 	mp_textureManager = new TextureManager(m_d3DDevice.Get(), m_commandList.Get());
 	// On cree un heap pour le nombre total de textures
-	mp_textureManager->CreateDescriptorHeap(11);
+	mp_textureManager->CreateDescriptorHeap(14);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
 	if (!mp_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
@@ -240,20 +242,34 @@ bool InitDirect3DApp::InitTexture()
 	}
 	if (!mp_textureManager->LoadTexture(L"DefaultTexture", L"../../../src/MoteurDX/defaultTexture.dds"))
 	{
-		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		MessageBox(0, L"echec du chargement de la texture DefaultTexture.", L"Erreur", MB_OK);
 		return false;
 	}
 	if (!mp_textureManager->LoadTexture(L"BlueBeamTexture", L"../../../src/MoteurDX/blueBeam.dds"))
 	{
-		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		MessageBox(0, L"echec du chargement de la texture BlueBeamTexture.", L"Erreur", MB_OK);
 		return false;
 	}
 	if (!mp_textureManager->LoadTexture(L"RedBeamTexture", L"../../../src/MoteurDX/redBeam.dds"))
 	{
-		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
+		MessageBox(0, L"echec du chargement de la texture RedBeamTexture.", L"Erreur", MB_OK);
 		return false;
 	}
-
+	if (!mp_textureManager->LoadTexture(L"PlayerBeamTexture", L"../../../src/MoteurDX/BeamPlayerV2.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture PlayerBeamTexture.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!mp_textureManager->LoadTexture(L"EnnemyBeamTexture", L"../../../src/MoteurDX/BeamEnnemyV2.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture EnnemyBeamTexture.", L"Erreur", MB_OK);
+		return false;
+	}
+	if (!mp_textureManager->LoadTexture(L"MeteorTexture", L"../../../src/MoteurDX/meteor.dds"))
+	{
+		MessageBox(0, L"echec du chargement de la texture MeteorTexture.", L"Erreur", MB_OK);
+		return false;
+	}
 	return true;
 }
 
@@ -363,7 +379,7 @@ void InitDirect3DApp::Render()
 		m_commandList->SetGraphicsRootConstantBufferView(2, m_passConstantBuffer->GetGPUVirtualAddress());
 
 		DirectX::XMMATRIX view = mp_cameraManager->GetViewMatrix();
-		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
+		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 50000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : mp_entityManager->GetEntityTab())
@@ -571,7 +587,7 @@ void InitDirect3DApp::Draw()
 	m_commandList->ResourceBarrier(1, &barrierStart);
 
 	// Effacer le Render Target avec une couleur de fond
-	FLOAT clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
+	FLOAT clearColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
 	// Effacer le Depth Buffer pour reinitialiser les valeurs de profondeur (1.0 = loin).

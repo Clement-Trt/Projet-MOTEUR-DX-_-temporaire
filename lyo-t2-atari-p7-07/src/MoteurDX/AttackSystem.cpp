@@ -1,11 +1,22 @@
 #include "pch.h"
 #include "AttackSystem.h"
 #include "InitDirect3DApp.h"
-#include "Components.h"
+#include "Components.h" // Pour AttackComponent
+#include "AssetManager.h"
 
 void AttackSystem::Initialize(InitDirect3DApp* gameManager)
 {
     m_gameManager = gameManager;
+	
+	// Sound
+	std::string basePath = AssetManager::GetExecutablePath();
+
+	std::string beamPath = basePath + "res\\bubblebeam.wav";
+	std::string beamPlayerPath = basePath + "res\\BeamPlayer.wav";
+	std::string beamEnnemyPath = basePath + "res\\BeamEnnemy.wav";
+	AssetManager::AddSound("beam", beamPath); 
+	AssetManager::AddSound("beamPlayer", beamPlayerPath);
+	AssetManager::AddSound("beamEnnemy", beamEnnemyPath);
 }
 
 void AttackSystem::Update(float deltaTime)
@@ -20,6 +31,8 @@ void AttackSystem::Update(float deltaTime)
 		{
 			AttackComponent* attack = nullptr;
 			TransformComponent* entityTransform = nullptr;
+			PlayerComponent* player = nullptr;
+			EnnemyComponent* ennemy = nullptr;
 			auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
 			for (auto* comp : compTab)
 			{
@@ -30,6 +43,14 @@ void AttackSystem::Update(float deltaTime)
 				if (comp->ID == Transform_ID)
 				{
 					entityTransform = static_cast<TransformComponent*>(comp);
+				}
+				if (comp->ID == Player_ID)
+				{
+					player = static_cast<PlayerComponent*>(comp);
+				}
+				if (comp->ID == Ennemy_ID)
+				{
+					ennemy = static_cast<EnnemyComponent*>(comp);
 				}
 			}
 			if (attack)
@@ -90,7 +111,7 @@ void AttackSystem::Update(float deltaTime)
 						if (component->ID == LifeTime_ID)
 						{
 							p_lifeTime = static_cast<LifeTimeComponent*>(component);
-							p_lifeTime->m_lifeTime = 1.5f;
+							p_lifeTime->m_lifeTime = 3.5f;
 						}
 						if (component->ID == Highlight_ID)
 						{
@@ -98,6 +119,15 @@ void AttackSystem::Update(float deltaTime)
 							highlight->isHighlighted = true;
 							highlight->intensity = 4.0f;
 						}
+
+					}
+					if (player != nullptr)
+					{
+						AssetManager::PlayLocalSound("beamPlayer");
+					}
+					if (ennemy != nullptr)
+					{
+						AssetManager::PlayLocalSound("beamEnnemy");
 					}
 					attack->timeSinceLastAttack = 0.0f;
 					attack->attackRequested = false;

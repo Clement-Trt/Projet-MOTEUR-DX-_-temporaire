@@ -3,6 +3,7 @@
 #include <iostream>
 #include "Scene.h"
 #include "InitDirect3DApp.h"
+#include "AssetManager.h"
 
 void Scene::Initialize(InitDirect3DApp* gameManager)
 {
@@ -20,4 +21,5 @@ void Scene::Update()
 
 void Scene::Close()
 {
+	AssetManager::ReleaseAll();
 }
