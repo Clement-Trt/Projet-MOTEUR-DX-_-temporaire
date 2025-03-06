@@ -144,7 +144,7 @@ void GameScene::OnInitialize()
 				attack->attackCooldown = 0.1f;
 				attack->damage = 2;
 
-				attack->projectileSpeed = 1;
+				attack->projectileSpeed = 5;
 				attack->projectileSizeX = 0.2f;
 				attack->projectileSizeY = 0.2f;
 				attack->projectileSizeZ = 1.0f;
@@ -170,25 +170,25 @@ void GameScene::OnInitialize()
 			if (comp->ID == Transform_ID)
 			{
 				TransformComponent* transform = static_cast<TransformComponent*>(comp);
-				transform->m_transform.Scale(700, 700, 700);
+				transform->m_transform.Scale(50000, 50000, 50000);
 				transform->m_transform.Move(0, 0, 0);
 			}
 		}
 	}
 
 	// Meteors
-	int nbMeteor = 20;
+	int nbMeteor = 70;
 	int nbMeteorInScene = 0;
 
 	while (nbMeteorInScene < nbMeteor)
 	{
-		float randSizeX = 10 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (90 - 10);
-		float randSizeY = 10 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (90 - 10);
-		float randSizeZ = 10 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (90 - 10);
+		float randSizeX = 10 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (200 - 10);
+		float randSizeY = 10 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (200 - 10);
+		float randSizeZ = 10 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (200 - 10);
 
-		float randPosX = -300 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (300 - -300);
-		float randPosY = -300 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (300 - -300);
-		float randPosZ = -300 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (300 - -300);
+		float randPosX = -1000 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (1000 - -1000);
+		float randPosY = -1000 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (1000 - -1000);
+		float randPosZ = -1000 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (1000 - -1000);
 
 		CreateWallBlock(randSizeX, randSizeY, randSizeZ, randPosX, randPosY, randPosZ, 10);
 		nbMeteorInScene++;
@@ -297,6 +297,7 @@ void GameScene::OnUpdate()
 			if (component->ID == Attack_ID)
 			{
 				attack = static_cast<AttackComponent*>(component);
+				
 				break;
 			}
 		}

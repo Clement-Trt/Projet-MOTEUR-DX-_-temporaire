@@ -110,7 +110,7 @@ void AttackSystem::Update(float deltaTime)
 						if (component->ID == LifeTime_ID)
 						{
 							p_lifeTime = static_cast<LifeTimeComponent*>(component);
-							p_lifeTime->m_lifeTime = 1.5f;
+							p_lifeTime->m_lifeTime = 3.5f;
 						}
 
 					}

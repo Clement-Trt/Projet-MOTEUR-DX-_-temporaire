@@ -6,8 +6,8 @@
 void MovementManager::Initialize(InitDirect3DApp* gameManager)
 {
 	mp_gameManager = gameManager;
-	m_limitPosMin = -220; //-145
-	m_limitPosMax = 220; //145
+	m_limitPosMin = -500; //-145
+	m_limitPosMax = 500; //145
 
 }
 

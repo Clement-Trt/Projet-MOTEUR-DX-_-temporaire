@@ -379,7 +379,7 @@ void InitDirect3DApp::Render()
 		m_commandList->SetGraphicsRootConstantBufferView(2, m_passConstantBuffer->GetGPUVirtualAddress());
 
 		DirectX::XMMATRIX view = mp_cameraManager->GetViewMatrix();
-		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
+		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 50000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube
 		for (auto* entity : mp_entityManager->GetEntityTab())
