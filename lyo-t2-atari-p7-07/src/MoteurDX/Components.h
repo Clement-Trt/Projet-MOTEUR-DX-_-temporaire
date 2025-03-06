@@ -23,6 +23,7 @@ enum ComponentType {
 	COMPONENT_PLAYER = 1 << 9,
 	COMPONENT_LIGHT = 1 << 10,
 	COMPONENT_LIFETIME = 1 << 11,
+	COMPONENT_HIGHLIGHT = 1 << 12,
 };
 
 enum ComponentIndex
@@ -39,6 +40,7 @@ enum ComponentIndex
 	Player_index,
 	Light_index,
 	LifeTime_index,
+	Highlight_index,
 };
 
 enum ComponentID
@@ -55,6 +57,7 @@ enum ComponentID
 	Player_ID,
 	Light_ID,
 	LifeTime_ID,
+	Highlight_ID,
 
 	TotalComponentsNumber
 };
@@ -191,4 +194,11 @@ struct LightComponent : public Component {
 	float ConstantAtt;
 	float LinearAtt;
 	float QuadraticAtt;
+};
+
+struct HighlightComponent : public Component {
+	HighlightComponent() : Component(Highlight_ID, COMPONENT_HIGHLIGHT) {}
+
+	bool isHighlighted;
+	float intensity;
 };

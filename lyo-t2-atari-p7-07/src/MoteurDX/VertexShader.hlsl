@@ -2,6 +2,11 @@ cbuffer Transform : register(b0) // Buffer de constantes contenant la matrice de
 {
     matrix World; // Matrice monde
     matrix WorldViewProj; // Matrice combinee
+    
+    // Parametres de highlight
+    float highlightActive; 
+    float highlightIntensity;
+    float pad[2];
 };
 
 struct VS_INPUT
@@ -19,6 +24,8 @@ struct PS_INPUT
     float3 normal : NORMAL;
     float4 color : COLOR;
     float2 tex : TEXCOORD;
+    float highlightActive : TEXCOORD2;
+    float highlightIntensity : TEXCOORD3;
 };
 
 PS_INPUT VSMain(VS_INPUT input)
@@ -30,5 +37,7 @@ PS_INPUT VSMain(VS_INPUT input)
     output.normal = input.normal;
     output.color = input.color;
     output.tex = input.tex;
+    output.highlightActive = highlightActive;
+    output.highlightIntensity = highlightIntensity;
     return output;
 }

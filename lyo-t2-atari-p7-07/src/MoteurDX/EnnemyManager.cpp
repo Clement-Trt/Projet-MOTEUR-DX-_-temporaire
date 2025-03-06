@@ -131,6 +131,7 @@ void EnnemyManager::SpawnEnnemy(float posX, float posY, float posZ)
     mp_entityManager->AddComponent<EnnemyComponent>(ennemy);
     mp_entityManager->AddComponent<AttackComponent>(ennemy);
     mp_entityManager->AddComponent<HealthComponent>(ennemy);
+    mp_entityManager->AddComponent<HighlightComponent>(ennemy);
 
     for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
     {
@@ -151,6 +152,12 @@ void EnnemyManager::SpawnEnnemy(float posX, float posY, float posZ)
             HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
             healthComp->maxHealth = healthComp->currentHealth = 10;
         }
+        if (comp->ID == Highlight_ID)
+        {
+            HighlightComponent* highlight = static_cast<HighlightComponent*>(comp);
+            highlight->isHighlighted = true;
+            highlight->intensity = 3.0f;
+        }
     }
 }
 
@@ -163,6 +170,7 @@ void EnnemyManager::SpawnEnnemyBoss(float posX, float posY, float posZ)
     mp_entityManager->AddComponent<EnnemyComponent>(ennemy);
     mp_entityManager->AddComponent<AttackComponent>(ennemy);
     mp_entityManager->AddComponent<HealthComponent>(ennemy);
+    mp_entityManager->AddComponent<HighlightComponent>(ennemy);
 
     for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
     {
@@ -183,6 +191,12 @@ void EnnemyManager::SpawnEnnemyBoss(float posX, float posY, float posZ)
             HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
             healthComp->maxHealth = 100;
             healthComp->currentHealth = 100;
+        }
+        if (comp->ID == Highlight_ID)
+        {
+            HighlightComponent* highlight = static_cast<HighlightComponent*>(comp);
+            highlight->isHighlighted = true;
+            highlight->intensity = 4.0f;
         }
     }
 }

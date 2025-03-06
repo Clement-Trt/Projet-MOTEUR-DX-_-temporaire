@@ -45,6 +45,7 @@ void ParticleManager::CreateParticle(float startPosX, float startPosY, float sta
 	mp_entityManager->AddComponent<ParticleComponent>(newIceBlock);
 	mp_entityManager->AddComponent<VelocityComponent>(newIceBlock);
 	mp_entityManager->AddComponent<LifeTimeComponent>(newIceBlock);
+	mp_entityManager->AddComponent<HighlightComponent>(newIceBlock);
 
 	for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[newIceBlock->tab_index]->vec_components)
 	{
@@ -76,6 +77,12 @@ void ParticleManager::CreateParticle(float startPosX, float startPosY, float sta
 		{
 			LifeTimeComponent* p_lifeTime = static_cast<LifeTimeComponent*>(comp);
 			p_lifeTime->m_lifeTime = 0.8f;
+		}
+		if (comp->ID == Highlight_ID)
+		{
+			HighlightComponent* highlight = static_cast<HighlightComponent*>(comp);
+			highlight->isHighlighted = true;
+			highlight->intensity = 4.0f;
 		}
 	}
 }

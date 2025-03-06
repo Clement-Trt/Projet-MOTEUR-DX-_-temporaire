@@ -19,6 +19,10 @@ struct TransformConstants
 {
 	DirectX::XMFLOAT4X4 World;
 	DirectX::XMFLOAT4X4 WorldViewProj;
+
+	float highlightActive;
+	float highlightIntensity;
+	float pad[2];
 };
 
 class MeshFactory
