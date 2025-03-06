@@ -24,6 +24,7 @@ public:
 	~InitDirect3DApp();
 
 	bool Initialize();
+	bool InitConstantBuffer();
 	bool InitTexture();
 	void Update() override;
 	void UpdatePhysics();

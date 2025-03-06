@@ -146,6 +146,18 @@ bool InitDirect3DApp::Initialize()
 	mp_scene->Initialize(this);
 	mp_scene->OnInitialize();
 
+	if (!InitConstantBuffer())
+	{
+		MessageBox(0, L"echec du chargement des constant buffer !", L"Erreur", MB_OK);
+		return false;
+	}
+
+	m_gameIsPaused = true;
+	return true;
+}
+
+bool InitDirect3DApp::InitConstantBuffer()
+{
 	// Pour la lumiere :
 	// Calculez la taille necessaire pour le constant buffer
 	UINT passCBSize = (sizeof(PassConstants) + 255) & ~255;
@@ -154,7 +166,7 @@ bool InitDirect3DApp::Initialize()
 	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
 	CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(passCBSize);
 
-	hr = m_d3DDevice->CreateCommittedResource(
+	HRESULT hr = m_d3DDevice->CreateCommittedResource(
 		&heapProps,
 		D3D12_HEAP_FLAG_NONE,
 		&bufferDesc,
@@ -174,10 +186,9 @@ bool InitDirect3DApp::Initialize()
 		// Gestion d'erreur
 	}
 
-	// Optionnel : initialiser le buffer a zero
+	// Initialiser le buffer a zero
 	memset(mp_mappedPassCB, 0, passCBSize);
-
-	m_gameIsPaused = true;
+	
 	return true;
 }
 

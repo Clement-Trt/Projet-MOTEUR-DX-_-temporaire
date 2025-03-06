@@ -1,5 +1,3 @@
-//#define MAX_POINT_LIGHTS 64
-
 struct DirectionalLight
 {
     float3 Direction;
@@ -29,11 +27,6 @@ cbuffer PassConstants : register(b1)
     
     // Lumiere point
     PointLight PtLight;
-    
-    //int NumPointLights;
-    //int pad[3]; // Alignement
-    //PointLight PtLights[MAX_POINT_LIGHTS];
-    
 };
 
 Texture2D g_Texture : register(t0);
@@ -66,21 +59,11 @@ float4 PSMain(PS_INPUT input) : SV_Target // SV_Target est utilise pour le rendu
     float ndotlPt = max(dot(norm, lightDir), 0.0);
     float attenuation = 1.0 / (PtLight.ConstantAtt + PtLight.LinearAtt * distance + PtLight.QuadraticAtt * (distance * distance));
     float3 diffusePt = PtLight.Color * ndotlPt * attenuation;
-    //float3 diffusePtTotal = 0;
-    //for (int i = 0; i < NumPointLights; i++)
-    //{
-    //    float3 lightDir = PtLights[i].Position - input.worldPos;
-    //    float distance = length(lightDir);
-    //    lightDir = normalize(lightDir);
-    //    float ndotlPt = max(dot(norm, lightDir), 0.0);
-    //    float attenuation = 1.0 / (PtLights[i].ConstantAtt + PtLights[i].LinearAtt * distance + PtLights[i].QuadraticAtt * (distance * distance));
-    //    float3 diffusePtTotal += PtLights[i].Color * ndotlPt * attenuation;
-    //}
 
     // Combiner ambiant, directionnel et point
-    // float3 finalLight = AmbientLight.rgb + diffuseDir + diffusePtTotal;
     float3 finalLight = AmbientLight.rgb + diffuseDir + diffusePt;
     float3 finalColor = finalLight * input.color.rgb * texColor.rgb;
+    
     return float4(finalColor, texColor.a);
 }
 
