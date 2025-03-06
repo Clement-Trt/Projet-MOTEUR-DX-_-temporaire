@@ -255,12 +255,9 @@ void GameScene::OnUpdate()
 
 	// Sensibilite de la souris
 	const float sensitivity = 0.005f;
-	if (InputManager::GetKeyIsPressed(MK_LBUTTON))
-	{
-		// Mettre a jour la rotation de la camera en fonction du delta
-		transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
-	}
 
+	// Mettre a jour la rotation de la camera en fonction du delta
+	transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
 
 	if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 0.5f;
 	if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -0.5f;
