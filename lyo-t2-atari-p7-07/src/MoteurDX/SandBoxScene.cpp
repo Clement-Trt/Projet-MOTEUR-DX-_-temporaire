@@ -225,7 +225,7 @@ void SandBoxScene::OnInitialize()
 				attack->attackCooldown = 0.1f;
 				attack->damage = 2;
 
-				attack->projectileSpeed = 5;
+				attack->projectileSpeed = 100;
 				attack->projectileSizeX = 0.2f;
 				attack->projectileSizeY = 0.2f;
 				attack->projectileSizeZ = 1.0f;
@@ -381,14 +381,13 @@ void SandBoxScene::OnUpdate()
 	// Mettre a jour la rotation de la camera en fonction du delta
 	transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
 
-	if (InputManager::GetKeyIsPressed('D')) /*transform->m_transform.vPosition.x += 1.5f;*/ velComponent->vx = 0.75f;
-	if (InputManager::GetKeyIsPressed('Q')) /*transform->m_transform.vPosition.x -= 1.5f;*/ velComponent->vx = -0.75f;
+	if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 40.0f;
+	if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -40.0f;
 
-	if (InputManager::GetKeyIsPressed('Z')) /*transform->m_transform.vPosition.z += 1.5f;*/ velComponent->vz = 0.75f;
-	if (InputManager::GetKeyIsPressed('S')) /*transform->m_transform.vPosition.z -= 1.5f;*/ velComponent->vz = -0.75f;
+	if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 40.0f;
+	if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -40.0f;
 
 	if (InputManager::GetKeyIsPressed(VK_SPACE)) transform->m_transform.vPosition.y += 2.0f;
-	//if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -1.5f;
 
 
 	// Si la touche 'P' est presse, on demande une attaque du joueur sur l'IceBlock
@@ -423,18 +422,13 @@ void SandBoxScene::OnUpdate()
 	}
 
 	TransformComponent* transform2 = nullptr;
-	//VelocityComponent* velComponent2 = nullptr;
 
 	for (auto* component : mpEntityManager->GetComponentsTab()[mp_playerBody->tab_index]->vec_components)
 	{
 		if (component->ID == Transform_ID)
 		{
 			transform2 = static_cast<TransformComponent*>(component);
-		}/*
-		if (component->ID == Velocity_ID)
-		{
-			velComponent2 = static_cast<VelocityComponent*>(component);
-		}*/
+		}
 	}
 	if (transform2)
 	{
