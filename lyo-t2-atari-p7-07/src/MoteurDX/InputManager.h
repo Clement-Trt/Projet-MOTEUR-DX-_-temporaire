@@ -13,6 +13,7 @@ public:
 	static int GetMouseDeltaX();
 	static int GetMouseDeltaY();
 
+	static void SetCursorOnTheCenterOfTheScreen(HWND hWnd);
 	static void SetCursorLockedAndInvisible(bool CursorLockedAndInvisible);
 
 private:

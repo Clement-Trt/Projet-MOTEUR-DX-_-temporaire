@@ -255,6 +255,7 @@ void InitDirect3DApp::Update()
 			m_gameIsPaused = false;
 			//ShowCursor(FALSE);
 			InputManager::SetCursorLockedAndInvisible(true);
+			InputManager::SetCursorOnTheCenterOfTheScreen(GetActiveWindow());
 		}
 	}
 	else

@@ -25,26 +25,7 @@ void InputManager::UpdateMouse(HWND hWnd)
 {
 	if (ms_cursorLockedAndInvisible == true)
 	{
-		// Obtenir les dimensions de la fenetre client
-		RECT rect;
-		GetClientRect(hWnd, &rect);
-		POINT center;
-		center.x = (rect.right - rect.left) / 2;
-		center.y = (rect.bottom - rect.top) / 2;
-
-		// Convertir le centre en coordonnees ecran
-		POINT centerScreen = center;
-		ClientToScreen(hWnd, &centerScreen);
-		POINT currentPos;
-		// Recuperer la position de la souris en coordonnees ecran
-		GetCursorPos(&currentPos);
-
-		// Calculer le delta par rapport au centre
-		ms_MouseDelta.x = currentPos.x - centerScreen.x;
-		ms_MouseDelta.y = currentPos.y - centerScreen.y;
-
-		// Reinitialiser la souris au centre de l'ecran
-		SetCursorPos(centerScreen.x, centerScreen.y);
+		SetCursorOnTheCenterOfTheScreen(hWnd);
 	}
 
 	else
@@ -62,6 +43,30 @@ void InputManager::UpdateMouse(HWND hWnd)
 		// Mettre a jour la derniere position
 		ms_LastMousePos = currentPos;
 	}
+}
+
+void InputManager::SetCursorOnTheCenterOfTheScreen(HWND hWnd)
+{
+	// Obtenir les dimensions de la fenetre client
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+	POINT center;
+	center.x = (rect.right - rect.left) / 2;
+	center.y = (rect.bottom - rect.top) / 2;
+
+	// Convertir le centre en coordonnees ecran
+	POINT centerScreen = center;
+	ClientToScreen(hWnd, &centerScreen);
+	POINT currentPos;
+	// Recuperer la position de la souris en coordonnees ecran
+	GetCursorPos(&currentPos);
+
+	// Calculer le delta par rapport au centre
+	ms_MouseDelta.x = currentPos.x - centerScreen.x;
+	ms_MouseDelta.y = currentPos.y - centerScreen.y;
+
+	// Reinitialiser la souris au centre de l'ecran
+	SetCursorPos(centerScreen.x, centerScreen.y);
 }
 
 int InputManager::GetMouseDeltaX()
