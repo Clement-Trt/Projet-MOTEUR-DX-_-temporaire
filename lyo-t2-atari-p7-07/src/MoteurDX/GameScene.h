@@ -6,10 +6,6 @@ class GameScene : public Scene
 {
 public:
 
-	void CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health = 0);
-
-	void CreateWallBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health = 0);
-
 	void OnInitialize() override;
 
 	void OnUpdate() override;
@@ -18,7 +14,10 @@ public:
 
 protected:
 
-	Entity* mp_cameraView = nullptr;
+	void CreateDefaultBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health = 0);
+
+	void CreateWallBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health = 0);
+
 	Entity* mp_playerEntity = nullptr;
 };
 

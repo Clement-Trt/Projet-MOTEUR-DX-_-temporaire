@@ -12,6 +12,7 @@
 #include "Scene.h"
 #include "SceneTest.h"
 #include "GameScene.h"
+#include "SandBoxScene.h"
 
 #include "TextureManager.h"
 #include "CameraSystem.h"
@@ -140,7 +141,8 @@ bool InitDirect3DApp::Initialize()
 	mp_lifeTimeManager->Initialize(this);
 
 	// Scene
-	GameScene* scene = new GameScene;
+	SandBoxScene* scene = new SandBoxScene;
+	//GameScene* scene = new GameScene;
 	//SceneTest* scene = new SceneTest;
 	SetScene(scene);
 	mp_scene->Initialize(this);
@@ -152,7 +154,7 @@ bool InitDirect3DApp::Initialize()
 		return false;
 	}
 
-	m_gameIsPaused = false;
+	/*m_gameIsPaused = false;*/
 	return true;
 }
 
@@ -275,6 +277,7 @@ bool InitDirect3DApp::InitTexture()
 
 void InitDirect3DApp::Update()
 {
+
 	if (m_gameIsPaused == true)
 	{
 		if (InputManager::GetKeyDown(VK_ESCAPE))
