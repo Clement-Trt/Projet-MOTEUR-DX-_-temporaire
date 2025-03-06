@@ -27,24 +27,6 @@ enum ComponentType {
 	COMPONENT_SCENEOBJECT = 1 << 13,
 };
 
-enum ComponentIndex
-{
-	Camera_index,
-	Mesh_index,
-	Transform_index,
-	Velocity_index,
-	Health_index,
-	Attack_index,
-	Collider_index,
-	Particle_index,
-	Ennemy_index,
-	Player_index,
-	Light_index,
-	LifeTime_index,
-	Highlight_index,
-	SceneObject_index,
-};
-
 enum ComponentID
 {
 	Camera_ID,
@@ -87,7 +69,6 @@ struct Mesh
 
 	void* m_mappedData = nullptr;
 };
-
 
 struct Component
 {
