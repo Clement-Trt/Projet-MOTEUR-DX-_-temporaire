@@ -12,7 +12,7 @@ public:
 
 protected:
 
-	void CreateBoxBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health);
+	void CreateBoxBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health, float intensity = 1);
 
 	void CreateIceBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ);
 

@@ -7,12 +7,13 @@
 #include "CameraSystem.h"
 #include "AssetManager.h"
 
-void SandBoxScene::CreateBoxBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health)
+void SandBoxScene::CreateBoxBlock(float sizeX, float sizeY, float sizeZ, float posX, float posY, float posZ, int health, float intensity)
 {
 	Entity* newBoxBlock = mpEntityManager->CreateEntity();
 	mpEntityManager->AddComponent<TransformComponent>(newBoxBlock);
 	mpEntityManager->AddComponent<MeshComponent>(newBoxBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newBoxBlock);
+	mpEntityManager->AddComponent<HighlightComponent>(newBoxBlock);
 
 	if (health != 0)
 		mpEntityManager->AddComponent<HealthComponent>(newBoxBlock);
@@ -34,6 +35,12 @@ void SandBoxScene::CreateBoxBlock(float sizeX, float sizeY, float sizeZ, float p
 		{
 			HealthComponent* healthComp = static_cast<HealthComponent*>(comp);
 			healthComp->maxHealth = healthComp->currentHealth = health;
+		}
+		if (comp->ID == Highlight_ID)
+		{
+			HighlightComponent* highlight = static_cast<HighlightComponent*>(comp);
+			highlight->isHighlighted = true;
+			highlight->intensity = intensity;
 		}
 	}
 }
@@ -164,16 +171,6 @@ void SandBoxScene::OnInitialize()
 	AssetManager::AddSound("beam", beamPath);
 	AssetManager::AddSound("beamPlayer", beamPlayerPath);
 
-	//// Music 															/!\/!\/!\/!\/!\/!\/!\/!\/!\
-	//std::string electroPath = basePath + "res\\ElectroMusic.wav";
-	//std::string albatorPath = basePath + "res\\AlbatorOST.wav";				ENLEVER ?
-	//AssetManager::AddMusic("electro", electroPath);
-	//AssetManager::AddMusic("albator", albatorPath);					/!\/!\/!\/!\/!\/!\/!\/!\/!\
-
-	//AssetManager::GetMusic("electro").play();
-	//AssetManager::GetMusic("electro").setVolume(15);
-
-
 	// Create Entity 1 = player
 	{
 		Entity* entityPlayer = mpEntityManager->CreateEntity();
@@ -288,6 +285,7 @@ void SandBoxScene::OnInitialize()
 
 		mpEntityManager->AddComponent<TransformComponent>(floor);
 		mpEntityManager->AddComponent<MeshComponent>(floor);
+		mpEntityManager->AddComponent<ColliderComponent>(floor);
 
 		for (auto& component : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[floor->tab_index]->vec_components)
 		{
@@ -300,7 +298,22 @@ void SandBoxScene::OnInitialize()
 			if (component->ID == Transform_ID)
 			{
 				TransformComponent* transform = static_cast<TransformComponent*>(component);
-				transform->m_transform.Scale(500.f, 0.0f, 500.f);
+				transform->m_transform.Scale(500.f, 1.0f, 500.f);
+			}
+		}
+	}
+	{
+		Entity* floor2 = mpEntityManager->CreateEntity();
+
+		mpEntityManager->AddComponent<TransformComponent>(floor2);
+		mpEntityManager->AddComponent<ColliderComponent>(floor2);
+
+		for (auto& component : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[floor2->tab_index]->vec_components)
+		{
+			if (component->ID == Transform_ID)
+			{
+				TransformComponent* transform = static_cast<TransformComponent*>(component);
+				transform->m_transform.Scale(500.f, 15.0f, 500.f);
 			}
 		}
 	}
@@ -316,8 +329,27 @@ void SandBoxScene::OnInitialize()
 		}
 	}
 
+	// Lumiere directionnel : 
+	{
+		Entity* sunEntity = mpEntityManager->CreateEntity();
+		mpEntityManager->AddComponent<LightComponent>(sunEntity);
+
+		for (auto& component : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[sunEntity->tab_index]->vec_components)
+		{
+			if (component->ID == Light_ID)
+			{
+				LightComponent* light = static_cast<LightComponent*>(component);
+				light->type = LightType::Directional;
+				light->Direction = { 0.57735f, 0.57735f, -0.57735f };
+				light->Color = { 1.0f, 1.0f, 0.95f };
+			}
+		}
+
+	}
+
 	mp_camera->SetTPS();
 
+	CreateBoxBlock(4, 4, 4, -18, 10, 60, 0, 2);
 	CreateBoxBlock(4, 4, 4, -12, 10, 60, 0);
 	CreateIceBlock(4, 4, 4, -6, 10, 60);
 	CreateEnnemy(0, 10, 60);
@@ -414,10 +446,10 @@ void SandBoxScene::OnUpdate()
 	if (transform)
 	{
 		transform->m_transform.vPosition.y -= 0.75;
-		if (transform->m_transform.GetPositionY() < 10)
+		/*if (transform->m_transform.GetPositionY() < 10)
 		{
 			transform->m_transform.vPosition.y = 10;
-		}
+		}*/
 		transform->m_transform.ResetRoll();
 	}
 

@@ -204,25 +204,6 @@ void GameScene::OnInitialize()
 		CreateWallBlock(randSizeX, randSizeY, randSizeZ, randPosX, randPosY, randPosZ, 10);
 		nbMeteorInScene++;
 	}
-
-	// Lumiere directionnel : 
-	//{
-	//	Entity* sunEntity = mpEntityManager->CreateEntity();
-	//	mpEntityManager->AddComponent<LightComponent>(sunEntity);
-
-	//	for (auto& component : m_gameManager->GetEntityManager()->GetComponentToAddTab()[sunEntity->tab_index]->vec_components)
-	//	{
-	//		if (component->ID == Light_ID)
-	//		{
-	//			LightComponent* light = static_cast<LightComponent*>(component);
-	//			light->type = LightType::Directional;
-	//			light->Direction = { 0.57735f, -0.57735f, 0.57735f };
-	//			light->Color = { 1.0f, 1.0f, 0.95f };
-	//		}
-	//	}
-
-	//}
-		
 	mp_camera->SetFPS();
 }
 
