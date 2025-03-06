@@ -88,7 +88,7 @@ void AttackSystem::Update(float deltaTime)
 						{
 							transform = static_cast<TransformComponent*>(component);
 							transform->m_transform = entityTransform->m_transform;
-							transform->m_transform.Move(2.0f, 0, 0);
+							transform->m_transform.Move(5.0f, 0, 0);
 							transform->m_transform.Scale(attack->projectileSizeX, attack->projectileSizeY, attack->projectileSizeZ);
 						}
 						if (component->ID == Velocity_ID)

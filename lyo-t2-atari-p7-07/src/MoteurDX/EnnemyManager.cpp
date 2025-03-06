@@ -147,7 +147,7 @@ void EnnemyManager::SpawnEnnemy(float posX, float posY, float posZ)
         if (comp->ID == Transform_ID)
         {
             TransformComponent* transform = static_cast<TransformComponent*>(comp);
-            transform->m_transform.Scale(2.f, 2.f, 2.f);
+            transform->m_transform.Scale(5.f, 5.f, 5.f);
             transform->m_transform.Move(posZ, posX, posY);
         }
         if (comp->ID == Health_ID)
@@ -186,7 +186,7 @@ void EnnemyManager::SpawnEnnemyBoss(float posX, float posY, float posZ)
         if (comp->ID == Transform_ID)
         {
             TransformComponent* transform = static_cast<TransformComponent*>(comp);
-            transform->m_transform.Scale(10.f, 10.f, 10.f);
+            transform->m_transform.Scale(9.f, 9.f, 9.f);
             transform->m_transform.Move(posZ, posX, posY);
         }
         if (comp->ID == Health_ID)
