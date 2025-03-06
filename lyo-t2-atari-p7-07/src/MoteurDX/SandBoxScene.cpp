@@ -443,11 +443,11 @@ void SandBoxScene::OnUpdate()
 		transform2->m_transform.vPosition.z = transform->m_transform.vPosition.z;
 	}
 
-	if (InputManager::GetKeyDown('V'))
+	if (InputManager::GetKeyDown('A'))
 	{
 		mp_camera->ChangeView();
 	}
-	if (InputManager::GetKeyIsPressed('N'))
+	if (InputManager::GetKeyIsPressed('X'))
 	{
 		mp_camera->SetTPS_Lock(true);
 	}

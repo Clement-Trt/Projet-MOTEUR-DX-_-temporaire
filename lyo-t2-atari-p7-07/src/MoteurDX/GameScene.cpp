@@ -106,6 +106,7 @@ void GameScene::OnInitialize()
 		mpEntityManager->AddComponent<ColliderComponent>(entityPlayer);
 		mpEntityManager->AddComponent<LightComponent>(entityPlayer);
 		mpEntityManager->AddComponent<HighlightComponent>(entityPlayer);
+		mpEntityManager->AddComponent<HealthComponent>(entityPlayer);
 
 		for (auto& component : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[entityPlayer->tab_index]->vec_components)
 		{
@@ -152,7 +153,12 @@ void GameScene::OnInitialize()
 			{
 				HighlightComponent* highlight = static_cast<HighlightComponent*>(component);
 				highlight->isHighlighted = true;
-				highlight->intensity = 3.0f;
+				highlight->intensity = 1.5f;
+			}
+			if (component->ID == Health_ID)
+			{
+				HealthComponent* healthComp = static_cast<HealthComponent*>(component);
+				healthComp->maxHealth = healthComp->currentHealth = 150;
 			}
 		}
 		mp_playerEntity = entityPlayer;
@@ -282,10 +288,10 @@ void GameScene::OnUpdate()
 	if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 1.5f;
 	if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -1.5f;
 
-	if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 1.5f;
+	if (InputManager::GetKeyIsPressed(VK_SPACE)) velComponent->vy = 1.5f;
 	if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -1.5f;
 
-	if (InputManager::GetKeyIsPressed('W'))
+	if (InputManager::GetKeyIsPressed(VK_SHIFT))
 	{
 		velComponent->vx *= 2;
 		velComponent->vy *= 2;
@@ -317,11 +323,11 @@ void GameScene::OnUpdate()
 		transform->m_transform.ResetRoll();
 	}
 
-	if (InputManager::GetKeyDown('V'))
+	if (InputManager::GetKeyDown('A'))
 	{
 		mp_camera->ChangeView();
 	}
-	if (InputManager::GetKeyIsPressed('N'))
+	if (InputManager::GetKeyIsPressed('X'))
 	{
 		mp_camera->SetTPS_Lock(true); 
 	}

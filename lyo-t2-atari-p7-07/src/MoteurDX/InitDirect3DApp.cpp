@@ -141,8 +141,8 @@ bool InitDirect3DApp::Initialize()
 	mp_lifeTimeManager->Initialize(this);
 
 	// Scene
-	SandBoxScene* scene = new SandBoxScene;
-	//GameScene* scene = new GameScene;
+	//SandBoxScene* scene = new SandBoxScene;
+	GameScene* scene = new GameScene;
 	//SceneTest* scene = new SceneTest;
 	SetScene(scene);
 	mp_scene->Initialize(this);
@@ -202,7 +202,7 @@ bool InitDirect3DApp::InitTexture()
 	mp_textureManager->CreateDescriptorHeap(14);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
-	if (!mp_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
+	if (!mp_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/head.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Player.", L"Erreur", MB_OK);
 		return false;
