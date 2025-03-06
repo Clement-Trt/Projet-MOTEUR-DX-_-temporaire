@@ -303,5 +303,5 @@ void SceneTest::OnUpdate()
 
 void SceneTest::OnClose()
 {
-
+	Close();
 }

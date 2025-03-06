@@ -8,7 +8,7 @@ void LightSystem::Initialize(InitDirect3DApp* gameManager)
     mp_gameManager = gameManager;
 
     // Valeurs par defaut globales
-    m_passConstants.AmbientLight = { 0.3f, 0.3f, 0.3f, 1.0f };
+    m_passConstants.AmbientLight = { 0.5f, 0.5f, 0.5f, 1.0f };
 
     // Lumiere directionnelle
     m_passConstants.DirLight.Direction = { 0.57735f, -0.57735f, 0.57735f };

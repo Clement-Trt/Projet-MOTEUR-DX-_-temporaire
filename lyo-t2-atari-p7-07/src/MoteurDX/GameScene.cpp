@@ -57,8 +57,8 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 			if (comp->ID == Mesh_ID)
 			{
 				MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-				mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-				mesh->textureID = L"MeteorTexture";
+				mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateCube();
+				mesh->m_textureID = L"MeteorTexture";
 			}
 			if (comp->ID == SceneObject_ID)
 			{
@@ -324,5 +324,6 @@ void GameScene::OnUpdate()
 
 void GameScene::OnClose()
 {
+	Close();
 	delete mp_playerEntity;
 }

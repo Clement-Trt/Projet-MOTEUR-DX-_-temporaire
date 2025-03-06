@@ -28,6 +28,7 @@ InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 
 InitDirect3DApp::~InitDirect3DApp()
 {
+	mp_scene->OnClose();
 	delete mp_healthSystem;
 	delete mp_attackSystem;
 	delete mp_meshFactory;
@@ -140,6 +141,7 @@ bool InitDirect3DApp::Initialize()
 
 	// Scene
 	GameScene* scene = new GameScene;
+	//SceneTest* scene = new SceneTest;
 	SetScene(scene);
 	mp_scene->Initialize(this);
 	mp_scene->OnInitialize();
@@ -242,17 +244,17 @@ bool InitDirect3DApp::InitTexture()
 		MessageBox(0, L"echec du chargement de la texture RedBeamTexture.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"PlayerBeamTexture", L"../../../src/MoteurDX/BeamPlayerV2.dds"))
+	if (!mp_textureManager->LoadTexture(L"PlayerBeamTexture", L"../../../src/MoteurDX/BeamPlayerV2.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture PlayerBeamTexture.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"EnnemyBeamTexture", L"../../../src/MoteurDX/BeamEnnemyV2.dds"))
+	if (!mp_textureManager->LoadTexture(L"EnnemyBeamTexture", L"../../../src/MoteurDX/BeamEnnemyV2.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture EnnemyBeamTexture.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"MeteorTexture", L"../../../src/MoteurDX/meteor.dds"))
+	if (!mp_textureManager->LoadTexture(L"MeteorTexture", L"../../../src/MoteurDX/meteor.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture MeteorTexture.", L"Erreur", MB_OK);
 		return false;
@@ -559,7 +561,7 @@ void InitDirect3DApp::Draw()
 	m_commandList->ResourceBarrier(1, &barrierStart);
 
 	// Effacer le Render Target avec une couleur de fond
-	FLOAT clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
+	FLOAT clearColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
 	// Effacer le Depth Buffer pour reinitialiser les valeurs de profondeur (1.0 = loin).

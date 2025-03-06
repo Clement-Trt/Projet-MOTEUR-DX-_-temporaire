@@ -58,7 +58,7 @@ void HealthSystem::Update(float deltaTime)
                     if (ennemy != nullptr) 
                     {
                         ennemyManager->SetNbEnnemy(ennemyManager->GetNbEnnemy() - 1);
-                        m_gameManager->GetParticleManager()->Explosion(transform->m_transform.GetPositionX(), transform->m_transform.GetPositionY(), transform->m_transform.GetPositionZ());
+                        mp_gameManager->GetParticleManager()->Explosion(transform->m_transform.GetPositionX(), transform->m_transform.GetPositionY(), transform->m_transform.GetPositionZ());
                         AssetManager::PlayLocalSound("explosion");
                     }
                     // detruire l'entity
