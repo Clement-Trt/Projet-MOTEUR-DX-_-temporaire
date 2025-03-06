@@ -152,7 +152,7 @@ bool InitDirect3DApp::Initialize()
 		return false;
 	}
 
-	m_gameIsPaused = true;
+	m_gameIsPaused = false;
 	return true;
 }
 

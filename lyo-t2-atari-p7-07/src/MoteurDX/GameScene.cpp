@@ -106,7 +106,7 @@ void GameScene::OnInitialize()
 		mpEntityManager->AddComponent<AttackComponent>(entityPlayer);
 		mpEntityManager->AddComponent<ColliderComponent>(entityPlayer);
 		mpEntityManager->AddComponent<LightComponent>(entityPlayer);
-
+		mpEntityManager->AddComponent<HighlightComponent>(entityPlayer);
 
 		for (auto& component : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[entityPlayer->tab_index]->vec_components)
 		{
@@ -148,6 +148,12 @@ void GameScene::OnInitialize()
 				attack->projectileSizeX = 0.2f;
 				attack->projectileSizeY = 0.2f;
 				attack->projectileSizeZ = 1.0f;
+			}
+			if (component->ID == Highlight_ID)
+			{
+				HighlightComponent* highlight = static_cast<HighlightComponent*>(component);
+				highlight->isHighlighted = true;
+				highlight->intensity = 3.0f;
 			}
 		}
 		mp_playerEntity = entityPlayer;
@@ -271,14 +277,14 @@ void GameScene::OnUpdate()
 	// Mettre a jour la rotation de la camera en fonction du delta
 	transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
 
-	if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 0.5f;
-	if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -0.5f;
+	if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 1.5f;
+	if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -1.5f;
 
-	if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 0.5f;
-	if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -0.5f;
+	if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 1.5f;
+	if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -1.5f;
 
-	if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 0.5f;
-	if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -0.5f;
+	if (InputManager::GetKeyIsPressed('A')) velComponent->vy = 1.5f;
+	if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -1.5f;
 
 	if (InputManager::GetKeyIsPressed('W'))
 	{

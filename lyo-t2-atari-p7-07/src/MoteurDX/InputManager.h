@@ -22,5 +22,5 @@ private:
 	static inline POINT ms_LastMousePos = { 0, 0 };
 	static inline POINT ms_MouseDelta = { 0, 0 };
 
-	static inline bool ms_cursorLockedAndInvisible = false;
+	static inline bool ms_cursorLockedAndInvisible = true;
 };
