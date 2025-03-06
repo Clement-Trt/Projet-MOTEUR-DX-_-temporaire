@@ -45,7 +45,7 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 	mpEntityManager->AddComponent<MeshComponent>(newIceBlock);
 	mpEntityManager->AddComponent<ColliderComponent>(newIceBlock);
 	mpEntityManager->AddComponent<SceneObjectComponent>(newIceBlock);
-	SceneObjectComponent* sceneObj = nullptr;
+	// SceneObjectComponent* sceneObj = nullptr;
 
 	float randRotX = -0.001 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (0.001 - -0.001);
 	float randRotY = -0.001 + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (0.001 - -0.001);
@@ -60,13 +60,13 @@ void GameScene::CreateWallBlock(float sizeX, float sizeY, float sizeZ, float pos
 				mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateCube();
 				mesh->m_textureID = L"MeteorTexture";
 			}
-			if (comp->ID == SceneObject_ID)
+			/*if (comp->ID == SceneObject_ID)
 			{
 				sceneObj = static_cast<SceneObjectComponent*>(comp);
 				sceneObj->speedRotX = randRotX;
 				sceneObj->speedRotY = randRotY;
 				sceneObj->speedRotZ = randRotZ;
-			}
+			}*/
 			if (comp->ID == Transform_ID)
 			{
 				TransformComponent* transform = static_cast<TransformComponent*>(comp);
@@ -253,10 +253,10 @@ void GameScene::OnUpdate()
 		}
 
 		// Si les deux composants sont trouves, on applique la rotation
-		if (sceneObj && objTransform)
+		/*if (sceneObj && objTransform)
 		{
 			objTransform->m_transform.Rotation(sceneObj->speedRotX, sceneObj->speedRotY, sceneObj->speedRotZ);
-		}
+		}*/
 	}
 
 	// Mettez a jour la souris en passant le handle de la fenetre
