@@ -1,15 +1,14 @@
 #include "pch.h"
 #include "HealthSystem.h"
 #include "InitDirect3DApp.h"
-#include "Components.h" // Pour HealthComponent
+#include "Components.h"
 #include "EnnemyManager.h"
 #include "AssetManager.h"
 #include "ParticleManager.h"
 
-// void HealthSystem::Update(EntityManager* entityManager, EnnemyManager* ennemyManager, float deltaTime)
 void HealthSystem::Initialize(InitDirect3DApp* gameManager)
 {
-    m_gameManager = gameManager;
+    mp_gameManager = gameManager;
 
     // Sound
     std::string basePath = AssetManager::GetExecutablePath();
@@ -17,20 +16,19 @@ void HealthSystem::Initialize(InitDirect3DApp* gameManager)
     std::string explosionPath = basePath + "res\\Explosion.wav";
     AssetManager::AddSound("explosion", explosionPath);
     AssetManager::GetSound("explosion");
+
 }
 
 void HealthSystem::Update(float deltaTime)
 {
-    EntityManager* entityManager = m_gameManager->GetEntityManager();
-    EnnemyManager* ennemyManager = m_gameManager->GetEnnemyManager();
+    EntityManager* entityManager = mp_gameManager->GetEntityManager();
+    EnnemyManager* ennemyManager = mp_gameManager->GetEnnemyManager();
 
-    // Parcourir toutes les entit�s
     for (Entity* entity : entityManager->GetEntityTab())
     {
         if (!entity)
             continue;
 
-        // V�rifier si l'entit�Eposs�de le composant Health
         if (entityManager->HasComponent(entity, COMPONENT_HEALTH))
         {
             HealthComponent* health = nullptr;
@@ -42,12 +40,10 @@ void HealthSystem::Update(float deltaTime)
                 if (comp->ID == Health_ID)
                 {
                     health = static_cast<HealthComponent*>(comp);
-                    //break;
                 }
                 if (comp->ID == Ennemy_ID)
                 {
                     ennemy = static_cast<EnnemyComponent*>(comp);
-                    //break;
                 }
                 if (comp->ID == Transform_ID)
                 {
@@ -56,7 +52,6 @@ void HealthSystem::Update(float deltaTime)
             }
             if (health)
             {
-                // Exemple de logique : d�truire l'entit�Esi la sant�Eest �puis�e
                 if (health->currentHealth <= 0)
                 {
                     // baisse le compte des ennemies
@@ -66,12 +61,9 @@ void HealthSystem::Update(float deltaTime)
                         m_gameManager->GetParticleManager()->Explosion(transform->m_transform.GetPositionX(), transform->m_transform.GetPositionY(), transform->m_transform.GetPositionZ());
                         AssetManager::PlayLocalSound("explosion");
                     }
+                    // detruire l'entity
                     entityManager->ToDestroy(entity);
                 }
-
-                // Vous pouvez par exemple ajouter une r�g�n�ration de la sant�E:
-                // float regenRate = 5.0f; // points de vie par seconde
-                // health->currentHealth = std::min(health->currentHealth + regenRate * deltaTime, float(health->maxHealth));
             }
         }
     }

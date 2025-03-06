@@ -1,8 +1,5 @@
 #pragma once
 
-
-#include "Camera.h"
-
 #include "InputManager.h"
 #include "Transform.h"
 
@@ -23,7 +20,7 @@ class TriangleRenderer
 {
 public:
     TriangleRenderer();
-    bool Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc, Camera* camera);
+    bool Initialize(ID3D12Device* device, ID3D12CommandQueue* commandQueue, ID3D12GraphicsCommandList* commandList, IDXGISwapChain3* swapChain, ID3D12DescriptorHeap* rtvHeap, ID3D12DescriptorHeap* dsvHeap, UINT rtvDescriptorSize, float size, DirectX::XMFLOAT4 color, D3D12_DEPTH_STENCIL_DESC depthStencilDesc);
     void Update();
     void UpdateTransform();
     void Render();
@@ -38,7 +35,6 @@ private:
 
     float m_Size;
     DirectX::XMFLOAT4 m_Color;
-    Camera* m_Camera;
 
     UINT m_RtvDescriptorSize;
     ComPtr<ID3D12Resource> m_RenderTargets[2];

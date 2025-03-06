@@ -11,6 +11,6 @@ public:
 
 protected:
 
-    InitDirect3DApp* m_gameManager;
+    InitDirect3DApp* mp_gameManager;
 
 };

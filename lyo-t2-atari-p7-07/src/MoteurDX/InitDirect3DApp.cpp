@@ -28,18 +28,18 @@ InitDirect3DApp::InitDirect3DApp(HINSTANCE hInstance) : WindowDX(hInstance)
 
 InitDirect3DApp::~InitDirect3DApp()
 {
-	delete m_healthSystem;
-	delete m_attackSystem;
-	delete m_meshFactory;
-	delete m_entityManager;
-	delete m_textureManager;
-	delete m_colliderManager;
-	delete m_particleManager;
-	delete m_ennemyManager;
-	delete m_movementManager;
-	delete m_lifeTimeManager;
-	delete m_cameraManager;
-	delete m_scene;
+	delete mp_healthSystem;
+	delete mp_attackSystem;
+	delete mp_meshFactory;
+	delete mp_entityManager;
+	delete mp_textureManager;
+	delete mp_colliderManager;
+	delete mp_particleManager;
+	delete mp_ennemyManager;
+	delete mp_movementManager;
+	delete mp_lifeTimeManager;
+	delete mp_cameraManager;
+	delete mp_scene;
 }
 
 bool InitDirect3DApp::Initialize()
@@ -49,9 +49,9 @@ bool InitDirect3DApp::Initialize()
 
 	FlushCommandQueue();
 
-	mCurrentFence = 0; // Initialisation de la valeur du fence
+	m_currentFence = 0;
 
-	HRESULT hr = mD3DDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
+	HRESULT hr = m_d3DDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"echec de la creation du Fence.", L"Erreur", MB_OK);
@@ -59,15 +59,15 @@ bool InitDirect3DApp::Initialize()
 	}
 
 	// Init les frame Ressources
-	for (int i = 0; i < gNumFrameResources; i++)
+	for (int i = 0; i < gNum_frameResources; i++)
 	{
 		auto frameResource = std::make_unique<FrameResource>();
-		mD3DDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&frameResource->CmdListAlloc));
-		frameResource->Fence = 0;
-		mFrameResources.push_back(std::move(frameResource));
+		m_d3DDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&frameResource->m_cmdListAlloc));
+		frameResource->m_fence = 0;
+		m_frameResources.push_back(std::move(frameResource));
 	}
 
-	mCurrFrameResource = mFrameResources[0].get();
+	m_currFrameResource = m_frameResources[0].get();
 
 
 	m_depthStencilDesc = {};
@@ -80,8 +80,8 @@ bool InitDirect3DApp::Initialize()
 	CreatePipelineState();
 
 	// Reinitialiser le command allocator et la command list
-	mCurrFrameResource->CmdListAlloc->Reset();
-	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
+	m_currFrameResource->m_cmdListAlloc->Reset();
+	m_commandList->Reset(m_currFrameResource->m_cmdListAlloc.Get(), nullptr);
 
 	if (!InitTexture())
 	{
@@ -90,61 +90,59 @@ bool InitDirect3DApp::Initialize()
 	}
 
 
-	mCommandList->Close();
-	ID3D12CommandList* cmdLists[] = { mCommandList.Get() };
-	mCommandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
+	m_commandList->Close();
+	ID3D12CommandList* cmdLists[] = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(cmdLists), cmdLists);
 	FlushCommandQueue();
 
 	// Initialisation Game Manager et Scene (ECS)
-	m_entityManager = new EntityManager();
+	mp_entityManager = new EntityManager();
 
 	// MeshFactory
-	m_meshFactory = new MeshFactory;
-	m_meshFactory->Initialize(mD3DDevice.Get(), m_entityManager, this);
-	MessageBox(0, L"InitReussiMeshFacto", 0, 0);
+	mp_meshFactory = new MeshFactory;
+	mp_meshFactory->Initialize(m_d3DDevice.Get(), mp_entityManager, this);
 
 	// Particles
-	m_particleManager = new ParticleManager;
-	m_particleManager->Initialize(this);
+	mp_particleManager = new ParticleManager;
+	mp_particleManager->Initialize(this);
 
 	// Collider
-	m_colliderManager = new ColliderManager;
-	m_colliderManager->Initialize(m_entityManager, m_particleManager);
+	mp_colliderManager = new ColliderManager;
+	mp_colliderManager->Initialize(mp_entityManager, mp_particleManager);
 
 	// Ennemy
-	m_ennemyManager = new EnnemyManager;
-	m_ennemyManager->Initialize(this);
+	mp_ennemyManager = new EnnemyManager;
+	mp_ennemyManager->Initialize(this);
 
 	// AttackSystem
-	m_attackSystem = new AttackSystem;
-	m_attackSystem->Initialize(this);
+	mp_attackSystem = new AttackSystem;
+	mp_attackSystem->Initialize(this);
 
 	// LightSystem
-	m_lightSystem = new LightSystem;
-	m_lightSystem->Initialize(this);
+	mp_lightSystem = new LightSystem;
+	mp_lightSystem->Initialize(this);
 
 	// HealthManager
-	m_healthSystem = new HealthSystem;
-	m_healthSystem->Initialize(this);
+	mp_healthSystem = new HealthSystem;
+	mp_healthSystem->Initialize(this);
 
 	// MouvementManager
-	m_movementManager = new MovementManager;
-	m_movementManager->Initialize(this);
+	mp_movementManager = new MovementManager;
+	mp_movementManager->Initialize(this);
 
 	// CameraManager
-	m_cameraManager = new CameraSystem;
-	m_cameraManager->Initialize(this);
+	mp_cameraManager = new CameraSystem;
+	mp_cameraManager->Initialize(this);
 
 	// LifeTimeManager
-	m_lifeTimeManager = new LifeTimeManager;
-	m_lifeTimeManager->Initialize(this);
+	mp_lifeTimeManager = new LifeTimeManager;
+	mp_lifeTimeManager->Initialize(this);
 
 	// Scene
-	//SceneTest* scene = new SceneTest;
 	GameScene* scene = new GameScene;
 	SetScene(scene);
-	m_scene->Initialize(this);
-	m_scene->OnInitialize();
+	mp_scene->Initialize(this);
+	mp_scene->OnInitialize();
 
 	// Pour la lumiere :
 	// Calculez la taille necessaire pour le constant buffer
@@ -154,7 +152,7 @@ bool InitDirect3DApp::Initialize()
 	CD3DX12_HEAP_PROPERTIES heapProps(D3D12_HEAP_TYPE_UPLOAD);
 	CD3DX12_RESOURCE_DESC bufferDesc = CD3DX12_RESOURCE_DESC::Buffer(passCBSize);
 
-	hr = mD3DDevice->CreateCommittedResource(
+	hr = m_d3DDevice->CreateCommittedResource(
 		&heapProps,
 		D3D12_HEAP_FLAG_NONE,
 		&bufferDesc,
@@ -168,14 +166,14 @@ bool InitDirect3DApp::Initialize()
 	}
 
 	// Mappez le constant buffer et obtenez un pointeur qui y est associe
-	hr = m_passConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&m_mappedPassCB));
+	hr = m_passConstantBuffer->Map(0, nullptr, reinterpret_cast<void**>(&mp_mappedPassCB));
 	if (FAILED(hr))
 	{
 		// Gestion d'erreur
 	}
 
-	// Optionnel : initialisez le buffer � z�ro
-	memset(m_mappedPassCB, 0, passCBSize);
+	// Optionnel : initialiser le buffer a zero
+	memset(mp_mappedPassCB, 0, passCBSize);
 
 	m_gameIsPaused = true;
 	return true;
@@ -184,62 +182,62 @@ bool InitDirect3DApp::Initialize()
 bool InitDirect3DApp::InitTexture()
 {
 	// Creation du TextureManager
-	m_textureManager = new TextureManager(mD3DDevice.Get(), mCommandList.Get());
+	mp_textureManager = new TextureManager(m_d3DDevice.Get(), m_commandList.Get());
 	// On cree un heap pour le nombre total de textures
-	m_textureManager->CreateDescriptorHeap(14);
+	mp_textureManager->CreateDescriptorHeap(14);
 
 	// Chargement des textures en appelant LoadTexture pour chaque ressource
-	if (!m_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
+	if (!mp_textureManager->LoadTexture(L"PlayerTexture", L"../../../src/MoteurDX/tile.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Player.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"WallTexture", L"../../../src/MoteurDX/stone.dds"))
+	if (!mp_textureManager->LoadTexture(L"WallTexture", L"../../../src/MoteurDX/stone.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Wall.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"BoxTexture", L"../../../src/MoteurDX/WoodCrate.dds"))
+	if (!mp_textureManager->LoadTexture(L"BoxTexture", L"../../../src/MoteurDX/WoodCrate.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Box.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"IceTexture", L"../../../src/MoteurDX/ice.dds"))
+	if (!mp_textureManager->LoadTexture(L"IceTexture", L"../../../src/MoteurDX/ice.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"FireTexture", L"../../../src/MoteurDX/fire.dds"))
+	if (!mp_textureManager->LoadTexture(L"FireTexture", L"../../../src/MoteurDX/fire.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Fire.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"DroneTexture", L"../../../src/MoteurDX/Drone.dds"))
+	if (!mp_textureManager->LoadTexture(L"DroneTexture", L"../../../src/MoteurDX/Drone.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"SkyBox", L"../../../src/MoteurDX/SkyBoxTexture.dds"))
+	if (!mp_textureManager->LoadTexture(L"SkyBox", L"../../../src/MoteurDX/SkyBoxTexture.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture Ice.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"SkyBox2", L"../../../src/MoteurDX/SkyBox2.dds"))
+	if (!mp_textureManager->LoadTexture(L"SkyBox2", L"../../../src/MoteurDX/SkyBox2.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture SkyBox2.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"DefaultTexture", L"../../../src/MoteurDX/defaultTexture.dds"))
+	if (!mp_textureManager->LoadTexture(L"DefaultTexture", L"../../../src/MoteurDX/defaultTexture.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture DefaultTexture.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"BlueBeamTexture", L"../../../src/MoteurDX/blueBeam.dds"))
+	if (!mp_textureManager->LoadTexture(L"BlueBeamTexture", L"../../../src/MoteurDX/blueBeam.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture BlueBeamTexture.", L"Erreur", MB_OK);
 		return false;
 	}
-	if (!m_textureManager->LoadTexture(L"RedBeamTexture", L"../../../src/MoteurDX/redBeam.dds"))
+	if (!mp_textureManager->LoadTexture(L"RedBeamTexture", L"../../../src/MoteurDX/redBeam.dds"))
 	{
 		MessageBox(0, L"echec du chargement de la texture RedBeamTexture.", L"Erreur", MB_OK);
 		return false;
@@ -269,16 +267,18 @@ void InitDirect3DApp::Update()
 		if (InputManager::GetKeyDown(VK_ESCAPE))
 		{
 			m_gameIsPaused = false;
-			ShowCursor(FALSE);
+			//ShowCursor(FALSE);
 			InputManager::SetCursorLockedAndInvisible(true);
+			InputManager::SetCursorOnTheCenterOfTheScreen(GetActiveWindow());
 		}
 	}
 	else
 	{
+		SetCursor(LoadCursor(NULL, IDC_CROSS));
 		if (InputManager::GetKeyDown(VK_ESCAPE))
 		{
 			m_gameIsPaused = true;
-			ShowCursor(TRUE);
+			// ShowCursor(TRUE);
 			InputManager::SetCursorLockedAndInvisible(false);
 		}
 
@@ -298,81 +298,78 @@ void InitDirect3DApp::UpdateTimer()
 void InitDirect3DApp::UpdatePhysics()
 {
 	// UPDATE SCENE
-	if (m_entityManager->GetNbEntity() > 0 && m_entityManager->GetEntityTab()[0] != nullptr)
+	if (mp_entityManager->GetNbEntity() > 0 && mp_entityManager->GetEntityTab()[0] != nullptr)
 	{
 		// Update (En gros gestion des input)
-		m_scene->OnUpdate();
+		mp_scene->OnUpdate();
 
 		// Ennemies
-		m_ennemyManager->Update();
+		mp_ennemyManager->Update();
 
 		// MovementSystem
-		m_movementManager->Update(); 
+		mp_movementManager->Update(); 
 
 		// CollisionsSystem
-		m_colliderManager->Update();
+		mp_colliderManager->Update();
 
 		// cameraSystem
-		m_cameraManager->Update(); 
+		mp_cameraManager->Update(); 
 
 		// attacksystem
-		m_attackSystem->Update(m_deltaTime);
+		mp_attackSystem->Update(m_deltaTime);
 
 		// HealthSystem
-		m_healthSystem->Update(m_deltaTime); 
+		mp_healthSystem->Update(m_deltaTime); 
 
 		// LightSystem
-		m_lightSystem->Update(m_deltaTime);
+		mp_lightSystem->Update(m_deltaTime);
 		
 		// LifeTimeSystem
-		m_lifeTimeManager->Update(m_deltaTime);
+		mp_lifeTimeManager->Update(m_deltaTime);
 	}
 
 	// DESTROY ENTITIES
-	for (auto& entityToDestroy : m_entityManager->GetToDestroyTab())
+	for (auto& entityToDestroy : mp_entityManager->GetToDestroyTab())
 	{
-		m_entityManager->DestroyEntity(entityToDestroy);
+		mp_entityManager->DestroyEntity(entityToDestroy);
 	}
-	m_entityManager->GetToDestroyTab().clear();
+	mp_entityManager->GetToDestroyTab().clear();
 
 	// ADD ENTITIES
-	for (auto& entityToAdd : m_entityManager->GetEntityToAddTab())
+	for (auto& entityToAdd : mp_entityManager->GetEntityToAddTab())
 	{
-		m_entityManager->AddEntityToTab(entityToAdd, m_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
+		mp_entityManager->AddEntityToTab(entityToAdd, mp_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
 	}
-	m_entityManager->GetEntityToAddTab().clear();
-	m_entityManager->GetComponentToAddTab().clear();
-	m_entityManager->ResetEntitiesToAdd();
+	mp_entityManager->GetEntityToAddTab().clear();
+	mp_entityManager->GetComponentToAddTab().clear();
+	mp_entityManager->ResetEntitiesToAdd();
 }
 
 
 void InitDirect3DApp::Render()
 {
 	// Si il ya des entitees
-	if (m_entityManager->GetNbEntity() > 0)
+	if (mp_entityManager->GetNbEntity() > 0)
 	{
 		// Configure le root signature et le pipeline
-		mCommandList->SetGraphicsRootSignature(mRootSignature.Get());
-		mCommandList->SetPipelineState(mPipelineState.Get());
+		m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+		m_commandList->SetPipelineState(m_pipelineState.Get());
 
 		// On doit lier le heap de textures (celui du TextureManager)
-		ID3D12DescriptorHeap* descriptorHeaps[] = { m_textureManager->GetSrvHeap() };
-		mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+		ID3D12DescriptorHeap* descriptorHeaps[] = { mp_textureManager->GetSrvHeap() };
+		m_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
 
-		// Definit les vertex et index buffers communs
-		/*mCommandList->IASetVertexBuffers(0, 1,m_meshFactory->GetVertexBufferView());
-		mCommandList->IASetIndexBuffer(m_meshFactory->GetIndexBufferView());*/
-		mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		PassConstants passConstants = m_lightSystem->GetPassConstants();
-		memcpy(m_mappedPassCB, &passConstants, sizeof(PassConstants));
-		mCommandList->SetGraphicsRootConstantBufferView(2, m_passConstantBuffer->GetGPUVirtualAddress());
+		PassConstants passConstants = mp_lightSystem->GetPassConstants();
+		memcpy(mp_mappedPassCB, &passConstants, sizeof(PassConstants));
+		m_commandList->SetGraphicsRootConstantBufferView(2, m_passConstantBuffer->GetGPUVirtualAddress());
 
-		DirectX::XMMATRIX view = m_cameraManager->GetViewMatrix();
+		DirectX::XMMATRIX view = mp_cameraManager->GetViewMatrix();
 		DirectX::XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(DirectX::XM_PIDIV4, 1.0f, 1.0f, 1000.0f);
 
 		// Mes a jour le constant buffer et dessiner chaque cube
-		for (auto* entity : m_entityManager->GetEntityTab())
+		for (auto* entity : mp_entityManager->GetEntityTab())
 		{
 			// Check si l'entity dans la table est null
 			if (entity == nullptr)
@@ -383,7 +380,7 @@ void InitDirect3DApp::Render()
 			MeshComponent* entityMesh = nullptr;
 			TransformComponent* entityTransform = nullptr;
 
-			for (auto& component : m_entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
+			for (auto& component : mp_entityManager->GetComponentsTab()[entity->tab_index]->vec_components)
 			{
 				if (!entityMesh && component->ID == Mesh_ID)
 				{
@@ -395,14 +392,12 @@ void InitDirect3DApp::Render()
 				}
 				if (entityMesh && entityTransform)
 				{
-					break; // On arrive la boucle d qu'on a trouve les deux composants
+					break; // On arrive la boucle des qu'on a trouve les deux composants
 				}
 			}
 			if (!entityMesh || !entityTransform)
 			{
-				// Gerer l'erreur (afficher un message, ignorer le rendu, etc.)
 				continue;
-				// return;
 			}
 
 			// Calculer la matrice World-View-Projection
@@ -416,22 +411,22 @@ void InitDirect3DApp::Render()
 			memcpy(entityMesh->m_cubeMesh->m_mappedData, &objConstants, sizeof(objConstants));
 
 			// Attacher le constant buffer a la racine (slot 0)
-			mCommandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer->GetGPUVirtualAddress());
-			mCommandList->IASetVertexBuffers(0, 1, &entityMesh->m_cubeMesh->m_geometryMesh.m_vertexBufferView);
-			mCommandList->IASetIndexBuffer(&entityMesh->m_cubeMesh->m_geometryMesh.m_indexBufferView);
+			m_commandList->SetGraphicsRootConstantBufferView(0, entityMesh->m_cubeMesh->m_constantBuffer->GetGPUVirtualAddress());
+			m_commandList->IASetVertexBuffers(0, 1, &entityMesh->m_cubeMesh->m_geometryMesh.m_vertexBufferView);
+			m_commandList->IASetIndexBuffer(&entityMesh->m_cubeMesh->m_geometryMesh.m_indexBufferView);
 
-			if (entityMesh->textureID.empty())
+			if (entityMesh->m_textureID.empty())
 			{
 				// Si aucun ID n'est defini, utilisez par defaut "PlayerTexture"
-				entityMesh->textureID = L"PlayerTexture";
+				entityMesh->m_textureID = L"PlayerTexture";
 			}
 			// Recuperation du handle de la texture a utiliser selon l'identifiant contenu dans le MeshComponent
-			D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = m_textureManager->GetTextureHandle(entityMesh->textureID);
+			D3D12_GPU_DESCRIPTOR_HANDLE textureHandle = mp_textureManager->GetTextureHandle(entityMesh->m_textureID);
 			// Mise a jour du slot 1 de la root signature (table de descripteurs) pour pointer sur la texture
-			mCommandList->SetGraphicsRootDescriptorTable(1, textureHandle);
+			m_commandList->SetGraphicsRootDescriptorTable(1, textureHandle);
 
 			// Dessiner le cube (36 indices)
-			mCommandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_geometryMesh.m_meshIndex, 1, 0, 0, 0);
+			m_commandList->DrawIndexedInstanced(entityMesh->m_cubeMesh->m_geometryMesh.m_meshIndex, 1, 0, 0, 0);
 		}
 	}
 }
@@ -439,7 +434,7 @@ void InitDirect3DApp::Render()
 void InitDirect3DApp::CreatePipelineState()
 {
 	// Definition d'un parametre root pour un Constant Buffer (CBV)
-	CD3DX12_ROOT_PARAMETER slotRootParameter[3]; // 2 parametres au lieu de 1 pour la texture
+	CD3DX12_ROOT_PARAMETER slotRootParameter[3];
 	// Parametre 0 : constant buffer (transformation)
 	slotRootParameter[0].InitAsConstantBufferView(0);
 	// Parametre 1 : table de descripteurs pour la texture (register t0)
@@ -468,7 +463,7 @@ void InitDirect3DApp::CreatePipelineState()
 		return;
 	}
 
-	hr = mD3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&mRootSignature));
+	hr = m_d3DDevice->CreateRootSignature(0, serializedRootSig->GetBufferPointer(), serializedRootSig->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"CreateRootSignature failed!", L"Error", MB_OK);
@@ -511,26 +506,22 @@ void InitDirect3DApp::CreatePipelineState()
 	// Create the pipeline state object
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { inputLayout, _countof(inputLayout) };
-	psoDesc.pRootSignature = mRootSignature.Get();
+	psoDesc.pRootSignature = m_rootSignature.Get();
 	psoDesc.VS = { vertexShader->GetBufferPointer(), vertexShader->GetBufferSize() };
 	psoDesc.PS = { pixelShader->GetBufferPointer(), pixelShader->GetBufferSize() };
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-
-	// psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = m_depthStencilDesc;
-	//psoDesc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
-
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
 	psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	psoDesc.SampleDesc.Count = 1;
 	psoDesc.SampleDesc.Quality = 0;
-	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;  // Ajout du format Depth/Stencil
-	psoDesc.DepthStencilState = m_depthStencilDesc; // Utilisation de la valeur stockee
+	psoDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT; 
+	psoDesc.DepthStencilState = m_depthStencilDesc;
 
-	hr = mD3DDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&mPipelineState));
+	hr = m_d3DDevice->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState));
 	if (FAILED(hr))
 	{
 		MessageBox(0, L"CreateGraphicsPipelineState failed.", L"Error", MB_OK);
@@ -543,79 +534,72 @@ void InitDirect3DApp::Draw()
 {
 
 	// Start des frames
-	mCurrFrameIndex = (mCurrFrameIndex + 1) % gNumFrameResources;
-	mCurrFrameResource = mFrameResources[mCurrFrameIndex].get();
+	m_currFrameIndex = (m_currFrameIndex + 1) % gNum_frameResources;
+	m_currFrameResource = m_frameResources[m_currFrameIndex].get();
 
 	// Start du lag meter
 	DWORD t = timeGetTime();
 
 	// Reinitialise le command allocator et la command list
-	mCurrFrameResource->CmdListAlloc->Reset();
-	mCommandList->Reset(mCurrFrameResource->CmdListAlloc.Get(), nullptr);
+	m_currFrameResource->m_cmdListAlloc->Reset();
+	m_commandList->Reset(m_currFrameResource->m_cmdListAlloc.Get(), nullptr);
 
 	// Definir le viewport et le rectangle de decoupe (scissor) pour le rendu.
-	mCommandList->RSSetViewports(1, &mScreenViewport);
-	mCommandList->RSSetScissorRects(1, &mScissorRect);
+	m_commandList->RSSetViewports(1, &m_screenViewport);
+	m_commandList->RSSetScissorRects(1, &m_scissorRect);
 
 	// Recuperer le handle du back buffer pour le rendu.
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(mRtvHeap->GetCPUDescriptorHandleForHeapStart(), mCurrBackBuffer, mRtvDescriptorSize);
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_currBackBuffer, m_rtvDescriptorSize);
 
 	// Recuperer le handle du Depth Stencil View.
-	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(mDsvHeap->GetCPUDescriptorHandleForHeapStart());
+	CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(m_dsvHeap->GetCPUDescriptorHandleForHeapStart());
 
 	// Transitionner le back buffer de l'etat PRESENT a RENDER_TARGET.
 	CD3DX12_RESOURCE_BARRIER barrierStart = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	mCommandList->ResourceBarrier(1, &barrierStart);
+	m_commandList->ResourceBarrier(1, &barrierStart);
 
 	// Effacer le Render Target avec une couleur de fond
 	FLOAT clearColor[] = { 1.0f, 0.0f, 1.0f, 1.0f };
-	mCommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
 	// Effacer le Depth Buffer pour reinitialiser les valeurs de profondeur (1.0 = loin).
-	mCommandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	m_commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	// Attacher le Render Target et le Depth Buffer a l'Output Merger.
-	mCommandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
+	m_commandList->OMSetRenderTargets(1, &rtvHandle, true, &dsvHandle);
 
 	// Appeler le renderer des objets
 	Render();
 
 	// Transitionner le back buffer de RENDER_TARGET a PRESENT pour la presentation.
 	CD3DX12_RESOURCE_BARRIER barrierStop = CD3DX12_RESOURCE_BARRIER::Transition(CurrentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	mCommandList->ResourceBarrier(1, &barrierStop);
+	m_commandList->ResourceBarrier(1, &barrierStop);
 
 	// Fermer la command list et l'executer sur la GPU.
-	mCommandList->Close();
-	ID3D12CommandList* ppCommandLists[] = { mCommandList.Get() };
-	mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+	m_commandList->Close();
+	ID3D12CommandList* ppCommandLists[] = { m_commandList.Get() };
+	m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
 	// Soumettre les commandes au GPU
-	mSwapChain->Present(0, 0);
-	mCurrBackBuffer = (mCurrBackBuffer + 1) % SwapChainBufferCount;
+	m_swapChain->Present(0, 0);
+	m_currBackBuffer = (m_currBackBuffer + 1) % SwapChainBufferCount;
 
 	// Advance the fence value to mark commands up to this fence point.
-	mCurrFrameResource->Fence = ++mCurrentFence;
+	m_currFrameResource->m_fence = ++m_currentFence;
 
 	// Add an instruction to the command queue to set a new fence point. 
 	// Because we are on the GPU timeline, the new fence point won't be 
 	// set until the GPU finishes processing all the commands prior to this Signal().
-	mCommandQueue->Signal(mFence.Get(), mCurrentFence);
+	m_commandQueue->Signal(m_fence.Get(), m_currentFence);
 
 	// Attendre que la frame precedente soit terminee
-	if (mFence->GetCompletedValue() < mCurrFrameResource->Fence)
+	if (m_fence->GetCompletedValue() < m_currFrameResource->m_fence)
 	{
 		HANDLE eventHandle = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-		mFence->SetEventOnCompletion(mCurrFrameResource->Fence, eventHandle);
+		m_fence->SetEventOnCompletion(m_currFrameResource->m_fence, eventHandle);
 		WaitForSingleObject(eventHandle, INFINITE);
 		CloseHandle(eventHandle);
 	}
 
 	DWORD dt = timeGetTime() - t;
-
-
-	// Affichage du lag meter
-
-	/*wchar_t title[256];
-	swprintf_s(title, 256, L"lag meters: %d", (int)dt);
-	SetWindowText(GetActiveWindow(), title);*/
 }

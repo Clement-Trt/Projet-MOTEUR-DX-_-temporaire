@@ -7,21 +7,19 @@ EnnemyManager::EnnemyManager()
 
 void EnnemyManager::Initialize(InitDirect3DApp* app)
 {
-	m_gameManager = app;
+	mp_gameManager = app;
     m_nbEnnemy = 0;
     m_nbEnnemyToSpawn = 0;
     m_waveNb = 1;
     m_startNextWave = true;
     m_gameStart = false;
-    //SpawnEnnemy(20,20,20);
-	m_entityManager = app->GetEntityManager();
+	mp_entityManager = app->GetEntityManager();
 }
 
 void EnnemyManager::Update()
 {
     if (!m_gameStart) 
     {
-        // VK_key pour les touches comme enter ou shift
         if (InputManager::GetKeyIsPressed(VK_RETURN)) { m_gameStart = true; };
 
         // Skip wave at start
@@ -39,50 +37,48 @@ void EnnemyManager::Update()
 void EnnemyManager::EnnemyAttackSystem()
 {
     // Premiere boucle : rechercher la transform du joueur
-    m_playerTransform = nullptr;
-    for (auto& entity : m_entityManager->GetEntityTab())
+    mp_playerTransform = nullptr;
+    for (auto& entity : mp_entityManager->GetEntityTab())
     {
         if (entity == nullptr)
             continue;
 
-        auto components = m_entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
+        auto components = mp_entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
         for (auto* comp : components)
         {
             if (comp->ID == Player_ID)
             {
-                m_player = entity;
-                // Trouver la transform dans les composants de cette entite
+                mp_player = entity;
                 for (auto* pcomp : components)
                 {
                     if (pcomp->ID == Transform_ID)
                     {
-                        m_playerTransform = static_cast<TransformComponent*>(pcomp);
-                        //OutputDebugString(L"PlayerTransformFound !\n");
+                        mp_playerTransform = static_cast<TransformComponent*>(pcomp);
                         break;
                     }
                 }
             }
-            if (m_playerTransform != nullptr)
+            if (mp_playerTransform != nullptr)
                 break;
         }
-        if (m_playerTransform != nullptr)
+        if (mp_playerTransform != nullptr)
             break;
     }
 
     // Si aucun joueur n'a ete trouve, on sort
-    if (m_playerTransform == nullptr)
+    if (mp_playerTransform == nullptr)
     {
         OutputDebugString(L"No PlayerTransform found, skipping enemy update\n");
         return;
     }
 
     // Deuxieme boucle : mettre a jour les ennemis
-    for (auto& entity : m_entityManager->GetEntityTab())
+    for (auto& entity : mp_entityManager->GetEntityTab())
     {
         if (entity == nullptr)
             continue;
 
-        auto components = m_entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
+        auto components = mp_entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
         bool isEnemy = false;
         TransformComponent* enemyTransform = nullptr;
         for (auto* comp : components)
@@ -96,11 +92,11 @@ void EnnemyManager::EnnemyAttackSystem()
         if (isEnemy && enemyTransform != nullptr)
         {
             // Faire suivre l'ennemi vers le joueur
-            enemyTransform->m_transform.FollowTarget(m_playerTransform->m_transform.GetPositionF3(), 0.1f);
-            enemyTransform->m_transform.LookAt(m_playerTransform->m_transform.GetPositionF3());
+            enemyTransform->m_transform.FollowTarget(mp_playerTransform->m_transform.GetPositionF3(), 0.1f);
+            enemyTransform->m_transform.LookAt(mp_playerTransform->m_transform.GetPositionF3());
 
             AttackComponent* attack = nullptr;
-            auto& playerComponents = m_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components;
+            auto& playerComponents = mp_gameManager->GetEntityManager()->GetComponentsTab()[entity->tab_index]->vec_components;
             for (auto* component : playerComponents)
             {
                 if (component->ID == Attack_ID)
@@ -120,10 +116,10 @@ void EnnemyManager::EnnemyAttackSystem()
                 attack->attackCooldown = minAtkCooldown + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (maxAtkCooldown - minAtkCooldown);
                 attack->damage = 2;
 
-                attack->projectileSpeed = 1; // 1
-                attack->projectileSizeX = 0.2f; // 0.2f
-                attack->projectileSizeY = 0.2f; // 0.2f
-                attack->projectileSizeZ = 1.0f; // 1.0f
+                attack->projectileSpeed = 1;
+                attack->projectileSizeX = 0.2f;
+                attack->projectileSizeY = 0.2f;
+                attack->projectileSizeZ = 1.0f;
             }
         }
     }
@@ -131,21 +127,21 @@ void EnnemyManager::EnnemyAttackSystem()
 
 void EnnemyManager::SpawnEnnemy(float posX, float posY, float posZ)
 {
-    Entity* ennemy = m_entityManager->CreateEntity();
-    m_entityManager->AddComponent<TransformComponent>(ennemy);
-    m_entityManager->AddComponent<MeshComponent>(ennemy);
-    m_entityManager->AddComponent<ColliderComponent>(ennemy);
-    m_entityManager->AddComponent<EnnemyComponent>(ennemy);
-    m_entityManager->AddComponent<AttackComponent>(ennemy);
-    m_entityManager->AddComponent<HealthComponent>(ennemy);
+    Entity* ennemy = mp_entityManager->CreateEntity();
+    mp_entityManager->AddComponent<TransformComponent>(ennemy);
+    mp_entityManager->AddComponent<MeshComponent>(ennemy);
+    mp_entityManager->AddComponent<ColliderComponent>(ennemy);
+    mp_entityManager->AddComponent<EnnemyComponent>(ennemy);
+    mp_entityManager->AddComponent<AttackComponent>(ennemy);
+    mp_entityManager->AddComponent<HealthComponent>(ennemy);
 
-    for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
+    for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
     {
         if (comp->ID == Mesh_ID)
         {
             MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-            mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-            mesh->textureID = L"DroneTexture";
+            mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateCube();
+            mesh->m_textureID = L"DroneTexture";
         }
         if (comp->ID == Transform_ID)
         {
@@ -163,21 +159,21 @@ void EnnemyManager::SpawnEnnemy(float posX, float posY, float posZ)
 
 void EnnemyManager::SpawnEnnemyBoss(float posX, float posY, float posZ)
 {
-    Entity* ennemy = m_entityManager->CreateEntity();
-    m_entityManager->AddComponent<TransformComponent>(ennemy);
-    m_entityManager->AddComponent<MeshComponent>(ennemy);
-    m_entityManager->AddComponent<ColliderComponent>(ennemy);
-    m_entityManager->AddComponent<EnnemyComponent>(ennemy);
-    m_entityManager->AddComponent<AttackComponent>(ennemy);
-    m_entityManager->AddComponent<HealthComponent>(ennemy);
+    Entity* ennemy = mp_entityManager->CreateEntity();
+    mp_entityManager->AddComponent<TransformComponent>(ennemy);
+    mp_entityManager->AddComponent<MeshComponent>(ennemy);
+    mp_entityManager->AddComponent<ColliderComponent>(ennemy);
+    mp_entityManager->AddComponent<EnnemyComponent>(ennemy);
+    mp_entityManager->AddComponent<AttackComponent>(ennemy);
+    mp_entityManager->AddComponent<HealthComponent>(ennemy);
 
-    for (auto& comp : m_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
+    for (auto& comp : mp_gameManager->GetEntityManager()->GetComponentToAddTab()[ennemy->tab_index]->vec_components)
     {
         if (comp->ID == Mesh_ID)
         {
             MeshComponent* mesh = static_cast<MeshComponent*>(comp);
-            mesh->m_cubeMesh = m_gameManager->GetFactory()->CreateCube();
-            mesh->textureID = L"DroneTexture";
+            mesh->m_cubeMesh = mp_gameManager->GetFactory()->CreateCube();
+            mesh->m_textureID = L"DroneTexture";
         }
         if (comp->ID == Transform_ID)
         {

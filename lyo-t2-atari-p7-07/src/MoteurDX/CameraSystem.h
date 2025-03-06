@@ -27,7 +27,7 @@ public:
     void SetTPS_Lock(bool value) { TPS_Lock = value; }
 private:
 
-    InitDirect3DApp* m_gameManager;
+    InitDirect3DApp* mp_gameManager;
 
     DirectX::XMMATRIX m_viewMatrix;
 

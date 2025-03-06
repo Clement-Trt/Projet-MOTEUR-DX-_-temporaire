@@ -5,16 +5,16 @@
 #include "LightSystem.h"
 
 class MeshFactory;
-class Camera;
+
+class CameraSystem;
+class Attackystem;
+class HealthSystem;
+
 class ColliderManager;
 class ParticleManager;
 class EnnemyManager;
 class MovementManager;
-class CameraSystem;
-class Attackystem;
-class HealthSystem;
 class LifeTimeManager;
-
 class TextureManager;
 
 class InitDirect3DApp : public WindowDX
@@ -30,55 +30,48 @@ public:
 	void UpdateTimer();
 	void Draw() override;
 
-
 	void Render();
 	void CreatePipelineState();
 
 	void SetDeltaTime(float deltaTime) { m_deltaTime = deltaTime; }
-	void SetScene(Scene* scene) { m_scene = scene; }
+	void SetScene(Scene* scene) { mp_scene = scene; }
 
-
-	EntityManager* GetEntityManager() { return m_entityManager; }
-	MeshFactory* GetFactory() { return m_meshFactory; }
-	ParticleManager* GetParticleManager() { return m_particleManager; }
-	CameraSystem* GetCameraSystem() { return m_cameraManager; }
-	EnnemyManager* GetEnnemyManager() { return m_ennemyManager; }
-
-	//CameraComponent* GetMainView() { return m_mainView; }
+	EntityManager* GetEntityManager() { return mp_entityManager; }
+	MeshFactory* GetFactory() { return mp_meshFactory; }
+	ParticleManager* GetParticleManager() { return mp_particleManager; }
+	CameraSystem* GetCameraSystem() { return mp_cameraManager; }
+	EnnemyManager* GetEnnemyManager() { return mp_ennemyManager; }
 
 	friend class Scene;
 
 private:
 	D3D12_DEPTH_STENCIL_DESC m_depthStencilDesc;
 
-	MeshFactory* m_meshFactory;
+	MeshFactory* mp_meshFactory;
 
-	EntityManager* m_entityManager;
-	//CameraComponent* m_mainView;
+	EntityManager* mp_entityManager;
+	ColliderManager* mp_colliderManager;
+	EnnemyManager* mp_ennemyManager;
+	ParticleManager* mp_particleManager;
+	TextureManager* mp_textureManager;
+	MovementManager* mp_movementManager;
+	LifeTimeManager* mp_lifeTimeManager;
 
-	ColliderManager* m_colliderManager;
-	EnnemyManager* m_ennemyManager;
-	ParticleManager* m_particleManager;
-	TextureManager* m_textureManager;
-	MovementManager* m_movementManager;
-	LifeTimeManager* m_lifeTimeManager;
+	HealthSystem* mp_healthSystem;
+	AttackSystem* mp_attackSystem;
+	CameraSystem* mp_cameraManager;
+	LightSystem* mp_lightSystem;
 
-	HealthSystem* m_healthSystem;
-	AttackSystem* m_attackSystem;
-	CameraSystem* m_cameraManager;
-	LightSystem* m_lightSystem;
+	Scene* mp_scene;
 
-	Scene* m_scene;
-
-	float m_deltaTime = 0.0f; //   PAS UTILISE ?
+	float m_deltaTime = 0.0f;
 	DWORD m_lastTime = 0;
 
-	// Textures:
 	ComPtr<ID3D12Resource> m_texture;
 
 	bool m_gameIsPaused;
 
 	ComPtr<ID3D12Resource> m_passConstantBuffer;
-	PassConstants* m_mappedPassCB = nullptr;
+	PassConstants* mp_mappedPassCB = nullptr;
 };
 

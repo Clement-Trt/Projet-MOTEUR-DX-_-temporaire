@@ -3,25 +3,23 @@
 
 void ColliderManager::Initialize(EntityManager* entityManager, ParticleManager* particleManager)
 {
-	m_entityManager = entityManager;
-	m_particleManager = particleManager;
+	mp_entityManager = entityManager;
+	mp_particleManager = particleManager;
 }
 
 void ColliderManager::Update()
 {
-	// Collisions
-	for (auto& entity1 : m_entityManager->GetEntityTab())
+	for (auto& entity1 : mp_entityManager->GetEntityTab())
 	{
 		if (entity1 == nullptr)
-			continue;// Msg d'erreur ?
+			continue;
 
-		// Transform & Collider Components
 		TransformComponent* transform1 = nullptr;
 		ColliderComponent* collider1 = nullptr;
 		VelocityComponent* velocity1 = nullptr;
 		HealthComponent* health1 = nullptr;
 		AttackComponent* attack1 = nullptr;
-		for (auto* component : m_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
+		for (auto* component : mp_entityManager->GetComponentsTab()[entity1->tab_index]->vec_components)
 		{
 			if (component->ID == Transform_ID)
 			{
@@ -45,22 +43,21 @@ void ColliderManager::Update()
 			}
 		}
 		if (!transform1 || !collider1)
-			continue; // Msg d'erreur ?
+			continue;
 
 
 		for (uint32_t entity2Index = entity1->tab_index + 1; entity2Index < 64000; entity2Index++)
 		{
-			auto& entity2 = m_entityManager->GetEntityTab()[entity2Index];
+			auto& entity2 = mp_entityManager->GetEntityTab()[entity2Index];
 			if (!entity2)
-				continue;// Msg d'erreur ?
+				continue;
 
-			// Transform & Collider Components
 			TransformComponent* transform2 = nullptr;
 			ColliderComponent* collider2 = nullptr;
 			VelocityComponent* velocity2 = nullptr;
 			HealthComponent* health2 = nullptr;
 			AttackComponent* attack2 = nullptr;
-			for (auto* component : m_entityManager->GetComponentsTab()[entity2Index]->vec_components)
+			for (auto* component : mp_entityManager->GetComponentsTab()[entity2Index]->vec_components)
 			{
 				if (component->ID == Transform_ID)
 				{
@@ -84,21 +81,18 @@ void ColliderManager::Update()
 				}
 			}
 			if (!transform2 || !collider2)
-				continue;	// Msg d'erreur ?		
+				continue;	
 
 			// Test de collision
 			if (AABBIntersect(*transform1, *transform2))
 			{
 				collider1->m_isColliding = true;
 				collider2->m_isColliding = true;
-				//OutputDebugString(L"Collision !\n");
 
-				//Si l'objet 1 est dynamique et l'objet 2 est statique, on corrige seulement l'objet 1
-				//if (collider1->m_isDynamic && !collider2->m_isDynamic)
 				if (velocity1 && !velocity2)
 				{
 					// Calculer le vecteur de correction minimal
-					DirectX::XMVECTOR correction = ResolveAABBCollision(*transform1, *transform2); // sortir du if ?
+					DirectX::XMVECTOR correction = ResolveAABBCollision(*transform1, *transform2);
 
 					// Charger la position actuelle dans un XMVECTOR
 					DirectX::XMVECTOR newPos = DirectX::XMLoadFloat3(&transform1->m_transform.vPosition);
@@ -113,7 +107,7 @@ void ColliderManager::Update()
 				else if (!velocity1 && velocity2)
 				{
 					// Calculer le vecteur de correction minimal
-					DirectX::XMVECTOR correction = ResolveAABBCollision(*transform2, *transform1); // sortir du if ?
+					DirectX::XMVECTOR correction = ResolveAABBCollision(*transform2, *transform1);
 
 					// Charger la position actuelle dans un XMVECTOR
 					DirectX::XMVECTOR newPos = DirectX::XMLoadFloat3(&transform2->m_transform.vPosition);
@@ -141,7 +135,6 @@ void ColliderManager::Update()
 					DirectX::XMStoreFloat3(&transform1->m_transform.vPosition, newPos1);
 					DirectX::XMStoreFloat3(&transform2->m_transform.vPosition, newPos2);
 
-
 					transform1->m_transform.UpdateMatrix();
 					transform2->m_transform.UpdateMatrix();
 				}
@@ -149,29 +142,23 @@ void ColliderManager::Update()
 				if (health1 && attack2)
 				{
 					health1->currentHealth -= attack2->damage;
-					//OutputDebugString(L"Ouch1\n");
 				}
 				if (health2 && attack1)
 				{
 					health2->currentHealth -= attack1->damage;
-					//OutputDebugString(L"Ouch2\n");
 				}
 
 				if (collider1->m_isDestructable && entity1)
 				{
-					//m_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
+					mp_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
 				}
 
 				if (collider2->m_isDestructable && entity2)
 				{
-					m_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
-					m_entityManager->DestroyEntity(entity2);
+					//m_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
+					mp_entityManager->DestroyEntity(entity2);
+					mp_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
 				}
-
-				//wchar_t buffer[256];
-				//swprintf_s(buffer, 256, L"Collision ! posX: %f, posY: %f\n", transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY());
-				//OutputDebugString(buffer);
-				//OutputDebugString(L"Collision !\n");
 			}
 			else
 			{

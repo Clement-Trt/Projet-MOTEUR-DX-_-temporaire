@@ -23,8 +23,8 @@ public:
 
 private:
 
-	EntityManager* m_entityManager;
-	ParticleManager* m_particleManager;
+	EntityManager* mp_entityManager;
+	ParticleManager* mp_particleManager;
 };
 
 

@@ -1,7 +1,6 @@
 #include "pch.h"
 
 #include "MeshFactory.h"
-// #include "TextureLoader.h"
 
 MeshFactory::MeshFactory()
 {
@@ -10,7 +9,7 @@ MeshFactory::MeshFactory()
 void MeshFactory::Initialize(ID3D12Device* device, EntityManager* entityManager, WindowDX* windowDx)
 {
 	m_Device = device;
-	m_entityManager = entityManager;
+	mp_entityManager = entityManager;
 }
 
 Mesh* MeshFactory::CreateCube()
@@ -40,7 +39,7 @@ Mesh* MeshFactory::CreateSkyBoxCube()
 
 	CreateCubeModelForSkyBox(newMesh);
 
-	// Créer le constant buffer comme d'habitude
+	// Creer le constant buffer comme d'habitude
 	CreateCubeConstantBuffer(newMesh);
 
 	// Mappage du buffer constant

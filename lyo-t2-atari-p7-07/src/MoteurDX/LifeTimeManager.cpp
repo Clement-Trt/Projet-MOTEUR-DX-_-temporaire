@@ -5,12 +5,12 @@
 
 void LifeTimeManager::Initialize(InitDirect3DApp* gameManager)
 {
-	mGM = gameManager;
+	mp_gameManager = gameManager;
 }
 
 void LifeTimeManager::Update(float deltaTime)
 {
-	EntityManager* entityManager = mGM->GetEntityManager();
+	EntityManager* entityManager = mp_gameManager->GetEntityManager();
 	
 	for (Entity* entity : entityManager->GetEntityTab())
 	{
@@ -19,17 +19,17 @@ void LifeTimeManager::Update(float deltaTime)
 
 		if (entityManager->HasComponent(entity, COMPONENT_LIFETIME))
 		{
-			LifeTimeComponent* lifeTime = nullptr;
+			LifeTimeComponent* p_lifeTime = nullptr;
 			auto& compTab = entityManager->GetComponentsTab()[entity->tab_index]->vec_components;
 			for (auto* comp : compTab)
 			{
 				if (comp->ID == LifeTime_ID)
 				{
-					lifeTime = static_cast<LifeTimeComponent*>(comp);
+					p_lifeTime = static_cast<LifeTimeComponent*>(comp);
 
-					if (lifeTime->lifeTime > 0) 
+					if (p_lifeTime->m_lifeTime > 0)
 					{
-						lifeTime->lifeTime -= 1 * deltaTime;
+						p_lifeTime->m_lifeTime -= 1 * deltaTime;
 					}
 					else
 					{
