@@ -11,7 +11,7 @@ void MovementManager::Initialize(InitDirect3DApp* gameManager)
 
 }
 
-void MovementManager::Update()
+void MovementManager::Update(float deltaTime)
 {
 	for (Entity* entity : mp_gameManager->GetEntityManager()->GetEntityTab())
 	{
@@ -37,7 +37,7 @@ void MovementManager::Update()
 			}
 			if (transform != nullptr && velocity != nullptr)
 			{
-				Move(entity, velocity, transform);
+				Move(entity, velocity, transform, deltaTime);
 			}
 		}
 	}
@@ -50,9 +50,9 @@ void MovementManager::SetVelocity(VelocityComponent* velComponent, float velFron
 	velComponent->vy = velUp;
 }
 
-void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent)
+void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent, float deltaTime)
 {
-	transformComponent->m_transform.Move(velComponent->vz, velComponent->vx, velComponent->vy);
+	transformComponent->m_transform.Move(velComponent->vz* deltaTime, velComponent->vx * deltaTime, velComponent->vy * deltaTime);
 
 	if (entity->id != 1) // Si ce n'est pas le joueur
 	{

@@ -144,7 +144,7 @@ void GameScene::OnInitialize()
 				attack->attackCooldown = 0.1f;
 				attack->damage = 2;
 
-				attack->projectileSpeed = 5;
+				attack->projectileSpeed = 100;
 				attack->projectileSizeX = 0.2f;
 				attack->projectileSizeY = 0.2f;
 				attack->projectileSizeZ = 1.0f;
@@ -282,14 +282,14 @@ void GameScene::OnUpdate()
 	// Mettre a jour la rotation de la camera en fonction du delta
 	transform->m_transform.Rotation(0.0f, deltaY * sensitivity, deltaX * sensitivity);
 
-	if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 1.5f;
-	if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -1.5f;
+	if (InputManager::GetKeyIsPressed('D')) velComponent->vx = 50.f;
+	if (InputManager::GetKeyIsPressed('Q')) velComponent->vx = -50.f;
 
-	if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 1.5f;
-	if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -1.5f;
+	if (InputManager::GetKeyIsPressed('Z')) velComponent->vz = 50.f;
+	if (InputManager::GetKeyIsPressed('S')) velComponent->vz = -50.f;
 
-	if (InputManager::GetKeyIsPressed(VK_SPACE)) velComponent->vy = 1.5f;
-	if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -1.5f;
+	if (InputManager::GetKeyIsPressed(VK_SPACE)) velComponent->vy = 50.f;
+	if (InputManager::GetKeyIsPressed('E')) velComponent->vy = -50.f;
 
 	if (InputManager::GetKeyIsPressed(VK_SHIFT))
 	{

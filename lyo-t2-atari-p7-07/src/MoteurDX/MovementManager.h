@@ -17,10 +17,10 @@ public:
 
 	void Initialize(InitDirect3DApp* gameManager);
 
-	void Update();
+	void Update(float deltaTime);
 
 	void SetVelocity(VelocityComponent* velComponent, float velFront, float velRight, float velUp);
 
-	void Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent);
+	void Move(Entity* entity, VelocityComponent* velComponent, TransformComponent* transformComponent, float deltaTime);
 };
 

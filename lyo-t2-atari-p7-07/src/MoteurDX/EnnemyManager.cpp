@@ -92,7 +92,7 @@ void EnnemyManager::EnnemyAttackSystem()
         if (isEnemy && enemyTransform != nullptr)
         {
             // Faire suivre l'ennemi vers le joueur
-            enemyTransform->m_transform.FollowTarget(mp_playerTransform->m_transform.GetPositionF3(), 0.1f);
+            enemyTransform->m_transform.FollowTarget(mp_playerTransform->m_transform.GetPositionF3(), 0.2f);
             enemyTransform->m_transform.LookAt(mp_playerTransform->m_transform.GetPositionF3());
 
             AttackComponent* attack = nullptr;
@@ -116,7 +116,7 @@ void EnnemyManager::EnnemyAttackSystem()
                 attack->attackCooldown = minAtkCooldown + static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX) * (maxAtkCooldown - minAtkCooldown);
                 attack->damage = 2;
 
-                attack->projectileSpeed = 1;
+                attack->projectileSpeed = 80.f;
                 attack->projectileSizeX = 0.2f;
                 attack->projectileSizeY = 0.2f;
                 attack->projectileSizeZ = 1.0f;

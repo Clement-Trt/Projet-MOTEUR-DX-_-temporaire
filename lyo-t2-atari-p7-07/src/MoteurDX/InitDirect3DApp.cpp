@@ -323,7 +323,7 @@ void InitDirect3DApp::UpdatePhysics()
 		mp_ennemyManager->Update();
 
 		// MovementSystem
-		mp_movementManager->Update(); 
+		mp_movementManager->Update(m_deltaTime);
 
 		// CollisionsSystem
 		mp_colliderManager->Update();
