@@ -10,10 +10,10 @@ EntityManager::~EntityManager()
 		entity = nullptr;
 	}
 	
-	for (auto& entity : tab_Components)
+	for (auto& components : tab_Components)
 	{
-		delete entity;
-		entity = nullptr;
+		delete components;
+		components = nullptr;
 	}
 	
 	for (auto& entity : tab_toDestroy)
@@ -29,10 +29,10 @@ EntityManager::~EntityManager()
 		entity = nullptr;
 	}
 	tab_entitiesToAdd.clear();
-	for (auto& component :tab_compToAdd)
+	for (auto& components :tab_compToAdd)
 	{
-		delete component;
-		component = nullptr;
+		delete components;
+		components = nullptr;
 	}
 	tab_compToAdd.clear();
 }
@@ -82,11 +82,11 @@ void EntityManager::DestroyEntity(Entity* entity) {
 	tab_Components[lastIndex]->tab_index = index;
 	*tab_Components[index] = *tab_Components[lastIndex];
 
-	tab_entity[lastIndex] = nullptr;
 	delete tab_entity[lastIndex];
+	tab_entity[lastIndex] = nullptr;
 
-	tab_Components[lastIndex] = nullptr;
 	delete tab_Components[lastIndex];
+	tab_Components[lastIndex] = nullptr;
 	int newEntityToPointAt = --entityNb;
 }
 
