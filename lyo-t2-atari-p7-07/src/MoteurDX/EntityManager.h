@@ -7,6 +7,7 @@ class Entity
 public:
 	int32_t id = 0;
 	uint32_t tab_index = 0;
+	bool m_isDestroyed = false;
 };
 
 struct EntityComponents
@@ -14,6 +15,15 @@ struct EntityComponents
 	uint32_t tab_index = 0;
 	ComponentMask mask = 0;
 	std::vector<Component*> vec_components;
+
+	~EntityComponents() 
+	{
+		for (auto* comp : vec_components) 
+		{
+			delete comp;
+		}
+		vec_components.clear();
+	}
 };
 
 
@@ -28,7 +38,8 @@ private:
 
 	EntityComponents* tab_Components[64000] = { nullptr };
 
-	std::vector<Entity*> tab_toDestroy;
+	//std::vector<Entity*> tab_toDestroy;
+	std::vector<Entity> tab_toDestroy;
 	std::vector<Entity*> tab_entitiesToAdd;
 	std::vector<EntityComponents*> tab_compToAdd;
 
@@ -39,7 +50,8 @@ public:
 
 	EntityComponents* (&GetComponentsTab())[64000] {	return tab_Components; }
 
-	std::vector<Entity*>& GetToDestroyTab() { return tab_toDestroy; }
+	//std::vector<Entity*>& GetToDestroyTab() { return tab_toDestroy; }
+	std::vector<Entity>& GetToDestroyTab() { return tab_toDestroy; }
 	std::vector<Entity*>& GetEntityToAddTab() { return tab_entitiesToAdd; }
 	std::vector<EntityComponents*>& GetComponentToAddTab() { return tab_compToAdd; }
 
@@ -69,6 +81,7 @@ public:
 				if (newComp->ID == component->ID)
 				{
 					std::cout << "Entity already has this component" << std::endl;
+					delete newComp;
 					return;
 				}
 			}
@@ -82,6 +95,7 @@ public:
 			{
 				if (newComp->ID == component->ID)
 				{
+					delete newComp;
 					return;
 				}
 			}

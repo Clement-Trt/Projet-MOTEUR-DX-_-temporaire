@@ -87,6 +87,9 @@ struct CameraComponent : public Component
 struct MeshComponent : public Component
 {
 	MeshComponent() : Component(Mesh_ID, COMPONENT_MESH) {}
+	~MeshComponent() {
+		delete m_cubeMesh;
+	}
 	Mesh* m_cubeMesh;
 	std::wstring m_textureID = L"";
 };

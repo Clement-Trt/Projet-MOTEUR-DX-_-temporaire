@@ -148,12 +148,13 @@ void ColliderManager::Update()
 					health2->currentHealth -= attack1->damage;
 				}
 
-				if (collider1->m_isDestructable && entity1)
+				if (entity1 && collider1->m_isDestructable && !entity1->m_isDestroyed)
 				{
+					mp_entityManager->ToDestroy(entity1);
 					mp_particleManager->Explosion(transform1->m_transform.GetPositionX(), transform1->m_transform.GetPositionY(), transform1->m_transform.GetPositionZ());
 				}
 
-				if (collider2->m_isDestructable && entity2)
+				if (entity2 && collider2->m_isDestructable && !entity2->m_isDestroyed)
 				{
 					//m_particleManager->Explosion(transform2->m_transform.GetPositionX(), transform2->m_transform.GetPositionY(), transform2->m_transform.GetPositionZ());
 					//mp_entityManager->DestroyEntity(entity2);

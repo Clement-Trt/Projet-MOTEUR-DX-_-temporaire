@@ -347,7 +347,7 @@ void InitDirect3DApp::UpdatePhysics()
 	// DESTROY ENTITIES
 	for (auto& entityToDestroy : mp_entityManager->GetToDestroyTab())
 	{
-		mp_entityManager->DestroyEntity(entityToDestroy);
+		mp_entityManager->DestroyEntity(&entityToDestroy);
 	}
 	mp_entityManager->GetToDestroyTab().clear();
 
@@ -355,6 +355,14 @@ void InitDirect3DApp::UpdatePhysics()
 	for (auto& entityToAdd : mp_entityManager->GetEntityToAddTab())
 	{
 		mp_entityManager->AddEntityToTab(entityToAdd, mp_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
+	}
+	for (auto& entityToAdd : mp_entityManager->GetEntityToAddTab())
+	{
+		entityToAdd = nullptr;
+	}
+	for (auto& componentToAdd : mp_entityManager->GetComponentToAddTab())
+	{
+		componentToAdd = nullptr;
 	}
 	mp_entityManager->GetEntityToAddTab().clear();
 	mp_entityManager->GetComponentToAddTab().clear();

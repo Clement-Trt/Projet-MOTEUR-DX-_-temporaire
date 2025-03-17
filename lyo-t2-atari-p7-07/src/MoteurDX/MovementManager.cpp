@@ -60,7 +60,7 @@ void MovementManager::Move(Entity* entity, VelocityComponent* velComponent, Tran
 			|| transformComponent->m_transform.GetPositionY() > m_limitPosMax || transformComponent->m_transform.GetPositionY() < m_limitPosMin
 			|| transformComponent->m_transform.GetPositionZ() > m_limitPosMax || transformComponent->m_transform.GetPositionZ() < m_limitPosMin)
 		{
-			mp_gameManager->GetEntityManager()->ToDestroy(entity);
+			//mp_gameManager->GetEntityManager()->ToDestroy(entity);
 		}
 	}
 	else // Si c'est le joueur

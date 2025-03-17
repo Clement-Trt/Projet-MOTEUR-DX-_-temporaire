@@ -3,23 +3,23 @@
 #include "EntityManager.h"
 
 EntityManager::~EntityManager()
-{	 
-	for (auto& entity : tab_entity)
+{
+	/*for (auto& entity : tab_entity)
 	{
 		delete entity;
 		entity = nullptr;
-	}
-	
+	}*/
+
 	for (auto& components : tab_Components)
 	{
 		delete components;
 		components = nullptr;
 	}
-	
+
 	for (auto& entity : tab_toDestroy)
 	{
-		delete entity;
-		entity = nullptr;
+		//delete entity;
+		//entity = nullptr;
 	}
 	tab_toDestroy.clear();
 
@@ -29,7 +29,7 @@ EntityManager::~EntityManager()
 		entity = nullptr;
 	}
 	tab_entitiesToAdd.clear();
-	for (auto& components :tab_compToAdd)
+	for (auto& components : tab_compToAdd)
 	{
 		delete components;
 		components = nullptr;
@@ -47,7 +47,7 @@ Entity* EntityManager::CreateEntity() {
 
 	EntityComponents* newComponents = new EntityComponents;
 	newComponents->mask = COMPONENT_NONE;
-	newComponents->tab_index = entitiesToAddIndex;
+	newComponents->tab_index = entitiesToAddIndex - 1;
 
 	tab_compToAdd.push_back(newComponents);
 
@@ -79,20 +79,48 @@ void EntityManager::DestroyEntity(Entity* entity) {
 	tab_entity[lastIndex]->tab_index = index;
 	*tab_entity[index] = *tab_entity[lastIndex];
 
+	for (auto* component : tab_Components[index]->vec_components)
+	{
+		if (component)
+		{
+			if (component->ID == Mesh_ID)
+			{
+				auto* meshComp = static_cast<MeshComponent*>(component);
+				delete meshComp->m_cubeMesh;
+				meshComp->m_cubeMesh = nullptr;
+			}
+			delete component;
+			component = nullptr;
+		}
+	}
 	tab_Components[lastIndex]->tab_index = index;
 	*tab_Components[index] = *tab_Components[lastIndex];
+
+	tab_Components[lastIndex]->vec_components.clear();
 
 	delete tab_entity[lastIndex];
 	tab_entity[lastIndex] = nullptr;
 
 	delete tab_Components[lastIndex];
 	tab_Components[lastIndex] = nullptr;
-	int newEntityToPointAt = --entityNb;
+
+	//int newEntityToPointAt = 
+	entityNb--;
 }
 
 void EntityManager::ToDestroy(Entity* entity)
 {
-	tab_toDestroy.push_back(entity);
+	if (entity->m_isDestroyed == false)
+	{
+		entity->m_isDestroyed = true;
+
+		Entity entityToDestroy;
+		entityToDestroy.id = entity->id;
+		entityToDestroy.tab_index = entity->tab_index;
+		entityToDestroy.m_isDestroyed = entity->m_isDestroyed;
+
+		tab_toDestroy.push_back(entityToDestroy);
+	}
 }
 
 bool EntityManager::HasComponent(Entity* entity, ComponentMask componentMask) const {
