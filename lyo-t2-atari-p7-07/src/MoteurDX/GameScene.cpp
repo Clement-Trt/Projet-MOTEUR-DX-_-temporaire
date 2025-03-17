@@ -318,5 +318,4 @@ void GameScene::OnUpdate()
 void GameScene::OnClose()
 {
 	Close();
-	delete mp_playerEntity;
 }

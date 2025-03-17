@@ -356,14 +356,6 @@ void InitDirect3DApp::UpdatePhysics()
 	{
 		mp_entityManager->AddEntityToTab(entityToAdd, mp_entityManager->GetComponentToAddTab()[entityToAdd->tab_index]);
 	}
-	for (auto& entityToAdd : mp_entityManager->GetEntityToAddTab())
-	{
-		entityToAdd = nullptr;
-	}
-	for (auto& componentToAdd : mp_entityManager->GetComponentToAddTab())
-	{
-		componentToAdd = nullptr;
-	}
 	mp_entityManager->GetEntityToAddTab().clear();
 	mp_entityManager->GetComponentToAddTab().clear();
 	mp_entityManager->ResetEntitiesToAdd();

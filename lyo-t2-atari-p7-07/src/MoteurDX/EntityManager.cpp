@@ -4,11 +4,14 @@
 
 EntityManager::~EntityManager()
 {
-	/*for (auto& entity : tab_entity)
+	for (auto& entity : tab_entity)
 	{
-		delete entity;
-		entity = nullptr;
-	}*/
+		if (entity)
+		{
+			delete entity;
+			entity = nullptr;
+		}
+	}
 
 	for (auto& components : tab_Components)
 	{
@@ -88,6 +91,8 @@ void EntityManager::DestroyEntity(Entity* entity) {
 				auto* meshComp = static_cast<MeshComponent*>(component);
 				delete meshComp->m_cubeMesh;
 				meshComp->m_cubeMesh = nullptr;
+				delete meshComp;
+				continue;
 			}
 			delete component;
 			component = nullptr;
