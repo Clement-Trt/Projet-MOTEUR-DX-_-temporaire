@@ -79,8 +79,18 @@ void EntityManager::DestroyEntity(Entity* entity) {
 		return;
 	}
 
+	int i = 0;
+
+	for (auto& entityToDestroy : tab_toDestroy)
+	{
+		if (tab_Components[lastIndex]->tab_index == entityToDestroy.tab_index)
+			tab_toDestroy.at(i).tab_index = index;
+		i++;
+	}
+
 	tab_entity[lastIndex]->tab_index = index;
 	*tab_entity[index] = *tab_entity[lastIndex];
+
 
 	for (auto* component : tab_Components[index]->vec_components)
 	{
@@ -100,6 +110,7 @@ void EntityManager::DestroyEntity(Entity* entity) {
 	}
 	tab_Components[lastIndex]->tab_index = index;
 	*tab_Components[index] = *tab_Components[lastIndex];
+
 
 	tab_Components[lastIndex]->vec_components.clear();
 
