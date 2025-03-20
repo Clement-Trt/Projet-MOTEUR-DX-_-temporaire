@@ -13,6 +13,12 @@ public:
     UIElement();
     ~UIElement();
 
+    Mesh* CreateUIRectangle();
+    void CreateRectangleUIModel(Mesh* cube, float posX, float posY, float width, float height);
+    void CreateConstantBuffer(Mesh* cube);
+    
+    ID3D12Resource* CreateVertexBuffer(ID3D12Device* device, void* vertexData, UINT bufferSize);
+
     // Initialise l'élément UI (création du vertex buffer, etc.)
     HRESULT Initialize(ID3D12Device* device, float posX, float posY, float width, float height);
 
@@ -27,7 +33,8 @@ public:
 
 private:
     // Vertex buffer et vue associée
-    ID3D12Resource* m_vertexBuffer;
+    //ID3D12Resource* m_vertexBuffer;
+    ComPtr<ID3D12Resource> m_vertexBuffer;
     D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 
 
@@ -56,7 +63,7 @@ public:
     // Mettre à jour la taille de l'écran (si nécessaire)
     void UpdateScreenSize(/*UINT screenWidth, UINT screenHeight*/);
 
-    ID3D12Resource* CreateVertexBuffer(ID3D12Device* device, void* vertexData, UINT bufferSize);
+    //ID3D12Resource* CreateVertexBuffer(ID3D12Device* device, void* vertexData, UINT bufferSize);
 
     // Rendu de l'UI
     void Render(ID3D12GraphicsCommandList* commandList, ID3D12RootSignature* rootSignature);

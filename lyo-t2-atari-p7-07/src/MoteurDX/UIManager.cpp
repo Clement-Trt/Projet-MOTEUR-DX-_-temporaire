@@ -15,7 +15,7 @@ UIManager::~UIManager()
 void UIManager::Initialize(ID3D12Device* device, ID3D12RootSignature* rootSignature)
 {
 	m_device = device;
-	m_rootSignature = rootSignature;
+	//m_rootSignature = rootSignature;
 
 	// Création de la matrice orthographique en mode Left-Handed
 	m_orthoMatrix = XMMatrixOrthographicLH(static_cast<float>(WindowDX::GetWindowWidth()), static_cast<float>(WindowDX::GetWindowHeight()), 0.0f, 100.0f);
@@ -40,7 +40,7 @@ void UIManager::UpdateScreenSize(/*UINT screenWidth, UINT screenHeight*/)
 }
 
 
-ID3D12Resource* UIManager::CreateVertexBuffer(ID3D12Device* device, void* vertexData, UINT bufferSize)
+ID3D12Resource* UIElement::CreateVertexBuffer(ID3D12Device* device, void* vertexData, UINT bufferSize)
 {
 	ID3D12Resource* vertexBuffer = nullptr;
 
@@ -89,68 +89,70 @@ ID3D12Resource* UIManager::CreateVertexBuffer(ID3D12Device* device, void* vertex
 
 void UIManager::InitializeUIPipeline(ID3D12Device* device)
 {
-	//// 1. Création de la Root Signature (décrit comment les shaders accèdent aux ressources)
-	//D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-	//rootSignatureDesc.NumParameters = 0;  // Pas de paramètres pour l'instant
-	//rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	{
+		//// 1. Création de la Root Signature (décrit comment les shaders accèdent aux ressources)
+		//D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+		//rootSignatureDesc.NumParameters = 0;  // Pas de paramètres pour l'instant
+		//rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	// Déclaration d'un tableau pour les paramètres de la root signature
-	//D3D12_ROOT_PARAMETER rootParameters[1] = {};
+		// Déclaration d'un tableau pour les paramètres de la root signature
+		//D3D12_ROOT_PARAMETER rootParameters[1] = {};
 
-	//// Configure le premier paramètre pour un CBV à register b0
-	//rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	//rootParameters[0].Descriptor.ShaderRegister = 0;
-	//rootParameters[0].Descriptor.RegisterSpace = 0;
-	//rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+		//// Configure le premier paramètre pour un CBV à register b0
+		//rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		//rootParameters[0].Descriptor.ShaderRegister = 0;
+		//rootParameters[0].Descriptor.RegisterSpace = 0;
+		//rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
-	//// Mise à jour de la description de la root signature
-	//D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-	//rootSignatureDesc.NumParameters = _countof(rootParameters);
-	//rootSignatureDesc.pParameters = rootParameters;
-	//rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+		//// Mise à jour de la description de la root signature
+		//D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+		//rootSignatureDesc.NumParameters = _countof(rootParameters);
+		//rootSignatureDesc.pParameters = rootParameters;
+		//rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-	//
+		//
 
-	//// Definition d'un parametre root pour un Constant Buffer (CBV)
-	//CD3DX12_ROOT_PARAMETER slotRootParameter[1]; // 2 parametres au lieu de 1 pour la texture
-	//// Parametre 0 : constant buffer (transformation)
-	//slotRootParameter[0].InitAsConstantBufferView(0);
-	////// Parametre 1 : table de descripteurs pour la texture (register t0)
-	////CD3DX12_DESCRIPTOR_RANGE texTable;
-	////texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
-	////slotRootParameter[1].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
+		//// Definition d'un parametre root pour un Constant Buffer (CBV)
+		//CD3DX12_ROOT_PARAMETER slotRootParameter[1]; // 2 parametres au lieu de 1 pour la texture
+		//// Parametre 0 : constant buffer (transformation)
+		//slotRootParameter[0].InitAsConstantBufferView(0);
+		////// Parametre 1 : table de descripteurs pour la texture (register t0)
+		////CD3DX12_DESCRIPTOR_RANGE texTable;
+		////texTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+		////slotRootParameter[1].InitAsDescriptorTable(1, &texTable, D3D12_SHADER_VISIBILITY_PIXEL);
 
-	//// Declarez le static sampler pour register(s0) 
-	//CD3DX12_STATIC_SAMPLER_DESC samplerDesc(0); // register s0
-	//samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
-	//samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	//samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	//samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		//// Declarez le static sampler pour register(s0) 
+		//CD3DX12_STATIC_SAMPLER_DESC samplerDesc(0); // register s0
+		//samplerDesc.Filter = D3D12_FILTER_ANISOTROPIC;
+		//samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		//samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+		//samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 
-	//// Creation de la Root Signature
-	//CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+		//// Creation de la Root Signature
+		//CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(2, slotRootParameter, 1, &samplerDesc, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-	////
+		////
 
 
-	//ID3DBlob* signatureBlob = nullptr;
-	//ID3DBlob* errorBlob = nullptr;
+		//ID3DBlob* signatureBlob = nullptr;
+		//ID3DBlob* errorBlob = nullptr;
 
-	//HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-	////HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
-	//if (FAILED(hr)) return;
+		//HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+		////HRESULT hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signatureBlob, &errorBlob);
+		//if (FAILED(hr)) return;
 
-	//m_rootSignature = nullptr;
-	//hr = device->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
-	//if (FAILED(hr)) return;
+		//m_rootSignature = nullptr;
+		//hr = device->CreateRootSignature(0, signatureBlob->GetBufferPointer(), signatureBlob->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+		//if (FAILED(hr)) return;
 
-	//D3D12_ROOT_PARAMETER rootParameters[1];
+		//D3D12_ROOT_PARAMETER rootParameters[1];
 
-	//// Définir un Constant Buffer View (CBV) sur le slot b0
-	//rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	//rootParameters[0].Descriptor.ShaderRegister = 0;  // Correspond à b0
-	//rootParameters[0].Descriptor.RegisterSpace = 0;
-	//rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+		//// Définir un Constant Buffer View (CBV) sur le slot b0
+		//rootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		//rootParameters[0].Descriptor.ShaderRegister = 0;  // Correspond à b0
+		//rootParameters[0].Descriptor.RegisterSpace = 0;
+		//rootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	}
 
 	D3D12_DESCRIPTOR_RANGE descriptorRange = {};
 	descriptorRange.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV; // SRV pour la texture
@@ -253,6 +255,7 @@ void UIManager::InitializeUIPipeline(ID3D12Device* device)
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(float) * 3, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
 	};
+
 
 	// 3. Configuration du Blend State (activer la transparence)
 	D3D12_BLEND_DESC blendDesc = {};
@@ -374,6 +377,47 @@ UIElement::~UIElement()
 	}
 }
 
+//Mesh* UIElement::CreateUIRectangle()
+//{
+//	Mesh* newMesh = new Mesh;
+//
+//	// Nombre d'indice de la forme (36 points pour un cube)
+//	newMesh->m_geometryMesh.m_meshIndex = 6;
+//
+//	// Creer la geometrie du cube
+//	CreateRectangleUIModel(newMesh);
+//
+//	// Creer le constant buffer pour ce cube
+//	CreateConstantBuffer(newMesh);
+//
+//	// InitMap
+//	CD3DX12_RANGE readRange(0, 0);
+//	newMesh->m_constantBuffer->Map(0, &readRange, &newMesh->m_mappedData);
+//
+//	return newMesh;
+//}
+
+//void UIElement::CreateRectangleUIModel(Mesh* cube, float posX, float posY, float width, float height))
+//{
+//	m_width = width;
+//	m_height = height;
+//	// On définit un quad en espace local allant de (0,0) à (width, height)
+//	Vertex2D vertices[] = {
+//		// Triangle 1
+//		{ { 0.0f,     0.0f, 0.0f }, { 0.0f, 0.0f } },
+//		{ { m_width,  0.0f, 0.0f }, { 1.0f, 0.0f } },
+//		{ { m_width,  m_height, 0.0f }, { 1.0f, 1.0f } },
+//		// Triangle 2
+//		{ { 0.0f,     0.0f, 0.0f }, { 0.0f, 0.0f } },
+//		{ { m_width,  m_height, 0.0f }, { 1.0f, 1.0f } },
+//		{ { 0.0f,     m_height, 0.0f }, { 0.0f, 1.0f } }
+//	};
+//}
+
+void UIElement::CreateConstantBuffer(Mesh* cube)
+{
+}
+
 HRESULT UIElement::Initialize(ID3D12Device* device, float posX, float posY, float width, float height)
 {
 	m_width = width;
@@ -403,7 +447,12 @@ HRESULT UIElement::Initialize(ID3D12Device* device, float posX, float posY, floa
 	};
 
 	SetPosition(posX, posY);
-		
+
+	// 3. Créer le vertex buffer (en utilisant ton mécanisme habituel)
+    // Par exemple, allouer un ID3D12Resource pour ce buffer et copier 'vertices' dedans.
+    
+	//m_vertexBuffer = CreateVertexBuffer(device, vertices, sizeof(vertices));
+
 	UINT bufferSize = sizeof(vertices);
 
 	// Préparation des propriétés du heap pour un buffer en mode UPLOAD
@@ -422,6 +471,9 @@ HRESULT UIElement::Initialize(ID3D12Device* device, float posX, float posY, floa
 	resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
 	resourceDesc.SampleDesc.Count = 1;
 	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	// Creer le vertex buffer
+	//ComPtr<ID3D12Resource>& cubeVertexBuffer = cube->m_geometryMesh.m_vertexBuffer;
 
 	HRESULT hr = device->CreateCommittedResource(
 		&heapProps,
@@ -472,10 +524,10 @@ void UIElement::Render(ID3D12GraphicsCommandList* commandList)
 	// On suppose que le pipeline UI (PSO, root signature, etc.) est déjà configuré par UIManager.
 	// Ici, on se contente de lier le vertex buffer et d'effectuer le dessin.
 	//commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-	if (m_vertexBuffer != nullptr)
+	if (m_vertexBuffer)
 	{
 		commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-		commandList->SetGraphicsRootConstantBufferView(0, m_vertexBuffer->GetGPUVirtualAddress());
+		//commandList->SetGraphicsRootConstantBufferView(1, m_vertexBuffer->GetGPUVirtualAddress());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		commandList->DrawInstanced(6, 1, 0, 0); // 6 vertices pour render un rectangle 

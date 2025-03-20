@@ -75,7 +75,7 @@ bool InitDirect3DApp::Initialize()
 	m_depthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 	m_depthStencilDesc.StencilEnable = FALSE;
 
-	// Cree le pipeline(root signature & PSO)
+	// Cree le pipeline(root signature & PSO) FOR 3D
 	CreatePipelineState();
 
 	// Reinitialiser le command allocator et la command list
@@ -100,7 +100,7 @@ bool InitDirect3DApp::Initialize()
 	// UIManager
 	m_UIManager = new UIManager;
 	m_UIManager->Initialize(mD3DDevice.Get(), mRootSignature.Get());
-	m_UIManager->AddUIElement(0,0,100,100);
+	m_UIManager->AddUIElement(50,50,100,100);
 
 	// MeshFactory
 	m_meshFactory = new MeshFactory;
